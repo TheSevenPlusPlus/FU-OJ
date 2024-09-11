@@ -1,0 +1,12 @@
+{
+  "folders": [
+    {
+      "name": "FU-OJ Server",
+      "path": "./FU.OJ.Server"
+    },
+    {
+      "name": "FU-OJ Client",
+      "path": "./FU.OJ.Client"
+    }
+  ]
+}
