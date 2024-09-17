@@ -8,10 +8,10 @@ namespace FU.OJ.Server.Controllers
 {
     [ApiController]
     [Route(TestcaseRoute.INDEX)]
-    public class TestCaseController : ControllerBase
+    public class TestCaseController : BaseController
     {
         public readonly ITestcaseService _service;
-        public TestCaseController(ITestcaseService service)
+        public TestCaseController(ITestcaseService service, ILogger <TestCaseController> logger) : base(logger)
         {
             _service = service;
         }
@@ -25,7 +25,7 @@ namespace FU.OJ.Server.Controllers
             }
             catch (Exception ex)
             {
-                throw;
+                return HandleException(ex);
             }
         }
     }

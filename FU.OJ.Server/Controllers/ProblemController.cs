@@ -9,10 +9,10 @@ namespace FU.OJ.Server.Controllers
 {
     [ApiController]
     [Route(ProblemRoute.INDEX)]
-    public class ProblemController : ControllerBase
+    public class ProblemController : BaseController
     {
         public readonly IProblemService _service;
-        public ProblemController(IProblemService service)
+        public ProblemController(IProblemService service, ILogger<ProblemController> logger) : base(logger)
         {
             _service = service;
         }
@@ -26,7 +26,7 @@ namespace FU.OJ.Server.Controllers
             }
             catch (Exception ex)
             {
-                throw;
+                return HandleException(ex);
             }
         }
     }

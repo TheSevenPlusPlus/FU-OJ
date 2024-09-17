@@ -14,14 +14,14 @@ namespace FU.OJ.Server.Controllers
 {
     [Route(SubmissionRoute.INDEX)]
     [ApiController]
-    public class SubmissionController : ControllerBase
+    public class SubmissionController : BaseController
     {
         private readonly string _judgeServerUrl;
         private readonly HttpClient _httpClient;
         private readonly ApplicationDBContext _context;
         private readonly ISubmissionService _submissionService;
 
-        public SubmissionController(HttpClient httpClient, IConfiguration configuration, ApplicationDBContext context, ISubmissionService submissionService)
+        public SubmissionController(HttpClient httpClient, IConfiguration configuration, ApplicationDBContext context, ISubmissionService submissionService, ILogger <SubmissionController> logger) : base(logger)
         {
             _httpClient = httpClient;
             _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl") ?? throw new Exception(ErrorMessage.NotFound);
@@ -42,7 +42,7 @@ namespace FU.OJ.Server.Controllers
             }
             catch (Exception ex)
             {
-                throw;
+                return HandleException(ex);
             }
         }
 

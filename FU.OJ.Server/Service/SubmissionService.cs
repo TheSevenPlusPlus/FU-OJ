@@ -4,12 +4,13 @@ using System.Text;
 using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.DTOs.Submission.Request;
 using Microsoft.Extensions.Configuration;
+using FU.OJ.Server.Infra.Models;
 
 namespace FU.OJ.Server.Service
 {
     public interface ISubmissionService
     {
-        public Task<bool> createAsync(CreateSubmissionRequest request, bool base64_encoded, bool wait);
+        public Task<List<string>> createAsync(CreateSubmissionRequest request, bool base64_encoded, bool wait);
     }
     public class SubmissionService : ISubmissionService
     {
@@ -28,7 +29,7 @@ namespace FU.OJ.Server.Service
             _context = context;
         }
 
-        public async Task<bool> createAsync(CreateSubmissionRequest request, bool base64_encoded, bool wait)
+        public async Task<List<string>> createAsync(CreateSubmissionRequest request, bool base64_encoded, bool wait)
         {
             var problem = await _problemService.getByCodeAsync(request.problem_code);
             if (problem == null)
@@ -43,8 +44,9 @@ namespace FU.OJ.Server.Service
 
             var folderPath = testcase.folder_path;
             var testFolders = Directory.GetDirectories(folderPath);
-            string url = $"{_judgeServerUrl}submissions/?base64_encoded={base64_encoded.ToString().ToLower()}&wait={wait.ToString().ToLower()}";
+            string url = $"{_judgeServerUrl}/submissions/?base64_encoded={base64_encoded.ToString().ToLower()}&wait={wait.ToString().ToLower()}";
 
+            var resultList = new List<string>();
             foreach (var testFolder in testFolders)
             {
                 var inputFilePath = Path.Combine(testFolder, $"{problem.code}.inp");
@@ -69,15 +71,12 @@ namespace FU.OJ.Server.Service
                     var jsonContent = new StringContent(JsonSerializer.Serialize(submissionRequest), Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await _httpClient.PostAsync(url, jsonContent);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var content = await response.Content.ReadAsStringAsync();
-                    }
-                    //return StatusCode((int)response.StatusCode, await response.Content.ReadAsStringAsync());
+                    var token = await response.Content.ReadAsStringAsync();
+                    resultList.Add(token);
                 }
             }
 
-            return true;
+            return resultList;
         }
     }
 }

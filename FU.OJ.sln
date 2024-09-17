@@ -9,6 +9,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "fu.oj.client", "fu.oj.clien
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaxNet_Category", "..\.NET\TAXNET\taxnet_category\TaxNet_Category.csproj", "{910BC9FA-F160-4262-AA4F-1D7A154124B7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaxNet_Common", "..\.NET\TAXNET\taxnet_common\TaxNet_Common.csproj", "{AF947087-1305-49B5-954A-4ED286BF1144}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{910BC9FA-F160-4262-AA4F-1D7A154124B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{910BC9FA-F160-4262-AA4F-1D7A154124B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{910BC9FA-F160-4262-AA4F-1D7A154124B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF947087-1305-49B5-954A-4ED286BF1144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF947087-1305-49B5-954A-4ED286BF1144}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF947087-1305-49B5-954A-4ED286BF1144}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF947087-1305-49B5-954A-4ED286BF1144}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

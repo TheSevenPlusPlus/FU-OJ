@@ -6,12 +6,12 @@ namespace FU.OJ.Server.Controllers
 {
     [Route(JudgeRoute.INDEX)]
     [ApiController]
-    public class JudgeController : ControllerBase
+    public class JudgeController : BaseController
     {
         private readonly string JudgeServerUrl = "";
         private readonly HttpClient _httpClient;
 
-        public JudgeController(HttpClient httpClient, IConfiguration configuration)
+        public JudgeController(HttpClient httpClient, IConfiguration configuration, ILogger<JudgeController> logger):base(logger)
         {
             _httpClient = httpClient;
             JudgeServerUrl = configuration.GetValue<string>("JudgeServerUrl")!;
