@@ -12,13 +12,17 @@ namespace FU.OJ.Server.Infra.Models
     {
         [Key]
         public string id { get; set; } = Guid.NewGuid().ToString();
+        public string code { get; set; } = null!;
         public string? title { get; set; }
         public string? description { get; set; }
-        public double time_limit { get; set; }
-        public float memory_limit { get; set; }
+        public string? constraints { get; set; }
+        public string? example_input { get; set; }
+        public string? example_output { get; set; }
+        public double? time_limit { get; set; }
+        public double? memory_limit { get; set; }
         public DateTime create_at { get; set; }
         public string? user_id { get; set; }
-        public int test_case_id { get; set; }
+        public string? test_case_id { get; set; }
     }
 
     public class Problem_configuration : IEntityTypeConfiguration<Problem>

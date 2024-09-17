@@ -1,3 +1,4 @@
+using FU.OJ.Server;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.Models;
 using Microsoft.AspNetCore.Identity;
@@ -5,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddServices();
 // Add CORS policy
 builder.Services.AddCors(options =>
 {

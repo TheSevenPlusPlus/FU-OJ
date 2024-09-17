@@ -8,6 +8,8 @@ namespace FU.OJ.Server.Infra.Models
     {
         public User user { get; set; } = null!;
         public Problem problem { get; set; } = null!;
+
+        public ICollection<Result> results { get; set; } = null!;
     }
     public class Submission_properties
     {
