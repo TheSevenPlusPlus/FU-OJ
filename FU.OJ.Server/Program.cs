@@ -1,7 +1,5 @@
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.Models;
-using FU.OJ.Server.Interfaces;
-using FU.OJ.Server.Repository;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,9 +15,6 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQL")));
-
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
 
 var app = builder.Build();
 
