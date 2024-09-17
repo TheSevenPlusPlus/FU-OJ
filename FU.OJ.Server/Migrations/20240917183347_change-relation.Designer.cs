@@ -3,6 +3,7 @@ using System;
 using FU.OJ.Server.Infra.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240917183347_change-relation")]
+    partial class changerelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,32 +82,19 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
-                    b.Property<string>("code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("constraints")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("create_at")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("description")
                         .HasColumnType("text");
 
-                    b.Property<string>("example_input")
-                        .HasColumnType("text");
+                    b.Property<float>("memory_limit")
+                        .HasColumnType("real");
 
-                    b.Property<string>("example_output")
-                        .HasColumnType("text");
+                    b.Property<int>("test_case_id")
+                        .HasColumnType("integer");
 
-                    b.Property<double?>("memory_limit")
-                        .HasColumnType("double precision");
-
-                    b.Property<string>("test_case_id")
-                        .HasColumnType("text");
-
-                    b.Property<double?>("time_limit")
+                    b.Property<double>("time_limit")
                         .HasColumnType("double precision");
 
                     b.Property<string>("title")
@@ -193,8 +183,10 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
-                    b.Property<string>("folder_path")
-                        .IsRequired()
+                    b.Property<string>("input")
+                        .HasColumnType("text");
+
+                    b.Property<string>("output")
                         .HasColumnType("text");
 
                     b.Property<string>("problem_id")

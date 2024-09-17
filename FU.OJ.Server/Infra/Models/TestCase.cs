@@ -13,8 +13,7 @@ namespace FU.OJ.Server.Infra.Models
         [Key]
         public string id { get; set; } = Guid.NewGuid().ToString();
         public string problem_id { get; set; } = null!;
-        public string? input { get; set; } //Link to Input folder
-        public string? output { get; set; } //Link to Output folder
+        public string folder_path { get; set; } = null!; // folder chứa test
     }
     public class TestCase_configuration : IEntityTypeConfiguration<TestCase>
     {
