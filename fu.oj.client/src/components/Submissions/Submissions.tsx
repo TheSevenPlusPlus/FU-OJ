@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { submitCode, getSubmissionStatus } from '../api/submission';
+import { submitCode, getSubmissionStatus } from '../../api/submission';
 
 const Submission: React.FC = () => {
     const [problemId, setProblemId] = useState('');

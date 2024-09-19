@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getLanguages, getSystemInfo } from '../api/system';
+import { getLanguages, getSystemInfo } from '../../api/system';
 
 const SystemInfo: React.FC = () => {
     const [languages, setLanguages] = useState([]);

@@ -1,18 +1,19 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { getProblemByCode } from '../api/problem';
-import { Problem } from '../models/ProblemModel';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate để điều hướng
+import { getProblemByCode } from '../../api/problem';
+import { Problem } from '../../models/ProblemModel';
 
 const ProblemDetail: React.FC = () => {
     const { problemCode } = useParams<{ problemCode: string }>();
     const [problem, setProblem] = useState<Problem | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate(); // Dùng để điều hướng đến trang chấm bài
 
     useEffect(() => {
         const fetchProblem = async () => {
             try {
-                const response = await getProblemByCode(problemCode!); // Gọi API theo problemCode
+                const response = await getProblemByCode(problemCode!); // Gọi API lấy thông tin bài tập
                 setProblem(response.data);
                 setLoading(false);
             } catch (err) {
@@ -23,6 +24,10 @@ const ProblemDetail: React.FC = () => {
 
         fetchProblem();
     }, [problemCode]);
+
+    const handleGradeSubmission = () => {
+        navigate(`/problems/${problemCode}/submit`); // Điều hướng đến trang chấm bài
+    };
 
     if (loading) return <p className="text-center text-lg">Loading...</p>;
     if (error) return <p className="text-center text-red-500">{error}</p>;
@@ -39,6 +44,13 @@ const ProblemDetail: React.FC = () => {
                         <p><strong>Memory Limit:</strong> {problem.memory_limit} MB</p>
                         <p><strong>Created At:</strong> {new Date(problem.create_at).toLocaleDateString()}</p>
                     </div>
+                    {/* Nút chấm bài */}
+                    <button
+                        className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        onClick={handleGradeSubmission}
+                    >
+                        Chấm bài
+                    </button>
                 </>
             )}
         </div>

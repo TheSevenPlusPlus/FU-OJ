@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { getAllProblems } from '../api/problem';
-import { Problem } from '../models/ProblemModel';
+import { getAllProblems } from '../../api/problem';
+import { Problem } from '../../models/ProblemModel';
 import { Link } from 'react-router-dom'; // Import Link để điều hướng
 
 const Problems: React.FC = () => {
