@@ -11,7 +11,11 @@ namespace FU.OJ.Server.Service
         public Task<string> createAsync(CreateProblemRequest request);
         public Task<Problem?> getByIdAsync(string id);
         public Task<Problem?> getByCodeAsync(string code);
+        public Task<List<Problem>> getAllAsync(); // Đổi tên phương thức thành getAllAsync
+        public Task<bool> updateAsync(string id, UpdateProblemRequest request); // Thêm phương thức updateAsync
+        public Task<bool> deleteAsync(string id); // Thêm phương thức deleteAsync
     }
+
     public class ProblemService : IProblemService
     {
         private readonly ApplicationDBContext _context;
@@ -36,7 +40,7 @@ namespace FU.OJ.Server.Service
 
             return problem;
         }
-        
+
         public async Task<string> createAsync(CreateProblemRequest request)
         {
             var problem = await getByCodeAsync(request.code);
@@ -62,6 +66,47 @@ namespace FU.OJ.Server.Service
             await _context.SaveChangesAsync();
 
             return new_problem.code;
+        }
+
+        public async Task<List<Problem>> getAllAsync() // Đổi tên phương thức thành getAllAsync
+        {
+            var problems = await _context.Problems.ToListAsync();
+
+            return problems;
+        }
+
+        public async Task<bool> updateAsync(string id, UpdateProblemRequest request)
+        {
+            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.id == id);
+
+            if (problem == null)
+                return false;
+
+            problem.title = request.title;
+            problem.description = request.description;
+            problem.constraints = request.constraints;
+            problem.example_input = request.example_input;
+            problem.example_output = request.example_output;
+            problem.time_limit = request.time_limit;
+            problem.memory_limit = request.memory_limit;
+
+            _context.Problems.Update(problem);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<bool> deleteAsync(string id)
+        {
+            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.id == id);
+
+            if (problem == null)
+                return false;
+
+            _context.Problems.Remove(problem);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

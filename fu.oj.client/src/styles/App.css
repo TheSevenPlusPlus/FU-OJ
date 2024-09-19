@@ -9,3 +9,11 @@ th, td {
     padding-left: 1rem;
     padding-right: 1rem;
 }
+/* src/styles/App.css */
+.app {
+    font-family: Arial, sans-serif;
+}
+
+main {
+    padding: 2rem;
+}

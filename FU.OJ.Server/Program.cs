@@ -1,7 +1,5 @@
-using FU.OJ.Server;
+﻿using FU.OJ.Server;
 using FU.OJ.Server.Infra.Context;
-using FU.OJ.Server.Infra.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,11 +34,11 @@ app.UseStaticFiles();
 // Enable CORS
 app.UseCors("AllowAllOrigins");
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI();
+//}
 
 app.UseHttpsRedirection();
 
