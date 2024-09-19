@@ -19,6 +19,8 @@ const App: React.FC = () => {
                         <Route path="/problems" element={<Problems />} />
                         <Route path="/problems/:problemCode" element={<ProblemDetail />} />
                         <Route path="/problems/:problemCode/submit" element={<SubmitProblemForm />} />
+                        <Route path="/problems/:problemCode/add-testcase" element={<AddTestCaseForm />} /> {/* New route */}
+
                     </Routes>
                 </main>
             </div>

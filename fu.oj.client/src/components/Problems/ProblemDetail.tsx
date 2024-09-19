@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate để điều hướng
+import { useParams, useNavigate } from 'react-router-dom';
 import { getProblemByCode } from '../../api/problem';
 import { Problem } from '../../models/ProblemModel';
 
@@ -8,7 +8,7 @@ const ProblemDetail: React.FC = () => {
     const [problem, setProblem] = useState<Problem | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const navigate = useNavigate(); // Dùng để điều hướng đến trang chấm bài
+    const navigate = useNavigate(); // Dùng để điều hướng đến trang chấm bài và thêm testcase
 
     useEffect(() => {
         const fetchProblem = async () => {
@@ -27,6 +27,10 @@ const ProblemDetail: React.FC = () => {
 
     const handleGradeSubmission = () => {
         navigate(`/problems/${problemCode}/submit`); // Điều hướng đến trang chấm bài
+    };
+
+    const handleAddTestCase = () => {
+        navigate(`/problems/${problemCode}/add-testcase`); // Điều hướng đến trang thêm testcase
     };
 
     if (loading) return <p className="text-center text-lg">Loading...</p>;
@@ -50,6 +54,13 @@ const ProblemDetail: React.FC = () => {
                         onClick={handleGradeSubmission}
                     >
                         Chấm bài
+                    </button>
+                    {/* Nút thêm test case */}
+                    <button
+                        className="mt-4 ml-4 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                        onClick={handleAddTestCase}
+                    >
+                        Thêm Test Case
                     </button>
                 </>
             )}
