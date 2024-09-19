@@ -6,6 +6,6 @@ namespace FU.OJ.Server.DTOs.Testcase.Request
     {
         [Required]
         public string problem_id { get; set; } = null!;
-        public string folder_path { get; set; } = null!; //Link to folder chua testcase
+        public IFormFile testcase_file { get; set; } = null!; //zip only
     }
 }

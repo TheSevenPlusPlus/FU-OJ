@@ -6,6 +6,7 @@
         public static class Action
         {
             public const string Create = "create";
+            public const string Update = "update";
         }
     }
 }

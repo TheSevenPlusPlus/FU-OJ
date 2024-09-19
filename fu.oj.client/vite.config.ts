@@ -49,6 +49,9 @@ export default defineConfig({
     https: {
       key: fs.readFileSync(keyFilePath),
       cert: fs.readFileSync(certFilePath),
-    },
+      },
+      proxy: {
+          '/api': 'https://localhost:7242',
+      }
   },
 });
