@@ -12,7 +12,7 @@ namespace FU.OJ.Server.Service
 {
     public interface ISubmissionService
     {
-        public Task<List<string>> createAsync(CreateSubmissionRequest request, bool base64_encoded, bool wait);
+        public Task<string> createAsync(CreateSubmissionRequest request, bool base64_encoded, bool wait);
         public Task<SubmissionView> getByIdAsync(string id);
         public Task<Submission?> getByIdWithoutResult(string id);
         public Task<SubmissionView> getByIdWithoutResultAsync(string id);
@@ -35,7 +35,7 @@ namespace FU.OJ.Server.Service
             _context = context;
         }
 
-        public async Task<List<string>> createAsync(CreateSubmissionRequest request, bool base64_encoded, bool wait)
+        public async Task<string> createAsync(CreateSubmissionRequest request, bool base64_encoded, bool wait)
         {
             var problem = await _problemService.getByCodeAsync(request.problem_code);
             if (problem == null)
@@ -87,13 +87,17 @@ namespace FU.OJ.Server.Service
                     var jsonContent = new StringContent(JsonSerializer.Serialize(submissionRequest), Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await _httpClient.PostAsync(url, jsonContent);
 
-                    var token = await response.Content.ReadAsStringAsync();
-                    tokenList.Add(token);
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                    var tokenObj = JsonSerializer.Deserialize<JsonElement>(jsonResponse);
+                    var token = tokenObj.GetProperty("token").GetString();  // Lấy giá trị token
+
+                    tokenList.Add(token!);
                 }
             }
 
             bool ac = true;
-            var resultList = new List<string>();
+            var resultList = new List<Result>();
             foreach (var token in tokenList)
             {
                 var tokenResult = await getByTokenAsync(token);
@@ -102,26 +106,42 @@ namespace FU.OJ.Server.Service
                     submission_id = submission.id,
                     status_description = JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString(),
                     time = JsonDocument.Parse(tokenResult).RootElement.GetProperty("time").GetString(),
-                    memory = JsonDocument.Parse(tokenResult).RootElement.GetProperty("memory").GetDouble()
+                    memory = JsonDocument.Parse(tokenResult).RootElement.TryGetProperty("memory", out JsonElement memoryElement) && memoryElement.ValueKind == JsonValueKind.Number
+                            ? memoryElement.GetDouble()
+                            : 262144
                 };
 
                 if (JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString() != "Accepted")
                     ac = false;
 
                 _context.Results.Add(newResult);
+                resultList.Add(newResult);
             }
 
             submission.status = ac;
+            submission.results = resultList;
             await _context.SaveChangesAsync();
-            return resultList;
+            return submission.id;
         }
 
         public async Task<string> getByTokenAsync(string token, bool base64_encoded = false, string fields = "stdout,time,memory,stderr,token,compile_output,message,status")
         {
             string url = $"{_judgeServerUrl}/submissions/{token}?base64_encoded={base64_encoded.ToString().ToLower()}&fields={fields}";
+            HttpResponseMessage response;
+            string responseContent;
 
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
-            var responseContent = await response.Content.ReadAsStringAsync();
+            while (true)
+            {
+                response = await _httpClient.GetAsync(url);
+                responseContent = await response.Content.ReadAsStringAsync();
+
+                var tokenResult = JsonDocument.Parse(responseContent).RootElement;
+                var statusDescription = tokenResult.GetProperty("status").GetProperty("description").GetString();
+
+                if (statusDescription != "In Queue" && statusDescription != "Processing") break;
+
+                await Task.Delay(100);
+            }
 
             return responseContent;
         }

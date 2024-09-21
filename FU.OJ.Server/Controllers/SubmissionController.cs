@@ -4,19 +4,20 @@ using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Mvc;
 using FU.OJ.Server.DTOs.Submission.Request;
+using Microsoft.Extensions.Logging;
 
 namespace FU.OJ.Server.Controllers
 {
     [Route(SubmissionRoute.INDEX)]
     [ApiController]
-    public class SubmissionController : ControllerBase
+    public class SubmissionController : BaseController
     {
         private readonly string _judgeServerUrl;
         private readonly HttpClient _httpClient;
         private readonly ApplicationDBContext _context;
         private readonly ISubmissionService _submissionService;
 
-        public SubmissionController(HttpClient httpClient, IConfiguration configuration, ApplicationDBContext context, ISubmissionService submissionService)
+        public SubmissionController(HttpClient httpClient, IConfiguration configuration, ApplicationDBContext context, ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
         {
             _httpClient = httpClient;
             _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl") ?? throw new Exception(ErrorMessage.NotFound);
@@ -37,7 +38,7 @@ namespace FU.OJ.Server.Controllers
             }
             catch (Exception ex)
             {
-                throw;
+                return HandleException(ex);
             }
         }
 
@@ -50,7 +51,7 @@ namespace FU.OJ.Server.Controllers
             }
             catch (Exception ex)
             {
-                throw;
+                return HandleException(ex);
             }
         }
 
@@ -63,7 +64,7 @@ namespace FU.OJ.Server.Controllers
             }
             catch (Exception ex)
             {
-                throw;
+                return HandleException(ex);
             }
         }
 
@@ -76,7 +77,7 @@ namespace FU.OJ.Server.Controllers
             }
             catch (Exception ex)
             {
-                throw;
+                return HandleException(ex);
             }
         }
     }
