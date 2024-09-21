@@ -48,7 +48,7 @@ namespace FU.OJ.Server.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpGet("")]
         public async Task<IActionResult> getAllProblemsAsync()
         {
             try

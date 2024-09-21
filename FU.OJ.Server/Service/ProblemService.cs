@@ -58,8 +58,7 @@ namespace FU.OJ.Server.Service
                 example_output = request.example_output,
                 time_limit = request.time_limit,
                 memory_limit = request.memory_limit,
-                create_at = request.create_at,
-                user_id = request.user_id
+                create_at = request.create_at
             };
 
             _context.Problems.Add(new_problem);

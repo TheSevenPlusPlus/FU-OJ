@@ -107,6 +107,8 @@ namespace FU.OJ.Server.Service
             };
 
             _context.TestCases.Add(newTestCase);
+            problem.test_case_id = newTestCase.id;
+            _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
 
             return newTestCase.id;

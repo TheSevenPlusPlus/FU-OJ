@@ -129,18 +129,15 @@ namespace FU.OJ.Server.Migrations
                     b.Property<double?>("memory")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("message")
+                    b.Property<string>("status_description")
                         .HasColumnType("text");
-
-                    b.Property<int?>("status")
-                        .HasColumnType("integer");
 
                     b.Property<string>("submission_id")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double?>("time")
-                        .HasColumnType("double precision");
+                    b.Property<string>("time")
+                        .HasColumnType("text");
 
                     b.HasKey("id");
 
@@ -156,27 +153,25 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
-                    b.Property<string>("create_by")
-                        .HasColumnType("text");
-
-                    b.Property<string>("language")
-                        .IsRequired()
+                    b.Property<string>("language_name")
                         .HasColumnType("text");
 
                     b.Property<string>("problem_id")
                         .HasColumnType("text");
 
                     b.Property<string>("source_code")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("status")
-                        .HasColumnType("text");
+                    b.Property<bool?>("status")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("submit_at")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("user_id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("user_name")
                         .HasColumnType("text");
 
                     b.HasKey("id");
