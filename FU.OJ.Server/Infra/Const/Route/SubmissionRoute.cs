@@ -7,8 +7,9 @@
         {
             public const string Create = "submit";
             public const string Get = "{token}";
+            public const string GetWithoutResult = "non-result/{token}";
             public const string GetAll = "";
-            public const string Delete = "{token}";
+            public const string GetAllBelongUser = "all/user";
         }
     }
 }

@@ -12,9 +12,8 @@ namespace FU.OJ.Server.Infra.Models
     {
         public string id { get; set; } = Guid.NewGuid().ToString();
         public string submission_id { get; set; } = null!;
-        public eStatus_Submission? status { get; set; }
-        public string? message { get; set; }
-        public double? time { set; get; }
+        public string? status_description { get; set; }
+        public string? time { set; get; }
         public double? memory { set; get; }
     }
     public class Result_configuration : IEntityTypeConfiguration<Result>

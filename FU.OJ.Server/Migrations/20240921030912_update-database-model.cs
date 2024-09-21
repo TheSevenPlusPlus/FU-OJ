@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace FU.OJ.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class initdb : Migration
+    public partial class updatedatabasemodel : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,13 +16,17 @@ namespace FU.OJ.Server.Migrations
                 columns: table => new
                 {
                     id = table.Column<string>(type: "text", nullable: false),
+                    code = table.Column<string>(type: "text", nullable: false),
                     title = table.Column<string>(type: "text", nullable: true),
                     description = table.Column<string>(type: "text", nullable: true),
-                    time_limit = table.Column<double>(type: "double precision", nullable: false),
-                    memory_limit = table.Column<float>(type: "real", nullable: false),
+                    constraints = table.Column<string>(type: "text", nullable: true),
+                    example_input = table.Column<string>(type: "text", nullable: true),
+                    example_output = table.Column<string>(type: "text", nullable: true),
+                    time_limit = table.Column<double>(type: "double precision", nullable: true),
+                    memory_limit = table.Column<double>(type: "double precision", nullable: true),
                     create_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: true),
-                    test_case_id = table.Column<int>(type: "integer", nullable: false)
+                    test_case_id = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -51,8 +55,7 @@ namespace FU.OJ.Server.Migrations
                 {
                     id = table.Column<string>(type: "text", nullable: false),
                     problem_id = table.Column<string>(type: "text", nullable: false),
-                    input = table.Column<string>(type: "text", nullable: true),
-                    output = table.Column<string>(type: "text", nullable: true)
+                    folder_path = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -92,12 +95,12 @@ namespace FU.OJ.Server.Migrations
                 {
                     id = table.Column<string>(type: "text", nullable: false),
                     problem_id = table.Column<string>(type: "text", nullable: true),
-                    source_code = table.Column<string>(type: "text", nullable: false),
-                    language = table.Column<string>(type: "text", nullable: false),
+                    source_code = table.Column<string>(type: "text", nullable: true),
+                    language_name = table.Column<string>(type: "text", nullable: true),
                     submit_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: true),
-                    status = table.Column<string>(type: "text", nullable: true),
-                    create_by = table.Column<string>(type: "text", nullable: true)
+                    user_name = table.Column<string>(type: "text", nullable: true),
+                    status = table.Column<bool>(type: "boolean", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -148,15 +151,20 @@ namespace FU.OJ.Server.Migrations
                 columns: table => new
                 {
                     id = table.Column<string>(type: "text", nullable: false),
+                    Submissionid = table.Column<string>(type: "text", nullable: true),
                     submission_id = table.Column<string>(type: "text", nullable: false),
-                    status = table.Column<int>(type: "integer", nullable: true),
-                    message = table.Column<string>(type: "text", nullable: true),
-                    time = table.Column<double>(type: "double precision", nullable: true),
+                    status_description = table.Column<string>(type: "text", nullable: true),
+                    time = table.Column<string>(type: "text", nullable: true),
                     memory = table.Column<double>(type: "double precision", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Results", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Results_Submissions_Submissionid",
+                        column: x => x.Submissionid,
+                        principalTable: "Submissions",
+                        principalColumn: "id");
                     table.ForeignKey(
                         name: "FK_Results_Submissions_submission_id",
                         column: x => x.submission_id,
@@ -189,6 +197,11 @@ namespace FU.OJ.Server.Migrations
                 name: "IX_Results_submission_id",
                 table: "Results",
                 column: "submission_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Results_Submissionid",
+                table: "Results",
+                column: "Submissionid");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Submissions_problem_id",

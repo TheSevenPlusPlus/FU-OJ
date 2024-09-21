@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    [Migration("20240917171849_init-db")]
-    partial class initdb
+    [Migration("20240921030912_update-database-model")]
+    partial class updatedatabasemodel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,19 +82,32 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
+                    b.Property<string>("code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("constraints")
+                        .HasColumnType("text");
+
                     b.Property<DateTime>("create_at")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("description")
                         .HasColumnType("text");
 
-                    b.Property<float>("memory_limit")
-                        .HasColumnType("real");
+                    b.Property<string>("example_input")
+                        .HasColumnType("text");
 
-                    b.Property<int>("test_case_id")
-                        .HasColumnType("integer");
+                    b.Property<string>("example_output")
+                        .HasColumnType("text");
 
-                    b.Property<double>("time_limit")
+                    b.Property<double?>("memory_limit")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("test_case_id")
+                        .HasColumnType("text");
+
+                    b.Property<double?>("time_limit")
                         .HasColumnType("double precision");
 
                     b.Property<string>("title")
@@ -113,23 +126,25 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
+                    b.Property<string>("Submissionid")
+                        .HasColumnType("text");
+
                     b.Property<double?>("memory")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("message")
+                    b.Property<string>("status_description")
                         .HasColumnType("text");
-
-                    b.Property<int?>("status")
-                        .HasColumnType("integer");
 
                     b.Property<string>("submission_id")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<double?>("time")
-                        .HasColumnType("double precision");
+                    b.Property<string>("time")
+                        .HasColumnType("text");
 
                     b.HasKey("id");
+
+                    b.HasIndex("Submissionid");
 
                     b.HasIndex("submission_id");
 
@@ -141,27 +156,25 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
-                    b.Property<string>("create_by")
-                        .HasColumnType("text");
-
-                    b.Property<string>("language")
-                        .IsRequired()
+                    b.Property<string>("language_name")
                         .HasColumnType("text");
 
                     b.Property<string>("problem_id")
                         .HasColumnType("text");
 
                     b.Property<string>("source_code")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("status")
-                        .HasColumnType("text");
+                    b.Property<bool?>("status")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime>("submit_at")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("user_id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("user_name")
                         .HasColumnType("text");
 
                     b.HasKey("id");
@@ -178,10 +191,8 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
-                    b.Property<string>("input")
-                        .HasColumnType("text");
-
-                    b.Property<string>("output")
+                    b.Property<string>("folder_path")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("problem_id")
@@ -250,6 +261,10 @@ namespace FU.OJ.Server.Migrations
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Result", b =>
                 {
+                    b.HasOne("FU.OJ.Server.Infra.Models.Submission", null)
+                        .WithMany("results")
+                        .HasForeignKey("Submissionid");
+
                     b.HasOne("FU.OJ.Server.Infra.Models.Submission", "submission")
                         .WithMany()
                         .HasForeignKey("submission_id")
@@ -288,6 +303,11 @@ namespace FU.OJ.Server.Migrations
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Contest", b =>
                 {
                     b.Navigation("contestParticipants");
+                });
+
+            modelBuilder.Entity("FU.OJ.Server.Infra.Models.Submission", b =>
+                {
+                    b.Navigation("results");
                 });
 #pragma warning restore 612, 618
         }
