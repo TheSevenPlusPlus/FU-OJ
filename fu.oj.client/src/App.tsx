@@ -7,6 +7,7 @@ import './styles/App.css';
 import Problems from './components/Problems/Problems';
 import ProblemDetail from './components/Problems/ProblemDetail';
 import SubmitProblemForm from './components/Submissions/SubmitProblemForm';
+import AddTestCaseForm from './components/TestCase/AddTestCaseForm';
 
 const App: React.FC = () => {
     return (

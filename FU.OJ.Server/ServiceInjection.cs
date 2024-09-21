@@ -9,6 +9,7 @@ namespace FU.OJ.Server
             services.AddScoped<IProblemService, ProblemService>();
             services.AddScoped<ITestcaseService, TestcaseService>();
             services.AddScoped<ISubmissionService, SubmissionService>();
+            services.AddScoped<IBlogService, BlogService>();
         }
     }
 }

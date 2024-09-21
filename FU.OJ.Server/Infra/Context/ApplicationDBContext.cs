@@ -1,10 +1,5 @@
 ﻿using FU.OJ.Server.Infra.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System;
-using System.Linq.Expressions;
-using System.Reflection.Emit;
 
 namespace FU.OJ.Server.Infra.Context
 {
@@ -23,6 +18,7 @@ namespace FU.OJ.Server.Infra.Context
         public DbSet<TestCase> TestCases { get; set; }
         public DbSet<Contest> Contests { get; set; }
         public DbSet<ContestParticipants> ContestsParticipants { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +30,7 @@ namespace FU.OJ.Server.Infra.Context
             modelBuilder.ApplyConfiguration(new ContestParticipants_configuration());
             modelBuilder.ApplyConfiguration(new TestCase_configuration());
             modelBuilder.ApplyConfiguration(new Problem_configuration());
+            modelBuilder.ApplyConfiguration(new Blog_configuration());
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

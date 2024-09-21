@@ -1,4 +1,5 @@
 ﻿using FU.OJ.Server.DTOs.Testcase.Request;
+using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.Models;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace FU.OJ.Server.Service
         Task<string> createAsync(CreateTestcaseRequest request);
         public Task<TestCase?> getByIdAsync(string id);
         Task updateAsync(CreateTestcaseRequest request);
-        Task deleteAsync(string id);
+        Task deleteAsync(string problem_code);
     }
 
     public class TestcaseService : ITestcaseService
@@ -41,11 +42,11 @@ namespace FU.OJ.Server.Service
         }
         public async Task<string> createAsync(CreateTestcaseRequest request)
         {
-            var problem = await _problemService.getByIdAsync(request.problem_id);
+            var problem = await _problemService.getByCodeAsync(request.problem_code);
             if (problem == null)
                 throw new Exception("Problem not found");
 
-            var existingTestCase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.problem_id == request.problem_id);
+            var existingTestCase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.problem_id == problem.id);
             if (existingTestCase != null)
                 throw new Exception("Test case already exists for this problem.");
 
@@ -102,7 +103,7 @@ namespace FU.OJ.Server.Service
 
             var newTestCase = new TestCase
             {
-                problem_id = request.problem_id,
+                problem_id = problem.id,
                 folder_path = finalFolderPath
             };
 
@@ -114,13 +115,14 @@ namespace FU.OJ.Server.Service
 
         public async Task updateAsync(CreateTestcaseRequest request)
         {
-            var testcase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.problem_id == request.problem_id);
+            var problem = await _problemService.getByCodeAsync(request.problem_code);
+            if (problem == null)
+                throw new Exception("Problem not found");
+            var testcase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.problem_id == problem.id);
             if (testcase == null)
                 throw new Exception("Test case not found");
 
-            var problem = await _problemService.getByIdAsync(request.problem_id);
-            if (problem == null)
-                throw new Exception("Problem not found");
+
 
             //Xu li ZIP
             var zipFolderName = Path.GetFileNameWithoutExtension(request.testcase_file.FileName);
@@ -176,6 +178,7 @@ namespace FU.OJ.Server.Service
             testcase.folder_path = finalFolderPath;
             _context.TestCases.Update(testcase);
             await _context.SaveChangesAsync();
+            return;
         }
 
         private void DeleteDirectoryRecursively(string path)
@@ -199,21 +202,23 @@ namespace FU.OJ.Server.Service
             }
         }
 
-
-
-        public async Task deleteAsync(string id)
+        public async Task deleteAsync(string problem_code)
         {
-            var testcase = await _context.TestCases.FindAsync(id);
+            var problem = await _context.Problems.AsNoTracking().FirstOrDefaultAsync(u => u.code == problem_code);
+            if (problem == null)
+                throw new Exception(ErrorMessage.NotFound);
+            var testcase = await _context.TestCases.AsNoTracking().FirstOrDefaultAsync(u => u.problem_id == problem.id);
             if (testcase == null)
                 throw new Exception("Test case not found");
 
             if (Directory.Exists(testcase.folder_path))
             {
-                Directory.Delete(testcase.folder_path, true);
+                DeleteDirectoryRecursively(testcase.folder_path);
             }
 
             _context.TestCases.Remove(testcase);
             await _context.SaveChangesAsync();
+            return;
         }
     }
 }

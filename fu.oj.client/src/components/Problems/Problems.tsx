@@ -46,7 +46,7 @@ const Problems: React.FC = () => {
                             </th>
                             <td className="px-6 py-4">{problem.code}</td>
                             <td className="px-6 py-4">{problem.time_limit} ms</td>
-                            <td className="px-6 py-4">{problem.memory_limit} MB</td>
+                            <td className="px-6 py-4">{problem.memory_limit / 1000} MB</td>
                             <td className="px-6 py-4">{new Date(problem.create_at).toLocaleDateString()}</td>
                         </tr>
                     ))}
