@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace FU.OJ.Server.Infra.Models
 {
     public class User : User_properties
     {
-        ICollection<Submission> submissions { get; set; } = new List<Submission>();
-        ICollection<Problem> problems { get; set; } = new List<Problem>();
-        ICollection<ContestParticipants> contestParticipants { get; set; } = new List<ContestParticipants>();
+        //ICollection<Submission> submissions { get; set; } = new List<Submission>();
+        //ICollection<Problem> problems { get; set; } = new List<Problem>();
+        //ICollection<ContestParticipants> contestParticipants { get; set; } = new List<ContestParticipants>();
     }
     public class User_properties
     {

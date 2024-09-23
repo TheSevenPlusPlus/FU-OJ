@@ -1,28 +1,29 @@
-﻿// src/App.tsx
-import React from 'react';
+﻿import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Home/Navbar';
-import Home from './components/Home/Home';
-import './styles/App.css';
-import Problems from './components/Problems/Problems';
-import ProblemDetail from './components/Problems/ProblemDetail';
-import SubmitProblemForm from './components/Submissions/SubmitProblemForm';
+import Navbar from './components/Navbar';
+import HomePage from './components/HomePage';
+//import Footer from './components/Footer';
+//import ProblemsPage from './pages/ProblemsPage';
+//import ContestsPage from './pages/ContestsPage';
+//import LeaderboardPage from './pages/LeaderboardPage';
+//import BlogPage from './pages/BlogPage';
+import './index.css';
 
 const App: React.FC = () => {
     return (
         <Router>
-            <div className="app">
+            <div className="flex flex-col min-h-screen bg-white">
                 <Navbar />
-                <main>
+                <main className="flex-grow">
                     <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/problems" element={<Problems />} />
-                        <Route path="/problems/:problemCode" element={<ProblemDetail />} />
-                        <Route path="/problems/:problemCode/submit" element={<SubmitProblemForm />} />
-                        <Route path="/problems/:problemCode/add-testcase" element={<AddTestCaseForm />} /> {/* New route */}
-
+                        <Route path="/" element={<HomePage/> } />
+                        {/*<Route path="/problems" element={<ProblemsPage />} />*/}
+                        {/*<Route path="/contests" element={<ContestsPage />} />*/}
+                        {/*<Route path="/leaderboard" element={<LeaderboardPage />} />*/}
+                        {/*<Route path="/blog" element={<BlogPage />} />*/}
                     </Routes>
                 </main>
+                {/*<Footer />*/}
             </div>
         </Router>
     );
