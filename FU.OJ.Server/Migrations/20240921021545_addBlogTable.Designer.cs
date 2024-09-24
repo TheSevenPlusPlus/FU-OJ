@@ -3,6 +3,7 @@ using System;
 using FU.OJ.Server.Infra.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDBContext))]
-    partial class ApplicationDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240921021545_addBlogTable")]
+    partial class addBlogTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,9 +140,6 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
-                    b.Property<int?>("ac_quantity")
-                        .HasColumnType("integer");
-
                     b.Property<string>("code")
                         .IsRequired()
                         .HasColumnType("text");
@@ -153,17 +153,11 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("description")
                         .HasColumnType("text");
 
-                    b.Property<string>("difficulty")
-                        .HasColumnType("text");
-
                     b.Property<string>("example_input")
                         .HasColumnType("text");
 
                     b.Property<string>("example_output")
                         .HasColumnType("text");
-
-                    b.Property<bool?>("hasSolution")
-                        .HasColumnType("boolean");
 
                     b.Property<double?>("memory_limit")
                         .HasColumnType("double precision");
@@ -196,15 +190,18 @@ namespace FU.OJ.Server.Migrations
                     b.Property<double?>("memory")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("status_description")
+                    b.Property<string>("message")
                         .HasColumnType("text");
+
+                    b.Property<int?>("status")
+                        .HasColumnType("integer");
 
                     b.Property<string>("submission_id")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("time")
-                        .HasColumnType("text");
+                    b.Property<double?>("time")
+                        .HasColumnType("double precision");
 
                     b.HasKey("id");
 
@@ -220,25 +217,27 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
-                    b.Property<string>("language_name")
+                    b.Property<string>("create_by")
+                        .HasColumnType("text");
+
+                    b.Property<string>("language")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("problem_id")
                         .HasColumnType("text");
 
                     b.Property<string>("source_code")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool?>("status")
-                        .HasColumnType("boolean");
+                    b.Property<string>("status")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("submit_at")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("user_id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("user_name")
                         .HasColumnType("text");
 
                     b.HasKey("id");
