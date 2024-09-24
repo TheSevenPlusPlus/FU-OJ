@@ -1,13 +1,12 @@
 ﻿import React from 'react';
+import './index.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import HomePage from './components/HomePage';
-//import Footer from './components/Footer';
-//import ProblemsPage from './pages/ProblemsPage';
-//import ContestsPage from './pages/ContestsPage';
-//import LeaderboardPage from './pages/LeaderboardPage';
-//import BlogPage from './pages/BlogPage';
-import './index.css';
+import ProblemList from './components/ProblemList';
+import SubmissionList from './components/SubmissionList';
+import ProblemDetail from './components/ProblemDetail';
+import CodeSubmission from './components/SubmitCode';
 
 const App: React.FC = () => {
     return (
@@ -16,14 +15,14 @@ const App: React.FC = () => {
                 <Navbar />
                 <main className="flex-grow">
                     <Routes>
-                        <Route path="/" element={<HomePage/> } />
-                        {/*<Route path="/problems" element={<ProblemsPage />} />*/}
-                        {/*<Route path="/contests" element={<ContestsPage />} />*/}
-                        {/*<Route path="/leaderboard" element={<LeaderboardPage />} />*/}
-                        {/*<Route path="/blog" element={<BlogPage />} />*/}
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/problems" element={<ProblemList />} />
+                        <Route path="/problem/:problemCode" element={<ProblemDetail />} />
+                        <Route path="/problem/:problemCode/submit" element={<CodeSubmission/> } />
+                        <Route path="/submissions" element={<SubmissionList />} />
                     </Routes>
                 </main>
-                {/*<Footer />*/}
+                {/* <Footer /> */}
             </div>
         </Router>
     );

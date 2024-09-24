@@ -11,4 +11,5 @@
     create_at: string;
     user_id: string;
     test_case_id?: string | null;  // test_case_id có thể null
+    difficulty: string
 }

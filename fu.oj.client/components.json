@@ -1,20 +1,21 @@
 {
   "$schema": "https://ui.shadcn.com/schema.json",
-  "style": "new-york", // Define your style; this could be 'default' or 'new-york'
+  "style": "new-york",
   "rsc": false,
   "tsx": true,
   "tailwind": {
-    "config": "tailwind.config.js", // Path to your Tailwind config
-    "css": "src/index.css", // Path to your main CSS file
-    "baseColor": "neutral", // Define the base color
-    "cssVariables": true, // Enable CSS variables
-    "prefix": "" // Optional prefix for classes
+    "config": "tailwind.config.js",
+    "css": "src/index.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
   },
   "aliases": {
-    "components": "@/components", // Aliases to simplify imports
+    "components": "@/components",
     "utils": "@/lib/utils",
     "ui": "@/components/ui",
     "lib": "@/lib",
     "hooks": "@/hooks"
   }
 }
+
