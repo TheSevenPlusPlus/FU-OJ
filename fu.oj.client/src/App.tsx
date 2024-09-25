@@ -9,9 +9,9 @@ import CodeSubmission from './components/SubmitCode';
 import BlogList from './components/BlogList';
 import BlogPost from './components/BlogPost'; // Import BlogPost component
 import AuthPage from './components/AuthPage';
-import ProfilePage from './components/Profile/ProfilePage';
-import PublicProfilePage from './components/Profile/PublicProfilePage';
-import PasswordEditPage from './components/Profile/PasswordEditPage';
+import ProfileView from './components/Profile/Profile';
+import ProfileEdit from './components/Profile/ProfileEdit';
+
 
 const App: React.FC = () => {
 
@@ -32,9 +32,9 @@ const App: React.FC = () => {
                         <Route path="/login" element={<AuthPage />} />
                         <Route path="/register" element={<AuthPage />} />
                         {/*Profile*/}
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route path="/profile/:username" element={<PublicProfilePage profile={mockProfile} />} />
-                        <Route path="/change-password" element={<PasswordEditPage />} />
+                        <Route path="/profile" element={<ProfileView />} />
+                        <Route path="/profile/edit" element={<ProfileEdit />} />
+                        {/*<Route path="/change-password" element={<PasswordEditPage />} />*/}
                         {/*Problem*/}
                         <Route path="/problems" element={<ProblemList />} />
                         <Route path="/problem/:problemCode" element={<ProblemDetail />} />

@@ -14,5 +14,10 @@ namespace FU.OJ.Server.DTOs.Auth.Request
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; } = null!;
+        [Required]
+        public string Fullname { get; set; } = null!;
+        [Required]
+        public string PhoneNumber { get; set; } = null!;
+
     }
 }

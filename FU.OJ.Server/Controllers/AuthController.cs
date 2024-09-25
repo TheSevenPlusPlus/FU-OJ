@@ -35,7 +35,9 @@ namespace FU.OJ.Server.Controllers
                 var user = new User()
                 {
                     UserName = registerRequest.Username,
-                    Email = registerRequest.Email
+                    Email = registerRequest.Email,
+                    Fullname = registerRequest.Fullname,
+                    PhoneNumber = registerRequest.PhoneNumber,
                 };
                 var createUser = await _userManager.CreateAsync(user, registerRequest.Password);
                 if (createUser.Succeeded)

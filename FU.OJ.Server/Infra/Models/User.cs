@@ -8,11 +8,10 @@ namespace FU.OJ.Server.Infra.Models
     {
         public string? Fullname { get; set; }
         public string? City { get; set; }
+        public string? School { get; set; }
         public string? Description { get; set; } = null;
         public string? FacebookLink { get; set; }
         public string? GithubLink { get; set; }
-        public string? Slogan { get; set; }
-        public string? Role { get; set; }
 
         //ICollection<Submission> submissions { get; set; } = new List<Submission>();
         //ICollection<Problem> problems { get; set; } = new List<Problem>();

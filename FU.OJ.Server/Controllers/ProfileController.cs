@@ -1,5 +1,4 @@
-﻿using FU.OJ.Server.DTOs.User.Request;
-using FU.OJ.Server.DTOs.User.Respond;
+﻿using FU.OJ.Server.DTOs.User.Respond;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -17,8 +16,30 @@ namespace FU.OJ.Server.Controllers
             _userService = userService;
         }
 
+        [HttpGet(UserRoute.Action.GetByUsername)]
+        public async Task<IActionResult> GetUserByUsername(string userName)
+        {
+            var user = await _userService.GetUserByUsername(userName);
+            if (user == null) return NotFound("User not found");
+
+            var userResponse = new UpdateUserRequest
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Fullname = user.Fullname,
+                City = user.City,
+                Description = user.Description,
+                FacebookLink = user.FacebookLink,
+                GithubLink = user.GithubLink,
+                School = user.School,
+            };
+
+            return Ok(userResponse);
+        }
+
         [HttpPut(UserRoute.Action.Update)]
-        public async Task<IActionResult> UpdateUser([FromBody] CreateUserRequest updateUserRequest)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -26,17 +47,17 @@ namespace FU.OJ.Server.Controllers
             var updatedUser = await _userService.UpdateProfileAsync(updateUserRequest);
             if (updatedUser == null) return NotFound("User not found");
 
-            var userResponse = new UpdateUserRespond
+            var userResponse = new UpdateUserRequest
             {
-                Id = updatedUser.Id,
                 UserName = updatedUser.UserName,
                 Email = updatedUser.Email,
+                PhoneNumber = updatedUser.PhoneNumber,
                 Fullname = updatedUser.Fullname,
                 City = updatedUser.City,
                 Description = updatedUser.Description,
                 FacebookLink = updatedUser.FacebookLink,
                 GithubLink = updatedUser.GithubLink,
-                Slogan = updatedUser.Slogan
+                School = updatedUser.School,
             };
 
             return Ok(userResponse);

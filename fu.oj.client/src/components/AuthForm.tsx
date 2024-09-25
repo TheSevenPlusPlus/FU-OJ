@@ -24,6 +24,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
         username: '',
         email: '',
         password: '',
+        confirmPassword: '',
         fullName: '',
         phoneNumber: '',
     })
@@ -55,36 +56,43 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
     }
 
     const validateForm = (): boolean => {
-        const newErrors: FormErrors = {}
+        const newErrors: FormErrors = {};
 
+        // Password validation regex (same as before)
         const passwordRegex = {
             lowerCase: /[a-z]/,
             upperCase: /[A-Z]/,
             number: /\d/,
             specialChar: /[!@#$%^&*(),.?":{}|<>]/
-        }
+        };
 
         if (activeTab === 'login') {
-            if (!formData.username.trim()) newErrors.username = 'Username is required'
-            if (!formData.password) newErrors.password = 'Password is required'
+            if (!formData.username.trim()) newErrors.username = 'Username is required';
+            if (!formData.password) newErrors.password = 'Password is required';
         } else {
-            if (!formData.username.trim()) newErrors.username = 'Username is required'
-            if (!formData.email.trim()) newErrors.email = 'Email is required'
-            if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid'
-            if (!formData.password) newErrors.password = 'Password is required'
-            if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters'
-            if (!passwordRegex.lowerCase.test(formData.password)) newErrors.password = 'Password must include at least one lowercase letter'
-            if (!passwordRegex.upperCase.test(formData.password)) newErrors.password = 'Password must include at least one uppercase letter'
-            if (!passwordRegex.number.test(formData.password)) newErrors.password = 'Password must include at least one number'
-            if (!passwordRegex.specialChar.test(formData.password)) newErrors.password = 'Password must include at least one special character'
-            if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required'
-            if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone Number is required'
-            if (!/^\d{10}$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Phone Number must be 10 digits'
+            if (!formData.username.trim()) newErrors.username = 'Username is required';
+            if (!formData.email.trim()) newErrors.email = 'Email is required';
+            if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
+            if (!formData.password) newErrors.password = 'Password is required';
+            if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
+            if (!passwordRegex.lowerCase.test(formData.password)) newErrors.password = 'Password must include at least one lowercase letter';
+            if (!passwordRegex.upperCase.test(formData.password)) newErrors.password = 'Password must include at least one uppercase letter';
+            if (!passwordRegex.number.test(formData.password)) newErrors.password = 'Password must include at least one number';
+            if (!passwordRegex.specialChar.test(formData.password)) newErrors.password = 'Password must include at least one special character';
+            if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
+            if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone Number is required';
+            if (!/^\d{10}$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Phone Number must be 10 digits';
+
+            // Confirm password check
+            if (formData.password !== formData.confirmPassword) {
+                newErrors.confirmPassword = 'Passwords do not match';
+            }
         }
 
-        setErrors(newErrors)
-        return Object.keys(newErrors).length === 0
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     }
+
 
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -217,6 +225,18 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                                     className={errors.password ? 'border-red-500' : ''}
                                 />
                                 {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                            </div>
+                            <div className="space-y-1">
+                                <Label htmlFor="register-confirm-password">Confirm Password</Label>
+                                <Input
+                                    id="register-confirm-password"
+                                    name="confirmPassword"
+                                    type="password"
+                                    required
+                                    onChange={handleInputChange}
+                                    className={errors.confirmPassword ? 'border-red-500' : ''}
+                                />
+                                {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
                             </div>
                             {additionalFields.map((field, index) => (
                                 <div key={index} className="space-y-1">

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240925090014_initDB")]
+    [Migration("20240925164808_initDB")]
     partial class initDB
     {
         /// <inheritdoc />
@@ -330,13 +330,10 @@ namespace FU.OJ.Server.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("School")
                         .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Slogan")
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")

@@ -81,7 +81,7 @@ const Navbar: React.FC = () => {
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem asChild>
-                                            <Link to="/edit-profile" className="flex items-center">
+                                            <Link to="/profile/edit" className="flex items-center">
                                                 <Edit className="mr-2 h-4 w-4" />
                                                 <span>Edit Profile</span>
                                             </Link>
@@ -107,7 +107,7 @@ const Navbar: React.FC = () => {
                     <div className="md:hidden">
                         <Sheet open={isOpen} onOpenChange={setIsOpen}>
                             <SheetTrigger asChild>
-                                <Button variant="outline" size="icon" onClick={toggleMenu}>
+                                <Button className="text-black" variant="outline" size="icon" onClick={toggleMenu}>
                                     {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                                     <span className="sr-only">Toggle menu</span>
                                 </Button>
@@ -122,14 +122,14 @@ const Navbar: React.FC = () => {
                                     {user ? (
                                         <>
                                             <Link to="/profile" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={toggleMenu}>Profile</Link>
-                                            <Link to="/edit-profile" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={toggleMenu}>Edit Profile</Link>
-                                            <Button variant="outline" className="w-full" onClick={() => { handleLogout(); toggleMenu(); }}>
+                                            <Link to="/profile/edit" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={toggleMenu}>Edit Profile</Link>
+                                            <Button variant="outline" className="text-black w-full" onClick={() => { handleLogout(); toggleMenu(); }}>
                                                 Logout
                                             </Button>
                                         </>
                                     ) : (
                                         <>
-                                            <Button variant="outline" asChild className="w-full" onClick={toggleMenu}>
+                                            <Button variant="outline" asChild className="text-black w-full" onClick={toggleMenu}>
                                                 <Link to="/login">Log in</Link>
                                             </Button>
                                             <Button asChild className="w-full" onClick={toggleMenu}>

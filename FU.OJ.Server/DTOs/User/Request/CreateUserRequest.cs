@@ -11,6 +11,8 @@ namespace FU.OJ.Server.DTOs.User.Request
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid email format")]
         public string Email { get; set; }
+        [Required]
+        public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be at least 8 characters long")]
@@ -19,11 +21,10 @@ namespace FU.OJ.Server.DTOs.User.Request
         [Required(ErrorMessage = "Full name is required")]
         public string Fullname { get; set; }
 
-        public string? City { get; set; }
-        public string? Description { get; set; }
-        public string? FacebookLink { get; set; }
-        public string? GithubLink { get; set; }
-        public string? Slogan { get; set; }
-        public string? Role { get; set; }
+        public string? City { get; set; } = null!;
+        public string? Description { get; set; } = null!;
+        public string? FacebookLink { get; set; } = null!;
+        public string? GithubLink { get; set; } = null!;
+        public string? School { get; set; } = null!;
     }
 }

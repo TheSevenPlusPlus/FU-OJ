@@ -7,6 +7,8 @@ export const registerUser = async (userData) => {
             username: userData.username,
             email: userData.email,
             password: userData.password,
+            fullName: userData.fullName,
+            phoneNumber: userData.phoneNumber
         });
         return response.data; // Return the response data (which includes the user info and token)
     } catch (error) {

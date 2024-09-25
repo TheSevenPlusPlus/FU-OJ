@@ -327,13 +327,10 @@ namespace FU.OJ.Server.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("School")
                         .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Slogan")
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
