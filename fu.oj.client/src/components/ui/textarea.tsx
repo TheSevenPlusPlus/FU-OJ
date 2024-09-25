@@ -1,31 +1,24 @@
-import React, { TextareaHTMLAttributes } from 'react';
+import * as React from "react"
 
-// Define props for the Textarea component
-interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-    label?: string; // Optional label for the textarea
-    error?: string; // Optional error message
-    rows?: number; // Default number of rows
-}
+import { cn } from "@/lib/utils"
 
-// Textarea component
-const Textarea: React.FC<TextareaProps> = ({
-    label,
-    error,
-    rows = 4,
-    ...props
-}) => {
+export interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, ...props }, ref) => {
     return (
-        <div className="mb-4">
-            {label && <label className="block mb-1 font-medium">{label}</label>}
-            <textarea
-                rows={rows}
-                className={`w-full border rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 ${error ? 'border-red-500' : 'border-gray-300'
-                    }`}
-                {...props}
-            />
-            {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-        </div>
-    );
-};
+      <textarea
+        className={cn(
+          "flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Textarea.displayName = "Textarea"
 
-export default Textarea;
+export { Textarea }
