@@ -52,6 +52,12 @@ namespace FU.OJ.Server
                 };
             });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("ManagerPolicy", policy => policy.RequireRole("Manager"));
+            });
+
             services.AddSwaggerGen(option =>
             {
                 option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });

@@ -8,7 +8,6 @@ namespace FU.OJ.Server.Controllers
 {
     [Route(BlogRoute.INDEX)]
     [ApiController]
-    [Authorize]
     public class BlogController : BaseController
     {
         private readonly IBlogService _blogService;
@@ -20,6 +19,7 @@ namespace FU.OJ.Server.Controllers
 
         // Create a new blog
         [HttpPost(BlogRoute.Action.Create)]
+        //[Authorize(Roles = RoleAuthorize.AdminManager)]
         public async Task<IActionResult> Create([FromBody] CreateBlogRequest request)
         {
             if (!ModelState.IsValid)
@@ -41,6 +41,7 @@ namespace FU.OJ.Server.Controllers
 
         // Get blog by id
         [HttpGet(BlogRoute.Action.GetDetails)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(string id)
         {
             try
@@ -62,6 +63,7 @@ namespace FU.OJ.Server.Controllers
 
         // Update a blog
         [HttpPut(BlogRoute.Action.Update)]
+        //[Authorize(Roles = RoleAuthorize.AdminManager)]
         public async Task<IActionResult> Update(string id, [FromBody] UpdateBlogRequest request)
         {
             if (!ModelState.IsValid)
@@ -83,6 +85,7 @@ namespace FU.OJ.Server.Controllers
 
         // Delete a blog
         [HttpDelete(BlogRoute.Action.Delete)]
+        //[Authorize(Roles = RoleAuthorize.AdminManager)]
         public async Task<IActionResult> Delete(string id)
         {
             try
