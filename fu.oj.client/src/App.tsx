@@ -8,6 +8,7 @@ import ProblemDetail from './components/ProblemDetail';
 import CodeSubmission from './components/SubmitCode';
 import BlogList from './components/BlogList';
 import BlogPost from './components/BlogPost'; // Import BlogPost component
+import AuthPage from './components/AuthPage';
 
 const App: React.FC = () => {
     return (
@@ -17,6 +18,10 @@ const App: React.FC = () => {
                 <main className="flex-grow">
                     <Routes>
                         <Route path="/" element={<HomePage />} />
+                        <Route path="/login" element={<AuthPage />} />
+                        <Route path="/register" element={<AuthPage />} />
+
+
                         <Route path="/problems" element={<ProblemList />} />
                         <Route path="/problem/:problemCode" element={<ProblemDetail />} />
                         <Route path="/problem/:problemCode/submit" element={<CodeSubmission />} />
