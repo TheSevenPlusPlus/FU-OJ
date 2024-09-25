@@ -11,6 +11,8 @@ namespace FU.OJ.Server.Service
         Task<List<User>> GetAllUsersAsync();
         Task<User> GetUserByIdAsync(string userId);
         Task<User> UpdateUserAsync(string userId, CreateUserRequest user);
+        Task<User> UpdateProfileAsync(CreateUserRequest user);
+
         Task<bool> DeleteUserAsync(string userId);
     }
 
@@ -55,6 +57,27 @@ namespace FU.OJ.Server.Service
         public async Task<User> UpdateUserAsync(string userId, CreateUserRequest updatedUser)
         {
             var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                user.Email = updatedUser.Email;
+                user.UserName = updatedUser.UserName;
+                user.Fullname = updatedUser.Fullname;
+                user.City = updatedUser.City;
+                user.Description = updatedUser.Description;
+                user.FacebookLink = updatedUser.FacebookLink;
+                user.GithubLink = updatedUser.GithubLink;
+                user.Slogan = updatedUser.Slogan;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded) return user;
+            }
+
+            return null;
+        }
+
+        public async Task<User> UpdateProfileAsync(CreateUserRequest updatedUser)
+        {
+            var user = await _userManager.FindByNameAsync(updatedUser.UserName);
             if (user != null)
             {
                 user.Email = updatedUser.Email;

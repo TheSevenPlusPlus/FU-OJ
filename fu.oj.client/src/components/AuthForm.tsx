@@ -7,10 +7,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { registerUser, loginUser } from '../api/auth' // Adjust the import based on your file structure
 
 interface RegisterProps {
     additionalFields: { name: string; label: string }[]
+}
+
+interface FormErrors {
+    [key: string]: string
 }
 
 export default function AuthForm({ additionalFields = [] }: RegisterProps) {
@@ -22,19 +27,19 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
         fullName: '',
         phoneNumber: '',
     })
+    const [errors, setErrors] = useState<FormErrors>({})
+    const [submitError, setSubmitError] = useState<string | null>(null)
 
     const navigate = useNavigate()
     const location = useLocation()
 
     useEffect(() => {
-        // Check if user is already logged in
         const user = localStorage.getItem('user')
         if (user) {
             navigate('/')
             return
         }
 
-        // Set active tab based on the current path
         if (location.pathname === '/login') {
             setActiveTab('login')
         } else if (location.pathname === '/register') {
@@ -45,10 +50,51 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
         setFormData((prevData) => ({ ...prevData, [name]: value }))
+        // Clear the error for this field when the user starts typing
+        setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }))
     }
+
+    const validateForm = (): boolean => {
+        const newErrors: FormErrors = {}
+
+        const passwordRegex = {
+            lowerCase: /[a-z]/,
+            upperCase: /[A-Z]/,
+            number: /\d/,
+            specialChar: /[!@#$%^&*(),.?":{}|<>]/
+        }
+
+        if (activeTab === 'login') {
+            if (!formData.username.trim()) newErrors.username = 'Username is required'
+            if (!formData.password) newErrors.password = 'Password is required'
+        } else {
+            if (!formData.username.trim()) newErrors.username = 'Username is required'
+            if (!formData.email.trim()) newErrors.email = 'Email is required'
+            if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid'
+            if (!formData.password) newErrors.password = 'Password is required'
+            if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters'
+            if (!passwordRegex.lowerCase.test(formData.password)) newErrors.password = 'Password must include at least one lowercase letter'
+            if (!passwordRegex.upperCase.test(formData.password)) newErrors.password = 'Password must include at least one uppercase letter'
+            if (!passwordRegex.number.test(formData.password)) newErrors.password = 'Password must include at least one number'
+            if (!passwordRegex.specialChar.test(formData.password)) newErrors.password = 'Password must include at least one special character'
+            if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required'
+            if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone Number is required'
+            if (!/^\d{10}$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Phone Number must be 10 digits'
+        }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
+    }
+
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        setSubmitError(null)
+
+        if (!validateForm()) {
+            return
+        }
+
         if (activeTab === "login") {
             try {
                 const data = await loginUser({
@@ -61,7 +107,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                 navigate(0) // Reload
             } catch (error) {
                 console.error('Login failed:', error.response?.data || error.message)
-                // Handle error (e.g., show error message)
+                setSubmitError('Login failed. Please check your credentials and try again.')
             }
         } else if (activeTab === "register") {
             try {
@@ -78,7 +124,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                 navigate(0) // Reload
             } catch (error) {
                 console.error('Registration failed:', error.response?.data || error.message)
-                // Handle error (e.g., show error message)
+                setSubmitError('Registration failed. Please try again later.')
             }
         }
     }
@@ -105,7 +151,9 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                                     type="text"
                                     required
                                     onChange={handleInputChange}
+                                    className={errors.username ? 'border-red-500' : ''}
                                 />
+                                {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="login-password">Password</Label>
@@ -115,7 +163,9 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                                     type="password"
                                     required
                                     onChange={handleInputChange}
+                                    className={errors.password ? 'border-red-500' : ''}
                                 />
+                                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                             </div>
                         </CardContent>
                         <CardFooter>
@@ -140,7 +190,9 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                                     type="text"
                                     required
                                     onChange={handleInputChange}
+                                    className={errors.username ? 'border-red-500' : ''}
                                 />
+                                {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="register-email">Email</Label>
@@ -150,7 +202,9 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                                     type="email"
                                     required
                                     onChange={handleInputChange}
+                                    className={errors.email ? 'border-red-500' : ''}
                                 />
+                                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                             </div>
                             <div className="space-y-1">
                                 <Label htmlFor="register-password">Password</Label>
@@ -160,7 +214,9 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                                     type="password"
                                     required
                                     onChange={handleInputChange}
+                                    className={errors.password ? 'border-red-500' : ''}
                                 />
+                                {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                             </div>
                             {additionalFields.map((field, index) => (
                                 <div key={index} className="space-y-1">
@@ -170,7 +226,9 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                                         name={field.name}
                                         type="text"
                                         onChange={handleInputChange}
+                                        className={errors[field.name] ? 'border-red-500' : ''}
                                     />
+                                    {errors[field.name] && <p className="text-red-500 text-sm mt-1">{errors[field.name]}</p>}
                                 </div>
                             ))}
                         </CardContent>
@@ -180,6 +238,11 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                     </form>
                 </Card>
             </TabsContent>
+            {submitError && (
+                <Alert variant="destructive" className="mt-4">
+                    <AlertDescription>{submitError}</AlertDescription>
+                </Alert>
+            )}
         </Tabs>
     )
 }
