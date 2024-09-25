@@ -1,12 +1,13 @@
 ﻿using FU.OJ.Server.Infra.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace FU.OJ.Server.Infra.Context
 {
-    public class ApplicationDBContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
         private readonly IConfiguration _config;
-        public ApplicationDBContext(DbContextOptions<ApplicationDBContext> options, IConfiguration config) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration config) : base(options)
         {
             _config = config;
         }

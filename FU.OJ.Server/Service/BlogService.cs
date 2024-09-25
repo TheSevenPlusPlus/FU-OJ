@@ -14,9 +14,9 @@ namespace FU.OJ.Server.Service
     }
     public class BlogService : IBlogService
     {
-        private readonly ApplicationDBContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public BlogService(ApplicationDBContext context)
+        public BlogService(ApplicationDbContext context)
         {
             _context = context;
         }

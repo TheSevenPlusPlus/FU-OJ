@@ -1,12 +1,14 @@
 ﻿using FU.OJ.Server.DTOs.Problem.Request;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers
 {
     [ApiController]
     [Route(ProblemRoute.INDEX)]
+    [Authorize]
     public class ProblemController : BaseController
     {
         private readonly IProblemService _service;
@@ -48,7 +50,7 @@ namespace FU.OJ.Server.Controllers
             }
         }
 
-        [HttpGet("")]
+        [HttpGet]
         public async Task<IActionResult> getAllProblemsAsync()
         {
             try

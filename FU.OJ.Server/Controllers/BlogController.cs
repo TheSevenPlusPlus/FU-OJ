@@ -1,12 +1,14 @@
 ﻿using FU.OJ.Server.DTOs.Blog.Request;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers
 {
     [Route(BlogRoute.INDEX)]
     [ApiController]
+    [Authorize]
     public class BlogController : BaseController
     {
         private readonly IBlogService _blogService;

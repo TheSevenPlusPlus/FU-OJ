@@ -18,9 +18,9 @@ namespace FU.OJ.Server.Service
 
     public class ProblemService : IProblemService
     {
-        private readonly ApplicationDBContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public ProblemService(ApplicationDBContext context)
+        public ProblemService(ApplicationDbContext context)
         {
             _context = context;
         }
