@@ -1,12 +1,14 @@
 ﻿using FU.OJ.Server.DTOs.Testcase.Request;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers
 {
     [ApiController]
     [Route(TestcaseRoute.INDEX)]
+    [Authorize]
     public class TestCaseController : BaseController
     {
         public readonly ITestcaseService _service;
@@ -20,6 +22,12 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
+                if (request.testcase_file == null)
+                    return BadRequest("File is missing.");
+                if (string.IsNullOrEmpty(request.problem_code))
+                {
+                    return BadRequest(new { message = "Problem Code is required." });
+                }
                 return Ok(await _service.createAsync(request));
             }
             catch (Exception ex)
@@ -28,13 +36,14 @@ namespace FU.OJ.Server.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> deleteTestCase(string id)
+        [HttpDelete("{problem_code}")]
+        public async Task<IActionResult> deleteTestCase(string problem_code)
         {
             try
             {
-                await _service.deleteAsync(id);
-                return NoContent();
+
+                await _service.deleteAsync(problem_code);
+                return Ok("Delete success");
             }
             catch (Exception ex)
             {
@@ -47,6 +56,12 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
+                if (request.testcase_file == null)
+                    return BadRequest("File is missing.");
+                if (string.IsNullOrEmpty(request.problem_code))
+                {
+                    return BadRequest(new { message = "Problem Code is required." });
+                }
                 await _service.updateAsync(request);
                 return Ok();
             }

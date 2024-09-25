@@ -1,23 +1,24 @@
-﻿using FU.OJ.Server.Infra.Const;
+﻿using FU.OJ.Server.DTOs.Submission.Request;
+using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using FU.OJ.Server.DTOs.Submission.Request;
-using Microsoft.Extensions.Logging;
 
 namespace FU.OJ.Server.Controllers
 {
     [Route(SubmissionRoute.INDEX)]
     [ApiController]
+    [Authorize]
     public class SubmissionController : BaseController
     {
         private readonly string _judgeServerUrl;
         private readonly HttpClient _httpClient;
-        private readonly ApplicationDBContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly ISubmissionService _submissionService;
 
-        public SubmissionController(HttpClient httpClient, IConfiguration configuration, ApplicationDBContext context, ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
+        public SubmissionController(HttpClient httpClient, IConfiguration configuration, ApplicationDbContext context, ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
         {
             _httpClient = httpClient;
             _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl") ?? throw new Exception(ErrorMessage.NotFound);

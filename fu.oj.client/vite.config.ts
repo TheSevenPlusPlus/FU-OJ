@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import child_process from "node:child_process";
-import { fileURLToPath, URL } from "node:url";
 
 import { defineConfig } from "vite";
 import vitePluginReactSWC from "@vitejs/plugin-react-swc";
@@ -41,7 +40,12 @@ export default defineConfig({
   plugins: [vitePluginReactSWC()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+          '@': path.resolve(__dirname, 'src'), // Adjust 'src' to match your project structure
+          //'components': path.resolve(__dirname, 'src/components'),
+          //'ui': path.resolve(__dirname, 'src/components/ui'),
+          //'lib': path.resolve(__dirname, 'src/lib'),
+          //'utils': path.resolve(__dirname, 'src/lib/utils'),
+          //'hooks': path.resolve(__dirname, 'src/hooks'),
     },
   },
   server: {
@@ -49,9 +53,6 @@ export default defineConfig({
     https: {
       key: fs.readFileSync(keyFilePath),
       cert: fs.readFileSync(certFilePath),
-      },
-      proxy: {
-          '/api': 'https://localhost:7242',
-      }
+    },
   },
 });

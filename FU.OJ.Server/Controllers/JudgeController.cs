@@ -1,17 +1,18 @@
-﻿using FU.OJ.Server.Infra.Const;
-using FU.OJ.Server.Infra.Const.Route;
+﻿using FU.OJ.Server.Infra.Const.Route;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers
 {
     [Route(JudgeRoute.INDEX)]
     [ApiController]
+    [Authorize]
     public class JudgeController : BaseController
     {
         private readonly string JudgeServerUrl = "";
         private readonly HttpClient _httpClient;
 
-        public JudgeController(HttpClient httpClient, IConfiguration configuration, ILogger<JudgeController> logger):base(logger)
+        public JudgeController(HttpClient httpClient, IConfiguration configuration, ILogger<JudgeController> logger) : base(logger)
         {
             _httpClient = httpClient;
             JudgeServerUrl = configuration.GetValue<string>("JudgeServerUrl")!;

@@ -1,6 +1,5 @@
 import apiClient from './client';
 
-// G?i submission
 export const getAllProblems = async () => {
     return await apiClient.get('/problem/');
 };

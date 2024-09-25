@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 
 namespace FU.OJ.Server.Infra.Models
@@ -23,6 +23,10 @@ namespace FU.OJ.Server.Infra.Models
         public DateTime create_at { get; set; }
         public string? user_id { get; set; }
         public string? test_case_id { get; set; }
+        public int? ac_quantity { get; set; }
+        public string? difficulty { get; set; }
+        public string? hasSolution { get; set; }
+
     }
 
     public class Problem_configuration : IEntityTypeConfiguration<Problem>

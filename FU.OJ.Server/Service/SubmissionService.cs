@@ -24,9 +24,9 @@ namespace FU.OJ.Server.Service
         private readonly HttpClient _httpClient;
         private readonly IProblemService _problemService;
         private readonly ITestcaseService _testcaseService;
-        private readonly ApplicationDBContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDBContext context, IConfiguration configuration)
+        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDbContext context, IConfiguration configuration)
         {
             _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl")!;
             _httpClient = httpClient;
