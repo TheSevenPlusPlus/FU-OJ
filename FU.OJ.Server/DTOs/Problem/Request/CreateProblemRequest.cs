@@ -16,5 +16,6 @@ namespace FU.OJ.Server.DTOs.Problem.Request
         public float memory_limit { get; set; } = 256 * 1024;
         public DateTime create_at { get; set; }
         public string? user_id { get; set; }
+
     }
 }

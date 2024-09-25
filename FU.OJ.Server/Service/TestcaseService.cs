@@ -17,11 +17,11 @@ namespace FU.OJ.Server.Service
 
     public class TestcaseService : ITestcaseService
     {
-        private readonly ApplicationDBContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly IProblemService _problemService;
         private readonly string _testcaseDirectory = "Testcase"; // Đường dẫn folder chứa test case
 
-        public TestcaseService(ApplicationDBContext context, IProblemService problemService)
+        public TestcaseService(ApplicationDbContext context, IProblemService problemService)
         {
             _context = context;
             _problemService = problemService;

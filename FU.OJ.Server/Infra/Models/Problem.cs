@@ -25,7 +25,7 @@ namespace FU.OJ.Server.Infra.Models
         public string? test_case_id { get; set; }
         public int? ac_quantity { get; set; }
         public string? difficulty { get; set; }
-        public bool? hasSolution { get; set; }
+        public string? hasSolution { get; set; }
 
     }
 
