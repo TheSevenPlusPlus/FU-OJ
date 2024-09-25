@@ -61,7 +61,6 @@ export default function ProfileEdit() {
         setProfile(prev => ({ ...prev, [name]: value || "" }));
     };
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null); // Reset error message before submitting
@@ -94,6 +93,14 @@ export default function ProfileEdit() {
                         <div className="space-y-2">
                             <Label htmlFor="userName">Username</Label>
                             <Input disabled id="userName" name="userName" value={profile.userName} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email</Label>
+                            <Input id="email" name="email" value={profile.email} onChange={handleChange} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="phoneNumber">Phone Number</Label>
+                            <Input id="phoneNumber" name="phoneNumber" value={profile.phoneNumber} onChange={handleChange} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="fullname">Full Name</Label>
