@@ -61,6 +61,22 @@ namespace FU.OJ.Server.Controllers
             }
         }
 
+        [HttpGet(BlogRoute.Action.GetAll)]
+        public async Task<IActionResult> GetAllBlogs()
+        {
+            try
+            {
+                var blog = await _blogService.getAllBlogs();
+
+                return Ok(blog);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while fetching blogs");
+                return StatusCode(500, "An error occurred while retrieving the blog.");
+            }
+        }
+
         // Update a blog
         [HttpPut(BlogRoute.Action.Update)]
         //[Authorize(Roles = RoleAuthorize.AdminManager)]

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { submitCode } from '../api/submission';
-import Textarea from './ui/textarea';
-import Select from './ui/select';
+import Textarea_manual from './ui/textarea-manual';
 import { useParams } from 'react-router-dom';
 
 const CodeSubmission: React.FC = () => {
@@ -41,7 +40,7 @@ const CodeSubmission: React.FC = () => {
                 <option value="Java">Java</option>
                 {/* Add more languages as needed */}
             </select>
-            <Textarea value={code} onChange={e => setCode(e.target.value)} placeholder="Write your code here..." rows={10} />
+            <Textarea_manual value={code} onChange={e => setCode(e.target.value)} placeholder="Write your code here..." rows={10} />
             <Button onClick={handleSubmit} disabled={loading}>
                 {loading ? 'Submitting...' : 'Submit Code'}
             </Button>

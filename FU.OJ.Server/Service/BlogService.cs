@@ -1,4 +1,5 @@
 ﻿using FU.OJ.Server.DTOs.Blog.Request;
+using FU.OJ.Server.DTOs.Blog.Response;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.Models;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +9,10 @@ namespace FU.OJ.Server.Service
     public interface IBlogService
     {
         Task<string> createAsync(CreateBlogRequest request);
-        public Task<Blog?> getByIdAsync(string id);
+        public Task<BlogView?> getByIdAsync(string id);
         Task updateAsync(string id, UpdateBlogRequest request);
         Task deleteAsync(string id);
+        public Task<List<BlogView>> getAllBlogs();
     }
     public class BlogService : IBlogService
     {
@@ -39,11 +41,32 @@ namespace FU.OJ.Server.Service
         }
 
         // Get a blog by ID
-        public async Task<Blog?> getByIdAsync(string id)
+        public async Task<BlogView?> getByIdAsync(string id)
         {
             return await _context.Blogs
-                .Include(b => b.user)
-                .FirstOrDefaultAsync(b => b.id == id);
+                .Where(blog => blog.id == id)
+                .Select(blog => new BlogView
+                {
+                    id = blog.id,
+                    title = blog.title,
+                    content = blog.content,
+                    create_at = blog.create_at,
+                    user_id = blog.user_id,
+                    user_name = blog.user.UserName
+                }).FirstOrDefaultAsync();
+        }
+
+        public async Task<List<BlogView>> getAllBlogs()
+        {
+            return await _context.Blogs.Select(blog => new BlogView
+            {
+                id = blog.id,
+                title = blog.title,
+                content = blog.content,
+                create_at = blog.create_at,
+                user_id = blog.user_id,
+                user_name = blog.user.UserName
+            }).ToListAsync();
         }
 
         // Update a blog
