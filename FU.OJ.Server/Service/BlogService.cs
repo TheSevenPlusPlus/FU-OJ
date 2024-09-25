@@ -52,7 +52,7 @@ namespace FU.OJ.Server.Service
                     content = blog.content,
                     create_at = blog.create_at,
                     user_id = blog.user_id,
-                    user_name = blog.user.name
+                    user_name = blog.user.UserName
                 }).FirstOrDefaultAsync();
         }
 
@@ -65,7 +65,7 @@ namespace FU.OJ.Server.Service
                 content = blog.content,
                 create_at = blog.create_at,
                 user_id = blog.user_id,
-                user_name = blog.user.name
+                user_name = blog.user.UserName
             }).ToListAsync();
         }
 
