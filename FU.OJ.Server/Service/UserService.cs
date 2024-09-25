@@ -7,6 +7,7 @@ namespace FU.OJ.Server.Service
 {
     public interface IUserService
     {
+        Task<User> CreateUserAsync(CreateUserRequest userRequest);
         Task<List<User>> GetAllUsersAsync();
         Task<User> GetUserByIdAsync(string userId);
         Task<User> UpdateUserAsync(string userId, CreateUserRequest user);
@@ -20,6 +21,25 @@ namespace FU.OJ.Server.Service
         public UserService(UserManager<User> userManager)
         {
             _userManager = userManager;
+        }
+        public async Task<User> CreateUserAsync(CreateUserRequest userRequest)
+        {
+            var user = new User
+            {
+                UserName = userRequest.UserName,
+                Email = userRequest.Email,
+                Fullname = userRequest.Fullname,
+                City = userRequest.City,
+                Description = userRequest.Description,
+                FacebookLink = userRequest.FacebookLink,
+                GithubLink = userRequest.GithubLink,
+                Slogan = userRequest.Slogan
+            };
+
+            var result = await _userManager.CreateAsync(user, userRequest.Password);
+            if (result.Succeeded) return user;
+
+            return null; // You might want to throw an exception or handle this differently.
         }
 
         public async Task<List<User>> GetAllUsersAsync()

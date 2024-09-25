@@ -20,6 +20,32 @@ namespace FU.OJ.Server.Controllers
             _userService = userService;
         }
 
+        [HttpPost(UserRoute.Action.Create)]
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest createUserRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var newUser = await _userService.CreateUserAsync(createUserRequest);
+            if (newUser == null)
+                return StatusCode(500, "User creation failed"); // Optionally, return specific error messages.
+
+            var userResponse = new UpdateUserRespond
+            {
+                Id = newUser.Id,
+                UserName = newUser.UserName,
+                Email = newUser.Email,
+                Fullname = newUser.Fullname,
+                City = newUser.City,
+                Description = newUser.Description,
+                FacebookLink = newUser.FacebookLink,
+                GithubLink = newUser.GithubLink,
+                Slogan = newUser.Slogan
+            };
+
+            return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, userResponse);
+        }
+
         // Get all users
         [HttpGet(UserRoute.Action.GetAll)]
         public async Task<IActionResult> GetAllUsers()
