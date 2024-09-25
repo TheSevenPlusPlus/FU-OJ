@@ -14,6 +14,7 @@ namespace FU.OJ.Server
     {
         public static void AddServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProblemService, ProblemService>();
             services.AddScoped<ITestcaseService, TestcaseService>();
             services.AddScoped<ISubmissionService, SubmissionService>();
