@@ -7,18 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { getProfile, updateProfile } from '../../api/profile';
+import { UserProfile } from '../../models/UserProfileModel';
 
-interface UserProfile {
-    userName: string;
-    email: string;
-    phoneNumber: string;
-    fullname: string;
-    city: string;
-    description: string;
-    facebookLink: string;
-    githubLink: string;
-    school: string;
-}
 
 export default function ProfileEdit() {
     const [profile, setProfile] = useState<UserProfile>({

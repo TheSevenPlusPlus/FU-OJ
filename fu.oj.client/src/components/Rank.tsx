@@ -6,46 +6,50 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Trophy, Medal, Award } from "lucide-react"
+import { getRank } from "../api/general" // Assuming the api file is in the same directory
 
 type Participant = {
     rank: number
-    name: string
     userName: string
     acProblems: number
 }
 
-const generateParticipants = (count: number): Participant[] => {
-    return Array.from({ length: count }, (_, i) => ({
-        rank: i + 1,
-        name: `Participant ${i + 1}`,
-        userName: `user${i + 1}`,
-        acProblems: Math.floor(Math.random() * 200)
-    })).sort((a, b) => b.acProblems - a.acProblems)
-        .map((p, index) => ({ ...p, rank: index + 1 }))
+type RankResponse = {
+    totalItems: number
+    items: Participant[]
 }
 
-const participants = generateParticipants(100)
-
 export default function Rank() {
-    const { page } = useParams<{ page: string }>();
+    const { page = "1" } = useParams<{ page?: string }>()
     const navigate = useNavigate()
-    const [currentPage, setCurrentPage] = useState(1)
+    const [currentPage, setCurrentPage] = useState(parseInt(page, 10))
+    const [rankData, setRankData] = useState<RankResponse | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const pageSize = 20
-    const totalPages = Math.ceil(participants.length / pageSize)
 
     useEffect(() => {
-        const pageNumber = parseInt(page || '1', 10)
-        if (pageNumber >= 1 && pageNumber <= totalPages) {
-            setCurrentPage(pageNumber)
-        } else {
-            navigate('/rank/1', { replace: true })
+        const fetchRankData = async () => {
+            setIsLoading(true)
+            setError(null)
+            try {
+                const data = await getRank(currentPage, pageSize)
+                setRankData(data)
+            } catch (err) {
+                setError("Failed to fetch rank data. Please try again later.")
+            } finally {
+                setIsLoading(false)
+            }
         }
-    }, [page, navigate, totalPages])
 
-    const paginatedParticipants = participants.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-    )
+        fetchRankData()
+    }, [currentPage])
+
+    useEffect(() => {
+        setCurrentPage(parseInt(page, 10))
+    }, [page])
+
+    const totalPages = rankData ? Math.ceil(rankData.totalItems / pageSize) : 0
 
     const getRankIcon = (rank: number): React.ReactNode => {
         if (rank === 1) return <Trophy className="w-6 h-6" />
@@ -64,6 +68,14 @@ export default function Rank() {
         navigate(`/rank/${newPage}`)
     }
 
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>
+    }
+
     return (
         <div className="container mx-auto py-10">
             <Card className="border-2 border-black">
@@ -73,13 +85,12 @@ export default function Rank() {
                             <thead>
                                 <tr className="bg-gray-100 border-b-2 border-black">
                                     <th className="px-4 py-2 text-left">Rank</th>
-                                    <th className="px-4 py-2 text-left">Name</th>
                                     <th className="px-4 py-2 text-left">Username</th>
                                     <th className="px-4 py-2 text-right">AC Problems</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {paginatedParticipants.map((participant) => (
+                                {rankData?.items.map((participant) => (
                                     <tr key={participant.userName} className={`${getRowStyle(participant.rank)} border-b border-gray-200 hover:bg-gray-50`}>
                                         <td className="px-4 py-2">
                                             <div className="flex items-center space-x-2">
@@ -87,7 +98,6 @@ export default function Rank() {
                                                 <span className="text-lg">{participant.rank}</span>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-2">{participant.name}</td>
                                         <td className="px-4 py-2">{participant.userName}</td>
                                         <td className="px-4 py-2 text-right">
                                             <Badge variant="outline" className="text-lg font-semibold border-black">
