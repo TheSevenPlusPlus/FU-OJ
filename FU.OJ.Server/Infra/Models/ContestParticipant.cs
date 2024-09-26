@@ -4,30 +4,28 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FU.OJ.Server.Infra.Models
 {
-    public class Contest : ContestProperties
+    public class ContestParticipant : ContestParticipantProperties
     {
         public User User { get; set; } = null!;
-        public ICollection<ContestParticipant> ContestParticipants { get; set; } = new List<ContestParticipant>();
+        public Contest Contest { get; set; } = null!;
     }
 
-    public class ContestProperties
+    public class ContestParticipantProperties
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string? Name { get; set; }
-        public string? Description { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
         public string? UserId { get; set; }
+        public string? ContestId { get; set; }
     }
 
-    public class ContestConfiguration : IEntityTypeConfiguration<Contest>
+    public class ContestParticipantConfiguration : IEntityTypeConfiguration<ContestParticipant>
     {
-        public void Configure(EntityTypeBuilder<Contest> builder)
+        public void Configure(EntityTypeBuilder<ContestParticipant> builder)
         {
             builder.HasKey(s => s.Id);
 
             builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
+            builder.HasOne(e => e.Contest).WithMany().HasForeignKey(e => e.ContestId);
         }
     }
 }

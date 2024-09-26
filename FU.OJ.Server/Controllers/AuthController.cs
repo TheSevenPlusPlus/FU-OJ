@@ -1,6 +1,6 @@
 ﻿using FU.OJ.Server.DTOs.Auth.Request;
 using FU.OJ.Server.DTOs.Auth.Respond;
-using FU.OJ.Server.Infra.Const;
+using FU.OJ.Server.Infra.Const.Authorize;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Infra.Models;
 using FU.OJ.Server.Service;
@@ -34,15 +34,15 @@ namespace FU.OJ.Server.Controllers
                 if (!ModelState.IsValid) return BadRequest(ModelState);
                 var user = new User()
                 {
-                    UserName = registerRequest.Username,
+                    UserName = registerRequest.UserName,
                     Email = registerRequest.Email,
-                    Fullname = registerRequest.Fullname,
+                    FullName = registerRequest.FullName,
                     PhoneNumber = registerRequest.PhoneNumber,
                 };
                 var createUser = await _userManager.CreateAsync(user, registerRequest.Password);
                 if (createUser.Succeeded)
                 {
-                    var roleResult = await _userManager.AddToRoleAsync(user, RoleStatic.Role_User);
+                    var roleResult = await _userManager.AddToRoleAsync(user, RoleStatic.RoleUser);
                     if (roleResult.Succeeded)
                     {
                         var token = await _tokenService.CreateToken(user); // Sử dụng await cho phương thức không đồng bộ
@@ -71,7 +71,7 @@ namespace FU.OJ.Server.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.Username);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.UserName);
             if (user == null) return Unauthorized("Invalid username");
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, false);
             if (!result.Succeeded) return Unauthorized("Invalid password");

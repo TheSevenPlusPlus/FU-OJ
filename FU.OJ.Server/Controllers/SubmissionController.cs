@@ -9,7 +9,6 @@ namespace FU.OJ.Server.Controllers
 {
     [Route(SubmissionRoute.INDEX)]
     [ApiController]
-    //[Authorize]
     public class SubmissionController : BaseController
     {
         private readonly string _judgeServerUrl;
@@ -25,16 +24,12 @@ namespace FU.OJ.Server.Controllers
             _submissionService = submissionService;
         }
 
-        // API to submit code
         [HttpPost(SubmissionRoute.Action.Create)]
-        public async Task<IActionResult> SubmitCode(
-        [FromBody] CreateSubmissionRequest request,
-        [FromQuery] bool base64_encoded = false,
-        [FromQuery] bool wait = false)
+        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request, [FromQuery] bool base64Encoded = false, [FromQuery] bool wait = true)
         {
             try
             {
-                return Ok(await _submissionService.createAsync(request, base64_encoded, wait));
+                return Ok(await _submissionService.CreateAsync(request, base64Encoded, wait));
             }
             catch (Exception ex)
             {
@@ -47,7 +42,7 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                return Ok(await _submissionService.getByIdAsync(id));
+                return Ok(await _submissionService.GetByIdAsync(id));
             }
             catch (Exception ex)
             {
@@ -60,7 +55,7 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                return Ok(await _submissionService.getByIdWithoutResultAsync(id));
+                return Ok(await _submissionService.GetByIdWithoutResultAsync(id));
             }
             catch (Exception ex)
             {
@@ -73,7 +68,7 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                return Ok(await _submissionService.getAllSubmissionsAsync());
+                return Ok(await _submissionService.GetAllSubmissionsAsync());
             }
             catch (Exception ex)
             {

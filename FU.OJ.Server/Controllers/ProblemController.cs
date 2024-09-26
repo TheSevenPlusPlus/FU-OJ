@@ -18,11 +18,11 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpPost(ProblemRoute.Action.Create)]
-        public async Task<IActionResult> createProblemAsync([FromBody] CreateProblemRequest request)
+        public async Task<IActionResult> CreateProblemAsync([FromBody] CreateProblemRequest request)
         {
             try
             {
-                var code = await _service.createAsync(request);
+                var code = await _service.CreateAsync(request);
                 return Ok(code);
             }
             catch (Exception ex)
@@ -32,11 +32,11 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpGet("{code}")]
-        public async Task<IActionResult> getProblemByCodeAsync(string code)
+        public async Task<IActionResult> GetProblemByCodeAsync(string code)
         {
             try
             {
-                var problem = await _service.getByCodeAsync(code);
+                var problem = await _service.GetByCodeAsync(code);
 
                 if (problem == null)
                     return NotFound();
@@ -50,11 +50,11 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> getAllProblemsAsync()
+        public async Task<IActionResult> GetAllProblemsAsync()
         {
             try
             {
-                var problems = await _service.getAllAsync();
+                var problems = await _service.GetAllAsync();
                 return Ok(problems);
             }
             catch (Exception ex)
@@ -64,16 +64,16 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpPut("all")]
-        public async Task<IActionResult> updateProblemAsync(string id, [FromBody] UpdateProblemRequest request)
+        public async Task<IActionResult> UpdateProblemAsync(string id, [FromBody] UpdateProblemRequest request)
         {
             try
             {
-                var updated = await _service.updateAsync(id, request);
+                var updated = await _service.UpdateAsync(id, request);
 
                 if (!updated)
                     return NotFound();
 
-                return NoContent(); // Return 204 No Content on successful update
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -82,16 +82,16 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> deleteProblemAsync(string id)
+        public async Task<IActionResult> DeleteProblemAsync(string id)
         {
             try
             {
-                var deleted = await _service.deleteAsync(id);
+                var deleted = await _service.DeleteAsync(id);
 
                 if (!deleted)
                     return NotFound();
 
-                return NoContent(); // Return 204 No Content on successful deletion
+                return NoContent();
             }
             catch (Exception ex)
             {

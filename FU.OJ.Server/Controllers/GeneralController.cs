@@ -14,9 +14,8 @@ public class GeneralController : BaseController
         _generalService = generalService;
     }
 
-    // API để lấy danh sách xếp hạng người dùng có phân trang
     [HttpGet(GeneralRoute.Action.Rank)]
-    public async Task<IActionResult> GetUserRankings([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    public async Task<IActionResult> GetUserRankingsAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
     {
         if (page <= 0 || pageSize <= 0)
         {

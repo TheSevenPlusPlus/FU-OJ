@@ -5,18 +5,18 @@ namespace FU.OJ.Server.DTOs.Submission.Response
 {
     public class SubmissionView
     {
-        public string id { get; set; } = null!;
-        public string? problem_id { get; set; }
-        public string? problem_name { get; set; }
+        public string Id { get; set; } = null!;
+        public string? ProblemId { get; set; }
+        public string? ProblemName { get; set; }
         [Required]
-        public string? source_code { get; set; }
+        public string? SourceCode { get; set; }
         [Required]
-        public string? language_name { get; set; }
-        public DateTime submit_at { get; set; }
-        public string? user_id { get; set; }
-        public string? user_name { get; set; }
-        public string? status { get; set; }
+        public string? LanguageName { get; set; }
+        public DateTime SubmittedAt { get; set; }
+        public string? UserId { get; set; }
+        public string? UserName { get; set; }
+        public string? Status { get; set; }
 
-        public List<Result> results { get; set; } = new List<Result>();
+        public ICollection<Result> Results { get; set; } = new List<Result>();
     }
 }

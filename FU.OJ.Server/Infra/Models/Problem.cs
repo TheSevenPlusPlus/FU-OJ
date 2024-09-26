@@ -4,39 +4,41 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FU.OJ.Server.Infra.Models
 {
-    public class Problem : Problem_properies
+    public class Problem : ProblemProperties
     {
-        ICollection<Submission> Submissions { get; set; } = new List<Submission>();
+        public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
         public User User { get; set; } = null!;
     }
-    public class Problem_properies
+
+    public class ProblemProperties
     {
         [Key]
-        public string id { get; set; } = Guid.NewGuid().ToString();
-        public string code { get; set; } = null!;
-        public string? title { get; set; }
-        public string? description { get; set; }
-        public string? constraints { get; set; }
-        public string? example_input { get; set; }
-        public string? example_output { get; set; }
-        public double? time_limit { get; set; }
-        public double? memory_limit { get; set; }
-        public DateTime create_at { get; set; }
-        public string? user_id { get; set; }
-        public string? test_case_id { get; set; }
-        public int? ac_quantity { get; set; }
-        public string? difficulty { get; set; }
-        public string? hasSolution { get; set; }
-
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string Code { get; set; } = null!;
+        public string? Title { get; set; }
+        public string? Description { get; set; }
+        public string? Constraints { get; set; }
+        public string? ExampleInput { get; set; }
+        public string? ExampleOutput { get; set; }
+        public double? TimeLimit { get; set; }
+        public double? MemoryLimit { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string? UserId { get; set; }
+        public string? TestCaseId { get; set; }
+        public int? AcQuantity { get; set; }
+        public string? Difficulty { get; set; }
+        public string? HasSolution { get; set; }
     }
 
-    public class Problem_configuration : IEntityTypeConfiguration<Problem>
+    public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
     {
         public void Configure(EntityTypeBuilder<Problem> builder)
         {
+            builder.HasKey(s => s.Id);
+
             builder.HasOne(p => p.User)
                    .WithMany(u => u.Problems)
-                   .HasForeignKey(p => p.user_id);
+                   .HasForeignKey(p => p.UserId);
         }
     }
 }

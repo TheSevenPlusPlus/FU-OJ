@@ -22,7 +22,7 @@ namespace FU.OJ.Server
             services.AddScoped<IGeneralService, GeneralService>();
             services.AddScoped<ITokenService, TokenService>();
 
-            services.AddScoped<IDBInitializer, DBInitializer>();
+            services.AddScoped<IDbInitializer, DbInitializer>();
 
 
             // Đảm bảo sử dụng ApplicationDbContext đúng namespace

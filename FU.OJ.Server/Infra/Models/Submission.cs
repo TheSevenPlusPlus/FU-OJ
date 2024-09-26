@@ -1,34 +1,43 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations;
 
 namespace FU.OJ.Server.Infra.Models
 {
-    public class Submission : Submission_properties
+    public class Submission : SubmissionProperties
     {
         public User User { get; set; } = null!;
         public Problem Problem { get; set; } = null!;
-
         public ICollection<Result> Results { get; set; } = null!;
     }
-    public class Submission_properties
+
+    public class SubmissionProperties
     {
-        public string id { get; set; } = Guid.NewGuid().ToString();
-        public string? problem_id { get; set; }
-        public string? problem_code { get; set; }
-        public string? source_code { get; set; }
-        public string? language_name { get; set; }
-        public DateTime submit_at { get; set; }
-        public string? user_id { get; set; }
-        public string? user_name { get; set; }
-        public string? status { get; set; }
+        [Key]
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string? ProblemId { get; set; }
+        public string? ProblemCode { get; set; }
+        public string? SourceCode { get; set; }
+        public string? LanguageName { get; set; }
+        public DateTime SubmittedAt { get; set; }
+        public string? UserId { get; set; }
+        public string? UserName { get; set; }
+        public string? Status { get; set; }
     }
 
-    public class Submission_configuration : IEntityTypeConfiguration<Submission>
+    public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
     {
         public void Configure(EntityTypeBuilder<Submission> builder)
         {
-            builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.user_id);
-            builder.HasOne(e => e.Problem).WithMany().HasForeignKey(e => e.problem_id);
+            builder.HasKey(s => s.Id);
+
+            builder.HasOne(e => e.User)
+                   .WithMany()
+                   .HasForeignKey(e => e.UserId);
+
+            builder.HasOne(e => e.Problem)
+                   .WithMany()
+                   .HasForeignKey(e => e.ProblemId);
         }
     }
 }

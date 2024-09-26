@@ -11,11 +11,9 @@ namespace FU.OJ.Server.Service
         Task<User> CreateUserAsync(CreateUserRequest userRequest);
         Task<List<User>> GetAllUsersAsync();
         Task<User> GetUserByIdAsync(string userId);
-        Task<User> GetUserByUsername(string userName);
-
-        Task<User> UpdateUserAsync(string userId, CreateUserRequest user);
+        Task<User> GetUserByUsernameAsync(string userName); // Added Async suffix for consistency
+        Task<User> UpdateUserAsync(string userId, UpdateUserRequest user);
         Task<User> UpdateProfileAsync(UpdateUserRequest user);
-
         Task<bool> DeleteUserAsync(string userId);
     }
 
@@ -27,13 +25,14 @@ namespace FU.OJ.Server.Service
         {
             _userManager = userManager;
         }
+
         public async Task<User> CreateUserAsync(CreateUserRequest userRequest)
         {
             var user = new User
             {
                 UserName = userRequest.UserName,
                 Email = userRequest.Email,
-                Fullname = userRequest.Fullname,
+                FullName = userRequest.FullName,
                 City = userRequest.City,
                 Description = userRequest.Description,
                 FacebookLink = userRequest.FacebookLink,
@@ -43,7 +42,7 @@ namespace FU.OJ.Server.Service
             var result = await _userManager.CreateAsync(user, userRequest.Password);
             if (result.Succeeded) return user;
 
-            return null; // You might want to throw an exception or handle this differently.
+            return null; // Consider throwing an exception or handling this differently.
         }
 
         public async Task<List<User>> GetAllUsersAsync()
@@ -56,19 +55,19 @@ namespace FU.OJ.Server.Service
             return await _userManager.FindByIdAsync(userId);
         }
 
-        public async Task<User> GetUserByUsername(string userName)
+        public async Task<User> GetUserByUsernameAsync(string userName) // Added Async suffix for consistency
         {
             return await _userManager.FindByNameAsync(userName);
         }
 
-        public async Task<User> UpdateUserAsync(string userId, CreateUserRequest updatedUser)
+        public async Task<User> UpdateUserAsync(string userId, UpdateUserRequest updatedUser)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
                 user.Email = updatedUser.Email;
                 user.UserName = updatedUser.UserName;
-                user.Fullname = updatedUser.Fullname;
+                user.FullName = updatedUser.FullName;
                 user.City = updatedUser.City;
                 user.Description = updatedUser.Description;
                 user.FacebookLink = updatedUser.FacebookLink;
@@ -90,7 +89,7 @@ namespace FU.OJ.Server.Service
             {
                 user.Email = updatedUser.Email;
                 user.PhoneNumber = updatedUser.PhoneNumber;
-                user.Fullname = updatedUser.Fullname;
+                user.FullName = updatedUser.FullName;
                 user.City = updatedUser.City;
                 user.Description = updatedUser.Description;
                 user.FacebookLink = updatedUser.FacebookLink;

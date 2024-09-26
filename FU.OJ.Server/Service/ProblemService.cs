@@ -8,12 +8,12 @@ namespace FU.OJ.Server.Service
 {
     public interface IProblemService
     {
-        public Task<string> createAsync(CreateProblemRequest request);
-        public Task<Problem?> getByIdAsync(string id);
-        public Task<Problem?> getByCodeAsync(string code);
-        public Task<List<Problem>> getAllAsync(); // Đổi tên phương thức thành getAllAsync
-        public Task<bool> updateAsync(string id, UpdateProblemRequest request); // Thêm phương thức updateAsync
-        public Task<bool> deleteAsync(string id); // Thêm phương thức deleteAsync
+        Task<string> CreateAsync(CreateProblemRequest request);
+        Task<Problem?> GetByIdAsync(string id);
+        Task<Problem?> GetByCodeAsync(string code);
+        Task<List<Problem>> GetAllAsync();
+        Task<bool> UpdateAsync(string id, UpdateProblemRequest request);
+        Task<bool> DeleteAsync(string id);
     }
 
     public class ProblemService : IProblemService
@@ -25,69 +25,63 @@ namespace FU.OJ.Server.Service
             _context = context;
         }
 
-        public async Task<Problem?> getByCodeAsync(string code)
+        public async Task<Problem?> GetByCodeAsync(string code)
         {
-            var problem = await _context.Problems.AsNoTracking()
-                .FirstOrDefaultAsync(p => p.code == code);
-
-            return problem;
+            return await _context.Problems.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Code == code);
         }
 
-        public async Task<Problem?> getByIdAsync(string id)
+        public async Task<Problem?> GetByIdAsync(string id)
         {
-            var problem = await _context.Problems.AsNoTracking()
-                .FirstOrDefaultAsync(p => p.id == id);
-
-            return problem;
+            return await _context.Problems.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<string> createAsync(CreateProblemRequest request)
+        public async Task<string> CreateAsync(CreateProblemRequest request)
         {
-            var problem = await getByCodeAsync(request.code);
+            var problem = await GetByCodeAsync(request.Code);
 
             if (problem != null)
                 throw new Exception(ErrorMessage.CodeExisted);
 
-            var new_problem = new Problem
+            var newProblem = new Problem
             {
-                code = request.code,
-                title = request.title,
-                description = request.description,
-                constraints = request.constraints,
-                example_input = request.example_input,
-                example_output = request.example_output,
-                time_limit = request.time_limit,
-                memory_limit = request.memory_limit,
-                create_at = request.create_at
+                Code = request.Code,
+                Title = request.Title,
+                Description = request.Description,
+                Constraints = request.Constraints,
+                ExampleInput = request.ExampleInput,
+                ExampleOutput = request.ExampleOutput,
+                TimeLimit = request.TimeLimit,
+                MemoryLimit = request.MemoryLimit,
+                CreatedAt = request.CreatedAt
             };
 
-            _context.Problems.Add(new_problem);
+            _context.Problems.Add(newProblem);
             await _context.SaveChangesAsync();
 
-            return new_problem.code;
+            return newProblem.Code;
         }
 
-        public async Task<List<Problem>> getAllAsync() // Đổi tên phương thức thành getAllAsync
+        public async Task<List<Problem>> GetAllAsync()
         {
-            var problems = await _context.Problems.ToListAsync();
-
-            return problems;
+            return await _context.Problems.ToListAsync();
         }
 
-        public async Task<bool> updateAsync(string id, UpdateProblemRequest request)
+        public async Task<bool> UpdateAsync(string id, UpdateProblemRequest request)
         {
-            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.id == id);
+            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Id == id);
 
             if (problem == null)
                 return false;
 
-            problem.title = request.title;
-            problem.description = request.description;
-            problem.constraints = request.constraints;
-            problem.example_input = request.example_input;
-            problem.example_output = request.example_output;
-            problem.time_limit = request.time_limit;
-            problem.memory_limit = request.memory_limit;
+            problem.Title = request.Title;
+            problem.Description = request.Description;
+            problem.Constraints = request.Constraints;
+            problem.ExampleInput = request.ExampleInput;
+            problem.ExampleOutput = request.ExampleOutput;
+            problem.TimeLimit = request.TimeLimit;
+            problem.MemoryLimit = request.MemoryLimit;
 
             _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
@@ -95,9 +89,9 @@ namespace FU.OJ.Server.Service
             return true;
         }
 
-        public async Task<bool> deleteAsync(string id)
+        public async Task<bool> DeleteAsync(string id)
         {
-            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.id == id);
+            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Id == id);
 
             if (problem == null)
                 return false;

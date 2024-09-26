@@ -1,26 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using FU.OJ.Server.Infra.Enum;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FU.OJ.Server.Infra.Models
 {
-    public class Result : Result_properties
+    public class Result : ResultProperties
     {
-        public Submission submission { get; set; } = null!;
+        public Submission Submission { get; set; } = null!;
     }
-    public class Result_properties
+
+    public class ResultProperties
     {
-        public string id { get; set; } = Guid.NewGuid().ToString();
-        public string submission_id { get; set; } = null!;
-        public string? status_description { get; set; }
-        public string? time { set; get; }
-        public double? memory { set; get; }
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string SubmissionId { get; set; } = null!;
+        public string? StatusDescription { get; set; }
+        public string? Time { set; get; }
+        public double? Memory { set; get; }
     }
-    public class Result_configuration : IEntityTypeConfiguration<Result>
+
+    public class ResultConfiguration : IEntityTypeConfiguration<Result>
     {
         public void Configure(EntityTypeBuilder<Result> builder)
         {
-            builder.HasOne(e => e.submission).WithMany().HasForeignKey(e => e.submission_id);
+            builder.HasKey(s => s.Id);
+
+            builder.HasOne(e => e.Submission).WithMany().HasForeignKey(e => e.SubmissionId);
         }
     }
 }

@@ -17,10 +17,9 @@ namespace FU.OJ.Server.Controllers
             _blogService = blogService;
         }
 
-        // Create a new blog
         [HttpPost(BlogRoute.Action.Create)]
         //[Authorize(Roles = RoleAuthorize.AdminManager)]
-        public async Task<IActionResult> Create([FromBody] CreateBlogRequest request)
+        public async Task<IActionResult> CreateBlogAsync([FromBody] CreateBlogRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -29,24 +28,23 @@ namespace FU.OJ.Server.Controllers
 
             try
             {
-                var blogId = await _blogService.createAsync(request);
-                return CreatedAtAction(nameof(GetById), new { id = blogId }, new { id = blogId });
+                var blogId = await _blogService.CreateAsync(request);
+                return CreatedAtAction(nameof(GetBlogByIdAsync), new { id = blogId }, new { id = blogId });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while creating a blog");
+                _logger.LogError(ex, "Error occurred while creating a blog.");
                 return StatusCode(500, "An error occurred while creating the blog.");
             }
         }
 
-        // Get blog by id
         [HttpGet(BlogRoute.Action.GetDetails)]
         [AllowAnonymous]
-        public async Task<IActionResult> GetById(string id)
+        public async Task<IActionResult> GetBlogByIdAsync(string id)
         {
             try
             {
-                var blog = await _blogService.getByIdAsync(id);
+                var blog = await _blogService.GetByIdAsync(id);
                 if (blog == null)
                 {
                     return NotFound("Blog not found.");
@@ -56,31 +54,29 @@ namespace FU.OJ.Server.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while fetching blog with ID {id}");
+                _logger.LogError(ex, $"Error occurred while fetching blog with ID {id}.");
                 return StatusCode(500, "An error occurred while retrieving the blog.");
             }
         }
 
         [HttpGet(BlogRoute.Action.GetAll)]
-        public async Task<IActionResult> GetAllBlogs()
+        public async Task<IActionResult> GetAllBlogsAsync()
         {
             try
             {
-                var blog = await _blogService.getAllBlogs();
-
-                return Ok(blog);
+                var blogs = await _blogService.GetAllBlogsAsync();
+                return Ok(blogs);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while fetching blogs");
-                return StatusCode(500, "An error occurred while retrieving the blog.");
+                _logger.LogError(ex, "Error occurred while fetching blogs.");
+                return StatusCode(500, "An error occurred while retrieving the blogs.");
             }
         }
 
-        // Update a blog
         [HttpPut(BlogRoute.Action.Update)]
         //[Authorize(Roles = RoleAuthorize.AdminManager)]
-        public async Task<IActionResult> Update(string id, [FromBody] UpdateBlogRequest request)
+        public async Task<IActionResult> UpdateBlogAsync(string id, [FromBody] UpdateBlogRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -89,35 +85,34 @@ namespace FU.OJ.Server.Controllers
 
             try
             {
-                await _blogService.updateAsync(id, request);
+                await _blogService.UpdateAsync(id, request);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while updating blog with ID {id}");
+                _logger.LogError(ex, $"Error occurred while updating blog with ID {id}.");
                 return StatusCode(500, "An error occurred while updating the blog.");
             }
         }
 
-        // Delete a blog
         [HttpDelete(BlogRoute.Action.Delete)]
         //[Authorize(Roles = RoleAuthorize.AdminManager)]
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> DeleteBlogAsync(string id)
         {
             try
             {
-                var blog = await _blogService.getByIdAsync(id);
+                var blog = await _blogService.GetByIdAsync(id);
                 if (blog == null)
                 {
                     return NotFound("Blog not found.");
                 }
 
-                await _blogService.deleteAsync(id);
+                await _blogService.DeleteAsync(id);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while deleting blog with ID {id}");
+                _logger.LogError(ex, $"Error occurred while deleting blog with ID {id}.");
                 return StatusCode(500, "An error occurred while deleting the blog.");
             }
         }

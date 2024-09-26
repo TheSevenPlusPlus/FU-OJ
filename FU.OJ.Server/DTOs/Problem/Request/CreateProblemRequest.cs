@@ -6,16 +6,18 @@ namespace FU.OJ.Server.DTOs.Problem.Request
     public class CreateProblemRequest
     {
         [Required, StringLength(15, MinimumLength = 1), RegularExpression(RegexPatterns.NoVietnameseAlphabetNoWhiteSpace, ErrorMessage = ErrorMessage.NoVietnameseNoWhiteSpace)]
-        public string code { get; set; } = null!;
-        public string? title { get; set; }
-        public string? description { get; set; }
-        public string? constraints { get; set; }
-        public string? example_input { get; set; }
-        public string? example_output { get; set; }
-        public double time_limit { get; set; } = 1;
-        public float memory_limit { get; set; } = 256 * 1024;
-        public DateTime create_at { get; set; }
-        public string? user_id { get; set; }
+        public string Code { get; set; } = null!;
 
+        public string? Title { get; set; }
+        public string? Description { get; set; }
+        public string? Constraints { get; set; }
+        public string? ExampleInput { get; set; }
+        public string? ExampleOutput { get; set; }
+
+        public double TimeLimit { get; set; } = 1;
+        public float MemoryLimit { get; set; } = 256 * 1024;
+
+        public DateTime CreatedAt { get; set; }
+        public string? UserId { get; set; }
     }
 }

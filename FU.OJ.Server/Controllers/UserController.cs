@@ -10,7 +10,7 @@ namespace FU.OJ.Server.Controllers
 {
     [Route(UserRoute.INDEX)]
     [ApiController]
-    [Authorize(Roles = RoleAuthorize.OnlyAdmin)] // Only allow Admins to manage users
+    [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
@@ -28,14 +28,14 @@ namespace FU.OJ.Server.Controllers
 
             var newUser = await _userService.CreateUserAsync(createUserRequest);
             if (newUser == null)
-                return StatusCode(500, "User creation failed"); // Optionally, return specific error messages.
+                return StatusCode(500, "User creation failed");
 
             var userResponse = new UpdateUserRequest
             {
                 UserName = newUser.UserName,
                 Email = newUser.Email,
                 PhoneNumber = newUser.PhoneNumber,
-                Fullname = newUser.Fullname,
+                FullName = newUser.FullName,
                 City = newUser.City,
                 Description = newUser.Description,
                 FacebookLink = newUser.FacebookLink,
@@ -46,7 +46,6 @@ namespace FU.OJ.Server.Controllers
             return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, userResponse);
         }
 
-        // Get all users
         [HttpGet(UserRoute.Action.GetAll)]
         public async Task<IActionResult> GetAllUsers()
         {
@@ -56,7 +55,7 @@ namespace FU.OJ.Server.Controllers
                 UserName = u.UserName,
                 Email = u.Email,
                 PhoneNumber = u.PhoneNumber,
-                Fullname = u.Fullname,
+                FullName = u.FullName,
                 City = u.City,
                 Description = u.Description,
                 FacebookLink = u.FacebookLink,
@@ -67,7 +66,6 @@ namespace FU.OJ.Server.Controllers
             return Ok(userResponses);
         }
 
-        // Get user by ID
         [HttpGet(UserRoute.Action.GetById)]
         public async Task<IActionResult> GetUserById(string id)
         {
@@ -79,7 +77,7 @@ namespace FU.OJ.Server.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Fullname = user.Fullname,
+                FullName = user.FullName,
                 City = user.City,
                 Description = user.Description,
                 FacebookLink = user.FacebookLink,
@@ -90,9 +88,8 @@ namespace FU.OJ.Server.Controllers
             return Ok(userResponse);
         }
 
-        // Update user
         [HttpPut(UserRoute.Action.Update)]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] CreateUserRequest updateUserRequest)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserRequest updateUserRequest)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -105,7 +102,7 @@ namespace FU.OJ.Server.Controllers
                 UserName = updatedUser.UserName,
                 Email = updatedUser.Email,
                 PhoneNumber = updatedUser.PhoneNumber,
-                Fullname = updatedUser.Fullname,
+                FullName = updatedUser.FullName,
                 City = updatedUser.City,
                 Description = updatedUser.Description,
                 FacebookLink = updatedUser.FacebookLink,
@@ -116,7 +113,6 @@ namespace FU.OJ.Server.Controllers
             return Ok(userResponse);
         }
 
-        // Delete user
         [HttpDelete(UserRoute.Action.Delete)]
         public async Task<IActionResult> DeleteUser(string id)
         {
