@@ -11,7 +11,7 @@ import BlogPost from './components/BlogPost'; // Import BlogPost component
 import AuthPage from './components/AuthPage';
 import ProfileView from './components/Profile/Profile';
 import ProfileEdit from './components/Profile/ProfileEdit';
-
+import Rank from './components/Rank';
 
 const App: React.FC = () => {
 
@@ -44,6 +44,9 @@ const App: React.FC = () => {
                         {/*Blogs*/}
                         <Route path="/blog" element={<BlogList />} />
                         <Route path="/blog/:blog_id" element={<BlogPost />} />
+                        {/*RankBoard*/}
+                        <Route path="/rank" element={<Rank />} /> {/* Default route when no page param */}
+                        <Route path="/rank/:page" element={<Rank />} />
                     </Routes>
                 </main>
             </div>

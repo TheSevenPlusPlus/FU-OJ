@@ -12,9 +12,8 @@ namespace FU.OJ.Server.Infra.Models
         public string? Description { get; set; } = null;
         public string? FacebookLink { get; set; }
         public string? GithubLink { get; set; }
-
-        //ICollection<Submission> submissions { get; set; } = new List<Submission>();
-        //ICollection<Problem> problems { get; set; } = new List<Problem>();
+        ICollection<Submission> Submissions { get; set; } = new List<Submission>();
+        ICollection<Problem> Problems { get; set; } = new List<Problem>();
         //ICollection<ContestParticipants> contestParticipants { get; set; } = new List<ContestParticipants>();
     }
 

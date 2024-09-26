@@ -55,7 +55,7 @@ const Navbar: React.FC = () => {
                                 <Link to="/problems" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800">Problems</Link>
                                 <Link to="/submissions" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800">Submissions</Link>
                                 <Link to="/contests" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800">Contests</Link>
-                                <Link to="/leaderboard" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800">Leaderboard</Link>
+                                <Link to="/rank" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800">Rank</Link>
                                 <Link to="/blog" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800">Blog</Link>
                             </div>
                         </div>
@@ -117,7 +117,7 @@ const Navbar: React.FC = () => {
                                     <Link to="/" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={toggleMenu}>Home</Link>
                                     <Link to="/problems" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={toggleMenu}>Problems</Link>
                                     <Link to="/contests" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={toggleMenu}>Contests</Link>
-                                    <Link to="/leaderboard" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={toggleMenu}>Leaderboard</Link>
+                                    <Link to="/rank" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={toggleMenu}>Rank</Link>
                                     <Link to="/blog" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={toggleMenu}>Blog</Link>
                                     {user ? (
                                         <>
