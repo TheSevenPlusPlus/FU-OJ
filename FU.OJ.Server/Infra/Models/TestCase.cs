@@ -21,11 +21,11 @@ namespace FU.OJ.Server.Infra.Models
     {
         public void Configure(EntityTypeBuilder<TestCase> builder)
         {
-            builder.HasKey(s => s.Id);
+            //builder.HasKey(s => s.Id);
 
-            builder.HasOne(e => e.Problem)
-                   .WithMany()
-                   .HasForeignKey(e => e.ProblemId);
+            //builder.HasOne(e => e.Problem)
+            //       .WithMany()
+            //       .HasForeignKey(e => e.ProblemId);
         }
     }
 }

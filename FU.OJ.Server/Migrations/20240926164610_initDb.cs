@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class initDB : Migration
+    public partial class initDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,6 +55,19 @@ namespace FU.OJ.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TestCases",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    ProblemId = table.Column<string>(type: "text", nullable: false),
+                    FolderPath = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TestCases", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -231,8 +244,12 @@ namespace FU.OJ.Server.Migrations
                         name: "FK_Problems_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Problems_TestCases_TestCaseId",
+                        column: x => x.TestCaseId,
+                        principalTable: "TestCases",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -265,7 +282,6 @@ namespace FU.OJ.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    ContestId1 = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: true),
                     ContestId = table.Column<string>(type: "text", nullable: true)
                 },
@@ -282,11 +298,6 @@ namespace FU.OJ.Server.Migrations
                         column: x => x.ContestId,
                         principalTable: "Contests",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_ContestParticipants_Contests_ContestId1",
-                        column: x => x.ContestId1,
-                        principalTable: "Contests",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -294,8 +305,6 @@ namespace FU.OJ.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    ProblemId1 = table.Column<string>(type: "text", nullable: true),
-                    UserId1 = table.Column<string>(type: "text", nullable: true),
                     ProblemId = table.Column<string>(type: "text", nullable: true),
                     ProblemCode = table.Column<string>(type: "text", nullable: true),
                     SourceCode = table.Column<string>(type: "text", nullable: true),
@@ -312,42 +321,12 @@ namespace FU.OJ.Server.Migrations
                         name: "FK_Submissions_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Submissions_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
-                        principalTable: "AspNetUsers",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Submissions_Problems_ProblemId",
                         column: x => x.ProblemId,
                         principalTable: "Problems",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Submissions_Problems_ProblemId1",
-                        column: x => x.ProblemId1,
-                        principalTable: "Problems",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TestCases",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    ProblemId = table.Column<string>(type: "text", nullable: false),
-                    FolderPath = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TestCases", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TestCases_Problems_ProblemId",
-                        column: x => x.ProblemId,
-                        principalTable: "Problems",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -355,7 +334,6 @@ namespace FU.OJ.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    SubmissionId1 = table.Column<string>(type: "text", nullable: true),
                     SubmissionId = table.Column<string>(type: "text", nullable: false),
                     StatusDescription = table.Column<string>(type: "text", nullable: true),
                     Time = table.Column<string>(type: "text", nullable: true),
@@ -370,11 +348,6 @@ namespace FU.OJ.Server.Migrations
                         principalTable: "Submissions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Results_Submissions_SubmissionId1",
-                        column: x => x.SubmissionId1,
-                        principalTable: "Submissions",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -435,11 +408,6 @@ namespace FU.OJ.Server.Migrations
                 column: "ContestId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ContestParticipants_ContestId1",
-                table: "ContestParticipants",
-                column: "ContestId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ContestParticipants_UserId",
                 table: "ContestParticipants",
                 column: "UserId");
@@ -448,6 +416,12 @@ namespace FU.OJ.Server.Migrations
                 name: "IX_Contests_UserId",
                 table: "Contests",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Problems_TestCaseId",
+                table: "Problems",
+                column: "TestCaseId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Problems_UserId",
@@ -460,34 +434,14 @@ namespace FU.OJ.Server.Migrations
                 column: "SubmissionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Results_SubmissionId1",
-                table: "Results",
-                column: "SubmissionId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Submissions_ProblemId",
                 table: "Submissions",
                 column: "ProblemId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Submissions_ProblemId1",
-                table: "Submissions",
-                column: "ProblemId1");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Submissions_UserId",
                 table: "Submissions",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Submissions_UserId1",
-                table: "Submissions",
-                column: "UserId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TestCases_ProblemId",
-                table: "TestCases",
-                column: "ProblemId");
         }
 
         /// <inheritdoc />
@@ -518,9 +472,6 @@ namespace FU.OJ.Server.Migrations
                 name: "Results");
 
             migrationBuilder.DropTable(
-                name: "TestCases");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
@@ -537,6 +488,9 @@ namespace FU.OJ.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "TestCases");
         }
     }
 }

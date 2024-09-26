@@ -40,8 +40,8 @@ const App: React.FC = () => {
                         <Route path="/problems" element={<ProblemList />} />
                         <Route path="/problem/:problemCode" element={<ProblemDetail />} />
                         <Route path="/problem/:problemCode/submit" element={<CodeSubmission />} />
-                        <Route path="/submissions/:id" element={<SubmissionDetail />} />
                         {/*Submissions*/}
+                        <Route path="/submissions/:id" element={<SubmissionDetail />} />
                         <Route path="/submissions" element={<SubmissionList />} />
                         {/*Blogs*/}
                         <Route path="/blog" element={<BlogList />} />

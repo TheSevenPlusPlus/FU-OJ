@@ -1,8 +1,13 @@
-﻿using FU.OJ.Server.Infra.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace FU.OJ.Server.DTOs.Submission.Response
 {
+    public class ResultView
+    {
+        public string? StatusDescription { get; set; }
+        public string? Time { set; get; }
+        public double? Memory { set; get; }
+    }
     public class SubmissionView
     {
         public string Id { get; set; } = null!;
@@ -17,6 +22,6 @@ namespace FU.OJ.Server.DTOs.Submission.Response
         public string? UserName { get; set; }
         public string? Status { get; set; }
 
-        public ICollection<Result> Results { get; set; } = new List<Result>();
+        public ICollection<ResultView> Results { get; set; } = new List<ResultView>();
     }
 }

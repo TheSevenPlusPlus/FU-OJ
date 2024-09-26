@@ -1,13 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FU.OJ.Server.Infra.Models
 {
     public class Problem : ProblemProperties
     {
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
+        [ForeignKey("UserId")]
         public User User { get; set; } = null!;
+        [ForeignKey("TestCaseId")]
+        public TestCase TestCase { get; set; }
     }
 
     public class ProblemProperties
@@ -34,11 +38,11 @@ namespace FU.OJ.Server.Infra.Models
     {
         public void Configure(EntityTypeBuilder<Problem> builder)
         {
-            builder.HasKey(s => s.Id);
+            //builder.HasKey(s => s.Id);
 
-            builder.HasOne(p => p.User)
-                   .WithMany(u => u.Problems)
-                   .HasForeignKey(p => p.UserId);
+            //builder.HasOne(p => p.User)
+            //       .WithMany(u => u.Problems)
+            //       .HasForeignKey(p => p.UserId);
         }
     }
 }

@@ -1,10 +1,13 @@
+import { Result } from './ResultModel'
 export interface Submission {
     id: string;
-    problem_id: string;
-    problem_name: string;
-    language_name: string;
-    submit_at: string;
-    user_id: string | null;
-    user_name: string | null;
+    problemId: string;
+    sourceCode: string;
+    problemName: string;
+    languageName: string;
+    submittedAt: string;
+    userId: string | null;
+    userName: string | null;
     status: string;
+    results: Result[];
 }

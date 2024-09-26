@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240926145135_initDB")]
-    partial class initDB
+    [Migration("20240926164610_initDb")]
+    partial class initDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -110,17 +110,12 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("ContestId")
                         .HasColumnType("text");
 
-                    b.Property<string>("ContestId1")
-                        .HasColumnType("text");
-
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ContestId");
-
-                    b.HasIndex("ContestId1");
 
                     b.HasIndex("UserId");
 
@@ -177,6 +172,9 @@ namespace FU.OJ.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TestCaseId")
+                        .IsUnique();
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Problems");
@@ -197,17 +195,12 @@ namespace FU.OJ.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("SubmissionId1")
-                        .HasColumnType("text");
-
                     b.Property<string>("Time")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.HasIndex("SubmissionId");
-
-                    b.HasIndex("SubmissionId1");
 
                     b.ToTable("Results");
                 });
@@ -226,9 +219,6 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("ProblemId")
                         .HasColumnType("text");
 
-                    b.Property<string>("ProblemId1")
-                        .HasColumnType("text");
-
                     b.Property<string>("SourceCode")
                         .HasColumnType("text");
 
@@ -241,9 +231,6 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId1")
-                        .HasColumnType("text");
-
                     b.Property<string>("UserName")
                         .HasColumnType("text");
 
@@ -251,11 +238,7 @@ namespace FU.OJ.Server.Migrations
 
                     b.HasIndex("ProblemId");
 
-                    b.HasIndex("ProblemId1");
-
                     b.HasIndex("UserId");
-
-                    b.HasIndex("UserId1");
 
                     b.ToTable("Submissions");
                 });
@@ -274,8 +257,6 @@ namespace FU.OJ.Server.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProblemId");
 
                     b.ToTable("TestCases");
                 });
@@ -497,7 +478,7 @@ namespace FU.OJ.Server.Migrations
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Blog", b =>
                 {
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Blogs")
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
@@ -530,12 +511,8 @@ namespace FU.OJ.Server.Migrations
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.ContestParticipant", b =>
                 {
                     b.HasOne("FU.OJ.Server.Infra.Models.Contest", "Contest")
-                        .WithMany()
-                        .HasForeignKey("ContestId");
-
-                    b.HasOne("FU.OJ.Server.Infra.Models.Contest", null)
                         .WithMany("ContestParticipants")
-                        .HasForeignKey("ContestId1");
+                        .HasForeignKey("ContestId");
 
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
                         .WithMany()
@@ -548,10 +525,15 @@ namespace FU.OJ.Server.Migrations
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Problem", b =>
                 {
+                    b.HasOne("FU.OJ.Server.Infra.Models.TestCase", "TestCase")
+                        .WithOne("Problem")
+                        .HasForeignKey("FU.OJ.Server.Infra.Models.Problem", "TestCaseId");
+
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
                         .WithMany("Problems")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("TestCase");
 
                     b.Navigation("User");
                 });
@@ -559,14 +541,10 @@ namespace FU.OJ.Server.Migrations
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Result", b =>
                 {
                     b.HasOne("FU.OJ.Server.Infra.Models.Submission", "Submission")
-                        .WithMany()
+                        .WithMany("Results")
                         .HasForeignKey("SubmissionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("FU.OJ.Server.Infra.Models.Submission", null)
-                        .WithMany("Results")
-                        .HasForeignKey("SubmissionId1");
 
                     b.Navigation("Submission");
                 });
@@ -574,36 +552,16 @@ namespace FU.OJ.Server.Migrations
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Submission", b =>
                 {
                     b.HasOne("FU.OJ.Server.Infra.Models.Problem", "Problem")
-                        .WithMany()
+                        .WithMany("Submissions")
                         .HasForeignKey("ProblemId");
 
-                    b.HasOne("FU.OJ.Server.Infra.Models.Problem", null)
-                        .WithMany("Submissions")
-                        .HasForeignKey("ProblemId1");
-
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("FU.OJ.Server.Infra.Models.User", null)
                         .WithMany("Submissions")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Problem");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("FU.OJ.Server.Infra.Models.TestCase", b =>
-                {
-                    b.HasOne("FU.OJ.Server.Infra.Models.Problem", "Problem")
-                        .WithMany()
-                        .HasForeignKey("ProblemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Problem");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -677,8 +635,16 @@ namespace FU.OJ.Server.Migrations
                     b.Navigation("Results");
                 });
 
+            modelBuilder.Entity("FU.OJ.Server.Infra.Models.TestCase", b =>
+                {
+                    b.Navigation("Problem")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.User", b =>
                 {
+                    b.Navigation("Blogs");
+
                     b.Navigation("Problems");
 
                     b.Navigation("Submissions");

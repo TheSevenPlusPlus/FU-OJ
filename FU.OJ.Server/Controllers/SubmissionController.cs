@@ -1,7 +1,6 @@
 ﻿using FU.OJ.Server.DTOs.Submission.Request;
-using FU.OJ.Server.Infra.Const;
+using FU.OJ.Server.DTOs.Submission.Response;
 using FU.OJ.Server.Infra.Const.Route;
-using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,16 +10,10 @@ namespace FU.OJ.Server.Controllers
     [ApiController]
     public class SubmissionController : BaseController
     {
-        private readonly string _judgeServerUrl;
-        private readonly HttpClient _httpClient;
-        private readonly ApplicationDbContext _context;
         private readonly ISubmissionService _submissionService;
 
-        public SubmissionController(HttpClient httpClient, IConfiguration configuration, ApplicationDbContext context, ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
+        public SubmissionController(ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
         {
-            _httpClient = httpClient;
-            _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl") ?? throw new Exception(ErrorMessage.NotFound);
-            _context = context;
             _submissionService = submissionService;
         }
 
@@ -42,7 +35,8 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                return Ok(await _submissionService.GetByIdAsync(id));
+                SubmissionView submission = await _submissionService.GetByIdAsync(id);
+                return Ok(submission);
             }
             catch (Exception ex)
             {
@@ -55,7 +49,8 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                return Ok(await _submissionService.GetByIdWithoutResultAsync(id));
+                SubmissionView submission = await _submissionService.GetByIdWithoutResultAsync(id);
+                return Ok(submission);
             }
             catch (Exception ex)
             {
@@ -68,7 +63,8 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                return Ok(await _submissionService.GetAllSubmissionsAsync());
+                List<SubmissionView> submissions = await _submissionService.GetAllSubmissionsAsync();
+                return Ok(submissions);
             }
             catch (Exception ex)
             {

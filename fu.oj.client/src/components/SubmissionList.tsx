@@ -15,7 +15,9 @@ const SubmissionList: React.FC = () => {
         const fetchSubmissions = async () => {
             try {
                 const response = await getAllSubmissions();
+                console.log("respond: ", response);
                 setSubmissions(response.data);
+                console.log("submissions: ", submissions);
                 setLoading(false);
             } catch (err) {
                 setError('Failed to fetch submissions.');
@@ -69,31 +71,31 @@ const SubmissionList: React.FC = () => {
                     {submissions.map((submission) => (
                         <TableRow key={submission.id}>
                             <TableCell>
-                                {submission.user_name ? (
-                                    <Link to={`/user/${submission.user_id}`} className="text-blue-600 hover:underline">
-                                        {submission.user_name}
+                                {submission.userName ? (
+                                    <Link to={`/user/${submission.userId}`} className="text-blue-600 hover:underline">
+                                        {submission.userName}
                                     </Link>
                                 ) : 'Anonymous'}
                             </TableCell>
                             <TableCell>
-                                <Link to={`/problem/${submission.problem_id}`} className="text-blue-600 hover:underline">
-                                    {submission.problem_name}
+                                <Link to={`/problem/${submission.problemId}`} className="text-blue-600 hover:underline">
+                                    {submission.problemName}
                                 </Link>
                             </TableCell>
                             <TableCell>
-                                <Badge
-                                    variant={
-                                        submission.status === 'Accepted' ? 'accepted' :
-                                            submission.status === 'Wrong Answer' ? 'wrongAnswer' :
-                                                submission.status === 'Time Limit Exceeded' || submission.status === 'Runtime Error (NZEC)' ? 'gray' :
-                                                    submission.status === 'Memory Limit Exceeded' ? 'memoryLimitExceeded' : 'default'
-                                    }
-                                >
-                                    {submission.status}
-                                </Badge>
+                                {/*<Badge*/}
+                                {/*    variant={*/}
+                                {/*        submission.status === 'Accepted' ? 'accepted' :*/}
+                                {/*            submission.status === 'Wrong Answer' ? 'wrongAnswer' :*/}
+                                {/*                submission.status === 'Time Limit Exceeded' || submission.status === 'Runtime Error (NZEC)' ? 'gray' :*/}
+                                {/*                    submission.status === 'Memory Limit Exceeded' ? 'memoryLimitExceeded' : 'default'*/}
+                                {/*    }*/}
+                                {/*>*/}
+                                {/*    {submission.status}*/}
+                                {/*</Badge>*/}
                             </TableCell>
-                            <TableCell>{submission.language_name}</TableCell>
-                            <TableCell className="text-right">{formatDate(submission.submit_at)}</TableCell>
+                            <TableCell>{submission.languageName}</TableCell>
+                            <TableCell className="text-right">{formatDate(submission.submittedAt)}</TableCell>
                             <TableCell className="text-center">
                                 <Link to={`/submissions/${submission.id}`}>
                                     <Button

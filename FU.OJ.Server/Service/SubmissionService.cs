@@ -11,11 +11,14 @@ namespace FU.OJ.Server.Service
 {
     public interface ISubmissionService
     {
-        Task<string> CreateAsync(CreateSubmissionRequest request, bool base64Encoded, bool wait);
-        Task<SubmissionView> GetByIdAsync(string id);
-        Task<Submission?> GetByIdWithoutResultAsync(string id);
-        Task<List<SubmissionView>> GetAllSubmissionsAsync();
+        Task<string> CreateAsync(CreateSubmissionRequest request, bool base64Encoded, bool wait); //
+        Task<SubmissionView> GetByIdAsync(string id);//
+        Task<SubmissionView?> GetByIdWithoutResultAsync(string id);//
+        Task<List<SubmissionView>> GetAllSubmissionsAsync();//
         Task<List<SubmissionView>> GetAllSubmissionsBelongsUserAsync(string userId);
+        Task<string> GetByTokenAsync(string token, bool base64Encoded = false, string fields = "stdout,time,memory,stderr,token,compile_output,message,status");
+        Task<Submission?> getByIdWithoutResult(string id); // Trả về Submission mà không kèm Result
+        Task<Submission?> getById(string id); // Trả về Submission kèm theo Result
     }
 
     public class SubmissionService : ISubmissionService
@@ -147,14 +150,18 @@ namespace FU.OJ.Server.Service
             return responseContent;
         }
 
-        public async Task<Submission?> GetByIdWithoutResultAsync(string id)
+        public async Task<Submission?> getByIdWithoutResult(string id)
         {
-            return await _context.Submissions.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+            var submission = await _context.Submissions.AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            return submission;
         }
 
-        public async Task<SubmissionView> GetByIdAsync(string id)
+        public async Task<SubmissionView?> GetByIdWithoutResultAsync(string id)
         {
-            var submission = await GetByIdWithoutResultAsync(id);
+            var submission = await _context.Submissions.AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id);
 
             if (submission == null)
                 throw new Exception(ErrorMessage.NotFound);
@@ -167,8 +174,48 @@ namespace FU.OJ.Server.Service
                 SourceCode = submission.SourceCode,
                 LanguageName = submission.LanguageName,
                 SubmittedAt = submission.SubmittedAt,
+                UserId = submission.UserId,
+                UserName = submission.UserName,
+                Status = submission.Status
+            };
+        }
+
+        public async Task<Submission?> getById(string id)
+        {
+            var submission = await _context.Submissions.AsNoTracking()
+                .Include(s => s.Results)
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            return submission;
+        }
+
+        public async Task<SubmissionView> GetByIdAsync(string id)
+        {
+            var submission = await _context.Submissions
+                .Include(s => s.Results)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.Id == id);
+
+            if (submission == null)
+                throw new Exception(ErrorMessage.NotFound);
+
+            return new SubmissionView
+            {
+                Id = submission.Id,
+                ProblemId = submission.ProblemId,
+                ProblemName = submission.ProblemCode,
+                SourceCode = submission.SourceCode,
+                LanguageName = submission.LanguageName,
+                SubmittedAt = submission.SubmittedAt,
+                UserId = submission.UserId,
+                UserName = submission.UserName,
                 Status = submission.Status,
-                Results = submission.Results
+                Results = submission.Results.Select(result => new ResultView
+                {
+                    StatusDescription = result.StatusDescription,
+                    Time = result.Time,
+                    Memory = result.Memory
+                }).ToList()
             };
         }
 
@@ -183,6 +230,8 @@ namespace FU.OJ.Server.Service
                     SourceCode = submission.SourceCode,
                     LanguageName = submission.LanguageName,
                     SubmittedAt = submission.SubmittedAt,
+                    UserId = submission.UserId,
+                    UserName = submission.UserName,
                     Status = submission.Status
                 })
                 .ToListAsync();
