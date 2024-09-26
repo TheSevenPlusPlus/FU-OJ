@@ -83,7 +83,8 @@ namespace FU.OJ.Server.Service
                         stdin = inputContent,
                         expected_output = outputContent,
                         cpu_time_limit = problem.TimeLimit,
-                        memory_limit = problem.MemoryLimit > 256000 ? problem.MemoryLimit : 256000
+                        memory_limit = problem.MemoryLimit > 256000 ? problem.MemoryLimit : 256000,
+                        stdout = ""
                     };
 
                     var jsonContent = new StringContent(JsonSerializer.Serialize(submissionRequest), Encoding.UTF8, "application/json");

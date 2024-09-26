@@ -85,8 +85,8 @@ const ProblemDetail: React.FC = () => {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td className="px-4 py-2 border">{problem.example_input}</td>
-                                        <td className="px-4 py-2 border">{problem.example_output}</td>
+                                        <td className="px-4 py-2 border">{problem.exampleInput}</td>
+                                        <td className="px-4 py-2 border">{problem.exampleOutput}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -102,8 +102,8 @@ const ProblemDetail: React.FC = () => {
                         <div>
                             <h2 className="text-xl font-semibold mb-2">Limits</h2>
                             <ul className="list-disc list-inside">
-                                <li>Time Limit: {problem.time_limit} seconds</li>
-                                <li>Memory Limit: {problem.memory_limit} KB</li>
+                                <li>Time Limit: {problem.timeLimit} seconds</li>
+                                <li>Memory Limit: {problem.memoryLimit} KB</li>
                             </ul>
                         </div>
 

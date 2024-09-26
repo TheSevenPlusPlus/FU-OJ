@@ -63,7 +63,7 @@ namespace FU.OJ.Server.Controllers
             }
         }
 
-        [HttpPut("all")]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdateProblemAsync(string id, [FromBody] UpdateProblemRequest request)
         {
             try
