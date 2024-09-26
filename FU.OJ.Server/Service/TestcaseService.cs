@@ -9,17 +9,17 @@ namespace FU.OJ.Server.Service
 {
     public interface ITestcaseService
     {
-        Task<string> createAsync(CreateTestcaseRequest request);
-        public Task<TestCase?> getByIdAsync(string id);
-        Task updateAsync(CreateTestcaseRequest request);
-        Task deleteAsync(string problem_code);
+        Task<string> CreateAsync(CreateTestcaseRequest request);
+        Task<TestCase?> GetByIdAsync(string id);
+        Task UpdateAsync(CreateTestcaseRequest request);
+        Task DeleteAsync(string problemCode);
     }
 
     public class TestcaseService : ITestcaseService
     {
         private readonly ApplicationDbContext _context;
         private readonly IProblemService _problemService;
-        private readonly string _testcaseDirectory = "Testcase"; // Đường dẫn folder chứa test case
+        private readonly string _testcaseDirectory = "Testcase"; // Directory path for test cases
 
         public TestcaseService(ApplicationDbContext context, IProblemService problemService)
         {
@@ -27,36 +27,37 @@ namespace FU.OJ.Server.Service
             _problemService = problemService;
         }
 
-        public async Task<TestCase?> getByIdAsync(string id)
+        public async Task<TestCase?> GetByIdAsync(string id)
         {
             var testcase = await _context.TestCases.AsNoTracking()
-                .FirstOrDefaultAsync(p => p.id == id);
+                .FirstOrDefaultAsync(tc => tc.Id == id); // Use Id instead of id
 
             return testcase;
         }
 
-        public async Task<TestCase?> getByProblemIdAsync(string problem_id)
+        public async Task<TestCase?> GetByProblemIdAsync(string problemId)
         {
             return await _context.TestCases.AsNoTracking()
-                .FirstOrDefaultAsync(p => p.problem_id == problem_id);
+                .FirstOrDefaultAsync(tc => tc.ProblemId == problemId); // Use ProblemId instead of problem_id
         }
-        public async Task<string> createAsync(CreateTestcaseRequest request)
+
+        public async Task<string> CreateAsync(CreateTestcaseRequest request)
         {
-            var problem = await _problemService.getByCodeAsync(request.problem_code);
+            var problem = await _problemService.GetByCodeAsync(request.ProblemCode); // Use ProblemCode instead of problem_code
             if (problem == null)
                 throw new Exception("Problem not found");
 
-            var existingTestCase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.problem_id == problem.id);
+            var existingTestCase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.ProblemId == problem.Id); // Use Id instead of id
             if (existingTestCase != null)
                 throw new Exception("Test case already exists for this problem.");
 
-            //Xu li ZIP
-            var zipFolderName = Path.GetFileNameWithoutExtension(request.testcase_file.FileName);
+            // Handle ZIP file
+            var zipFolderName = Path.GetFileNameWithoutExtension(request.TestcaseFile.FileName); // Use TestcaseFile instead of testcase_file
             var tempFolderPath = Path.Combine("TempDirectory");
             DeleteDirectoryRecursively(tempFolderPath);
             Directory.CreateDirectory(tempFolderPath);
 
-            var fileExtension = Path.GetExtension(request.testcase_file.FileName);
+            var fileExtension = Path.GetExtension(request.TestcaseFile.FileName);
             if (fileExtension != ".zip")
             {
                 throw new Exception("Only .zip files are supported.");
@@ -68,29 +69,28 @@ namespace FU.OJ.Server.Service
                 Directory.CreateDirectory("TempZipDirectory");
             }
 
-
             using (var stream = new FileStream(tempZipPath, FileMode.Create))
             {
-                await request.testcase_file.CopyToAsync(stream);
+                await request.TestcaseFile.CopyToAsync(stream);
             }
 
             // Extract the zip file to the temporary folder
             ZipFile.ExtractToDirectory(tempZipPath, tempFolderPath);
             File.Delete(tempZipPath);
 
-            // Sau khi giải nén zip file vào tempFolderPath
-            var finalFolderPath = Path.Combine(_testcaseDirectory, problem.code);
+            // After extracting zip file to tempFolderPath
+            var finalFolderPath = Path.Combine(_testcaseDirectory, problem.Code); // Use Code instead of code
 
-            // Xóa thư mục cũ nếu có
+            // Delete old directory if exists
             if (Directory.Exists(finalFolderPath))
             {
                 DeleteDirectoryRecursively(finalFolderPath);
             }
 
-            // Tạo thư mục mới cho các testcase
+            // Create new directory for test cases
             Directory.CreateDirectory(finalFolderPath);
 
-            // Di chuyển các thư mục testcase con vào finalFolderPath
+            // Move sub-testcase directories to finalFolderPath
             foreach (var dir in Directory.GetDirectories(Path.Combine(tempFolderPath, zipFolderName)))
             {
                 var dirName = Path.GetFileName(dir);
@@ -98,41 +98,40 @@ namespace FU.OJ.Server.Service
                 Directory.Move(dir, targetDir);
             }
 
-            // Xóa thư mục tạm thời
+            // Delete temporary folder
             DeleteDirectoryRecursively(tempFolderPath);
 
             var newTestCase = new TestCase
             {
-                problem_id = problem.id,
-                folder_path = finalFolderPath
+                ProblemId = problem.Id, // Use ProblemId instead of problem_id
+                FolderPath = finalFolderPath // Use FolderPath instead of folder_path
             };
 
             _context.TestCases.Add(newTestCase);
-            problem.test_case_id = newTestCase.id;
+            problem.TestCaseId = newTestCase.Id; // Use TestCaseId instead of test_case_id
             _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
 
-            return newTestCase.id;
+            return newTestCase.Id; // Use Id instead of id
         }
 
-        public async Task updateAsync(CreateTestcaseRequest request)
+        public async Task UpdateAsync(CreateTestcaseRequest request)
         {
-            var problem = await _problemService.getByCodeAsync(request.problem_code);
+            var problem = await _problemService.GetByCodeAsync(request.ProblemCode);
             if (problem == null)
                 throw new Exception("Problem not found");
-            var testcase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.problem_id == problem.id);
+
+            var testcase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.ProblemId == problem.Id);
             if (testcase == null)
                 throw new Exception("Test case not found");
 
-
-
-            //Xu li ZIP
-            var zipFolderName = Path.GetFileNameWithoutExtension(request.testcase_file.FileName);
+            // Handle ZIP file
+            var zipFolderName = Path.GetFileNameWithoutExtension(request.TestcaseFile.FileName);
             var tempFolderPath = Path.Combine("TempDirectory");
             DeleteDirectoryRecursively(tempFolderPath);
             Directory.CreateDirectory(tempFolderPath);
 
-            var fileExtension = Path.GetExtension(request.testcase_file.FileName);
+            var fileExtension = Path.GetExtension(request.TestcaseFile.FileName);
             if (fileExtension != ".zip")
             {
                 throw new Exception("Only .zip files are supported.");
@@ -144,29 +143,28 @@ namespace FU.OJ.Server.Service
                 Directory.CreateDirectory("TempZipDirectory");
             }
 
-
             using (var stream = new FileStream(tempZipPath, FileMode.Create))
             {
-                await request.testcase_file.CopyToAsync(stream);
+                await request.TestcaseFile.CopyToAsync(stream);
             }
 
             // Extract the zip file to the temporary folder
             ZipFile.ExtractToDirectory(tempZipPath, tempFolderPath);
             File.Delete(tempZipPath);
 
-            // Sau khi giải nén zip file vào tempFolderPath
-            var finalFolderPath = Path.Combine(_testcaseDirectory, problem.code);
+            // After extracting zip file to tempFolderPath
+            var finalFolderPath = Path.Combine(_testcaseDirectory, problem.Code);
 
-            // Xóa thư mục cũ nếu có
+            // Delete old directory if exists
             if (Directory.Exists(finalFolderPath))
             {
                 DeleteDirectoryRecursively(finalFolderPath);
             }
 
-            // Tạo thư mục mới cho các testcase
+            // Create new directory for test cases
             Directory.CreateDirectory(finalFolderPath);
 
-            // Di chuyển các thư mục testcase con vào finalFolderPath
+            // Move sub-testcase directories to finalFolderPath
             foreach (var dir in Directory.GetDirectories(Path.Combine(tempFolderPath, zipFolderName)))
             {
                 var dirName = Path.GetFileName(dir);
@@ -174,53 +172,52 @@ namespace FU.OJ.Server.Service
                 Directory.Move(dir, targetDir);
             }
 
-            // Xóa thư mục tạm thời
+            // Delete temporary folder
             DeleteDirectoryRecursively(tempFolderPath);
 
-            testcase.folder_path = finalFolderPath;
+            testcase.FolderPath = finalFolderPath; // Use FolderPath instead of folder_path
             _context.TestCases.Update(testcase);
             await _context.SaveChangesAsync();
-            return;
         }
 
         private void DeleteDirectoryRecursively(string path)
         {
             if (Directory.Exists(path))
             {
-                // Xóa tất cả các tập tin trong thư mục
+                // Delete all files in the directory
                 foreach (var file in Directory.GetFiles(path))
                 {
                     File.Delete(file);
                 }
 
-                // Xóa tất cả các thư mục con
+                // Delete all subdirectories
                 foreach (var directory in Directory.GetDirectories(path))
                 {
                     DeleteDirectoryRecursively(directory);
                 }
 
-                // Xóa thư mục hiện tại
+                // Delete the current directory
                 Directory.Delete(path);
             }
         }
 
-        public async Task deleteAsync(string problem_code)
+        public async Task DeleteAsync(string problemCode)
         {
-            var problem = await _context.Problems.AsNoTracking().FirstOrDefaultAsync(u => u.code == problem_code);
+            var problem = await _context.Problems.AsNoTracking().FirstOrDefaultAsync(u => u.Code == problemCode); // Use Code instead of code
             if (problem == null)
                 throw new Exception(ErrorMessage.NotFound);
-            var testcase = await _context.TestCases.AsNoTracking().FirstOrDefaultAsync(u => u.problem_id == problem.id);
+
+            var testcase = await _context.TestCases.AsNoTracking().FirstOrDefaultAsync(u => u.ProblemId == problem.Id); // Use ProblemId instead of problem_id
             if (testcase == null)
                 throw new Exception("Test case not found");
 
-            if (Directory.Exists(testcase.folder_path))
+            if (Directory.Exists(testcase.FolderPath)) // Use FolderPath instead of folder_path
             {
-                DeleteDirectoryRecursively(testcase.folder_path);
+                DeleteDirectoryRecursively(testcase.FolderPath);
             }
 
             _context.TestCases.Remove(testcase);
             await _context.SaveChangesAsync();
-            return;
         }
     }
 }

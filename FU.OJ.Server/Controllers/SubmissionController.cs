@@ -1,7 +1,6 @@
 ﻿using FU.OJ.Server.DTOs.Submission.Request;
-using FU.OJ.Server.Infra.Const;
+using FU.OJ.Server.DTOs.Submission.Response;
 using FU.OJ.Server.Infra.Const.Route;
-using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,32 +8,21 @@ namespace FU.OJ.Server.Controllers
 {
     [Route(SubmissionRoute.INDEX)]
     [ApiController]
-    //[Authorize]
     public class SubmissionController : BaseController
     {
-        private readonly string _judgeServerUrl;
-        private readonly HttpClient _httpClient;
-        private readonly ApplicationDbContext _context;
         private readonly ISubmissionService _submissionService;
 
-        public SubmissionController(HttpClient httpClient, IConfiguration configuration, ApplicationDbContext context, ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
+        public SubmissionController(ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
         {
-            _httpClient = httpClient;
-            _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl") ?? throw new Exception(ErrorMessage.NotFound);
-            _context = context;
             _submissionService = submissionService;
         }
 
-        // API to submit code
         [HttpPost(SubmissionRoute.Action.Create)]
-        public async Task<IActionResult> SubmitCode(
-        [FromBody] CreateSubmissionRequest request,
-        [FromQuery] bool base64_encoded = false,
-        [FromQuery] bool wait = false)
+        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request, [FromQuery] bool base64Encoded = false, [FromQuery] bool wait = true)
         {
             try
             {
-                return Ok(await _submissionService.createAsync(request, base64_encoded, wait));
+                return Ok(await _submissionService.CreateAsync(request, base64Encoded, wait));
             }
             catch (Exception ex)
             {
@@ -47,7 +35,8 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                return Ok(await _submissionService.getByIdAsync(id));
+                SubmissionView submission = await _submissionService.GetByIdAsync(id);
+                return Ok(submission);
             }
             catch (Exception ex)
             {
@@ -60,7 +49,8 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                return Ok(await _submissionService.getByIdWithoutResultAsync(id));
+                SubmissionView submission = await _submissionService.GetByIdWithoutResultAsync(id);
+                return Ok(submission);
             }
             catch (Exception ex)
             {
@@ -73,7 +63,8 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                return Ok(await _submissionService.getAllSubmissionsAsync());
+                List<SubmissionView> submissions = await _submissionService.GetAllSubmissionsAsync();
+                return Ok(submissions);
             }
             catch (Exception ex)
             {

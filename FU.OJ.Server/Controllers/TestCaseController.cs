@@ -7,27 +7,29 @@ namespace FU.OJ.Server.Controllers
 {
     [ApiController]
     [Route(TestcaseRoute.INDEX)]
-    //[Authorize]
     public class TestCaseController : BaseController
     {
-        public readonly ITestcaseService _service;
+        private readonly ITestcaseService _service;
+
         public TestCaseController(ITestcaseService service, ILogger<TestCaseController> logger) : base(logger)
         {
             _service = service;
         }
 
         [HttpPost(TestcaseRoute.Action.Create)]
-        public async Task<IActionResult> createTestcaseAsync([FromForm] CreateTestcaseRequest request)
+        public async Task<IActionResult> CreateTestcaseAsync([FromForm] CreateTestcaseRequest request)
         {
             try
             {
-                if (request.testcase_file == null)
+                if (request.TestcaseFile == null)
                     return BadRequest("File is missing.");
-                if (string.IsNullOrEmpty(request.problem_code))
+
+                if (string.IsNullOrEmpty(request.ProblemCode))
                 {
                     return BadRequest(new { message = "Problem Code is required." });
                 }
-                return Ok(await _service.createAsync(request));
+
+                return Ok(await _service.CreateAsync(request));
             }
             catch (Exception ex)
             {
@@ -35,12 +37,12 @@ namespace FU.OJ.Server.Controllers
             }
         }
 
-        [HttpDelete("{problem_code}")]
-        public async Task<IActionResult> deleteTestCase(string problem_code)
+        [HttpDelete("{problemCode}")]
+        public async Task<IActionResult> DeleteTestCase(string problemCode)
         {
             try
             {
-                await _service.deleteAsync(problem_code);
+                await _service.DeleteAsync(problemCode);
                 return Ok("Delete success");
             }
             catch (Exception ex)
@@ -50,17 +52,19 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpPut(TestcaseRoute.Action.Update)]
-        public async Task<IActionResult> updateTestCase([FromForm] CreateTestcaseRequest request)
+        public async Task<IActionResult> UpdateTestCase([FromForm] CreateTestcaseRequest request)
         {
             try
             {
-                if (request.testcase_file == null)
+                if (request.TestcaseFile == null)
                     return BadRequest("File is missing.");
-                if (string.IsNullOrEmpty(request.problem_code))
+
+                if (string.IsNullOrEmpty(request.ProblemCode))
                 {
                     return BadRequest(new { message = "Problem Code is required." });
                 }
-                await _service.updateAsync(request);
+
+                await _service.UpdateAsync(request);
                 return Ok();
             }
             catch (Exception ex)

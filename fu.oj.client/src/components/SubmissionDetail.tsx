@@ -7,27 +7,8 @@ import { Code, Clock, User } from 'lucide-react'
 import { getSubmissionById } from '../api/submission'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vs } from 'react-syntax-highlighter/dist/esm/styles/prism'; // Sử dụng theme "vs" của Visual Studio Code
-
-interface Result {
-    id: string;
-    submission_id: string;
-    status_description: string;
-    time: string;
-    memory: number;
-}
-
-interface Submission {
-    id: string;
-    problem_id: string;
-    problem_name: string;
-    language_name: string;
-    submit_at: string;
-    user_id: string | null;
-    user_name: string | null;
-    status: string;
-    source_code: string;
-    results: Result[];
-}
+import { Result } from '../models/ResultModel'
+import { Submission } from '../models/SubmissionModel'
 
 const SubmissionDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -39,6 +20,7 @@ const SubmissionDetail: React.FC = () => {
         const fetchSubmission = async () => {
             try {
                 const response = await getSubmissionById(id);
+                console.log(response);
                 console.log(response.data);
                 setSubmission(response.data);
             } catch (err) {
@@ -69,7 +51,7 @@ const SubmissionDetail: React.FC = () => {
             <Card className="w-full max-w-4xl mx-auto bg-white text-black">
                 <CardHeader className="border-b border-gray-200">
                     {submission ? (
-                        <CardTitle className="text-2xl font-bold">{submission.problem_name}</CardTitle>
+                        <CardTitle className="text-2xl font-bold">{submission.problemName}</CardTitle>
                     ) : (
                         <CardTitle className="text-2xl font-bold">Loading...</CardTitle>
                     )}
@@ -82,17 +64,17 @@ const SubmissionDetail: React.FC = () => {
                                 <div className="flex items-center">
                                     <Code className="mr-2 text-gray-600" />
                                     <span className="font-semibold">Language:</span>
-                                    <span className="ml-2">{submission.language_name}</span>
+                                    <span className="ml-2">{submission.languageName}</span>
                                 </div>
                                 <div className="flex items-center">
                                     <Clock className="mr-2 text-gray-600" />
                                     <span className="font-semibold">Submitted:</span>
-                                    <span className="ml-2">{new Date(submission.submit_at).toLocaleString()}</span>
+                                    <span className="ml-2">{new Date(submission.submittedAt).toLocaleString()}</span>
                                 </div>
                                 <div className="flex items-center">
                                     <User className="mr-2 text-gray-600" />
                                     <span className="font-semibold">User:</span>
-                                    <span className="ml-2">{submission.user_name || 'Anonymous'}</span>
+                                    <span className="ml-2">{submission.userName || 'Anonymous'}</span>
                                 </div>
                                 <div className="flex items-center">
                                     <Badge className={`${getStatusColor(submission.status)} text-white`}>
@@ -104,8 +86,8 @@ const SubmissionDetail: React.FC = () => {
                             {/* Source Code Display with Syntax Highlighting */}
                             <div className="mb-6">
                                 <h3 className="text-lg font-semibold mb-2">Submitted Code:</h3>
-                                <SyntaxHighlighter language={submission.language_name.toLowerCase()} style={vs}>
-                                    {submission.source_code}
+                                <SyntaxHighlighter language={submission.languageName.toLowerCase()} style={vs}>
+                                    {submission.sourceCode}
                                 </SyntaxHighlighter>
                             </div>
 
@@ -123,14 +105,14 @@ const SubmissionDetail: React.FC = () => {
                                     </TableHeader>
                                     <TableBody>
                                         {submission.results.map((result, index) => (
-                                            <TableRow key={result.id}>
+                                            <TableRow>
                                                 <TableCell className="font-medium">Test {index + 1}</TableCell>
                                                 <TableCell>
-                                                    <Badge className={`${getStatusColor(result.status_description)} text-white`}>
-                                                        {result.status_description}
+                                                    <Badge className={`${getStatusColor(result.statusDescription)} text-white`}>
+                                                        {result.statusDescription}
                                                     </Badge>
                                                 </TableCell>
-                                                <TableCell>{result.time}</TableCell>
+                                                <TableCell>{result.time == null ? "0" : result.time}</TableCell>
                                                 <TableCell>{result.memory} KB</TableCell>
                                             </TableRow>
                                         ))}

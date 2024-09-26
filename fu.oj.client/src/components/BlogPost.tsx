@@ -12,15 +12,15 @@ interface BlogPost {
     id: number;
     title: string;
     content: string;
-    create_at: string;
-    user_name: string;
+    createdAt: string;
+    userName: string;
 }
 
 interface Comment {
     id: number;
     content: string;
-    user_name: string;
-    create_at: string;
+    userName: string;
+    createdAt: string;
 }
 
 // Dummy initial data for demo purposes
@@ -29,15 +29,15 @@ const initialBlogPosts: BlogPost[] = [
         id: 1,
         title: "The Future of AI in Web Development",
         content: "AI is revolutionizing web development...",
-        create_at: "2023-09-25T12:00:00Z",
-        user_name: "TechGuru"
+        createdAt: "2023-09-25T12:00:00Z",
+        userName: "TechGuru"
     },
     {
         id: 2,
         title: "Understanding React Performance",
         content: "Performance optimization in React involves...",
-        create_at: "2023-09-26T12:00:00Z",
-        user_name: "ReactPro"
+        createdAt: "2023-09-26T12:00:00Z",
+        userName: "ReactPro"
     }
 ];
 
@@ -45,14 +45,14 @@ const initialComments: Comment[] = [
     {
         id: 1,
         content: "Great insights! I'm excited to see how AI will shape our industry.",
-        user_name: "WebDev123",
-        create_at: "2023-09-25T14:30:00Z"
+        userName: "WebDev123",
+        createdAt: "2023-09-25T14:30:00Z"
     },
     {
         id: 2,
         content: "I wonder how this will affect job prospects for junior developers.",
-        user_name: "NewbieCoder",
-        create_at: "2023-09-25T15:45:00Z"
+        userName: "NewbieCoder",
+        createdAt: "2023-09-25T15:45:00Z"
     }
 ];
 
@@ -93,8 +93,8 @@ export default function BlogPost() {
             const comment: Comment = {
                 id: comments.length + 1,
                 content: newComment,
-                user_name: "CurrentUser", // In a real app, this would be the logged-in user
-                create_at: new Date().toISOString()
+                userName: "CurrentUser", // In a real app, this would be the logged-in user
+                createdAt: new Date().toISOString()
             };
             setComments([...comments, comment]);
             setNewComment("");
@@ -112,7 +112,7 @@ export default function BlogPost() {
                     <CardHeader>
                         <h1 className="text-3xl font-bold text-gray-900">{blogPost.title}</h1>
                         <p className="text-sm text-gray-600">
-                            By {blogPost.user_name} on {formatDate(blogPost.create_at)}
+                            By {blogPost.userName} on {formatDate(blogPost.createdAt)}
                         </p>
                     </CardHeader>
                     <CardContent>
@@ -129,13 +129,13 @@ export default function BlogPost() {
                         <CardHeader>
                             <div className="flex items-center">
                                 <Avatar className="w-8 h-8 mr-2">
-                                    <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${comment.user_name}`} />
-                                    <AvatarFallback>{comment.user_name[0]}</AvatarFallback>
+                                    <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${comment.userName}`} />
+                                    <AvatarFallback>{comment.userName[0]}</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="font-semibold text-gray-900">{comment.user_name}</p>
+                                    <p className="font-semibold text-gray-900">{comment.userName}</p>
                                     <p className="text-xs text-gray-500">
-                                        {formatDate(comment.create_at)}
+                                        {formatDate(comment.createdAt)}
                                     </p>
                                 </div>
                             </div>

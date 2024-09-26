@@ -5,7 +5,7 @@ namespace FU.OJ.Server.DTOs.Auth.Request
     public class LoginRequest
     {
         [Required]
-        public string Username { get; set; } = null!;
+        public string UserName { get; set; } = null!;
 
         //[Required]
         //[EmailAddress]

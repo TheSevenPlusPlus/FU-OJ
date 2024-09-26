@@ -8,8 +8,8 @@ interface Blog {
     id: number;
     title: string;
     content: string;
-    create_at: string;
-    user_name: string;
+    createdAt: string;
+    userName: string;
 }
 
 export default function BlogList() {
@@ -61,10 +61,10 @@ function BlogCard({ blog }: { blog: Blog }) {
             <CardFooter className="flex items-center justify-between bg-gray-200 dark:bg-gray-800 px-4 py-3">
                 <div className="flex items-center space-x-2">
                     <Avatar className="border-2 border-gray-300 dark:border-gray-700">
-                        <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${blog.user_name}&backgroundColor=b6b6b6`} />
-                        <AvatarFallback>{blog.user_name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${blog.userName}&backgroundColor=b6b6b6`} />
+                        <AvatarFallback>{blog.userName.charAt(0)}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium text-black dark:text-white">{blog.user_name}</span>
+                    <span className="text-sm font-medium text-black dark:text-white">{blog.userName}</span>
                 </div>
                 <button
                     onClick={handleClick}

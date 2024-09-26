@@ -8,17 +8,16 @@ import { getProblemByCode } from '../api/problem';
 
 // Define model for language
 interface Language {
-    language_id: number;
-    language_name: string;
+    languageId: number;
+    languageName: string;
 }
-
 // Create a list of languages
 const languages: Language[] = [
-    { language_id: 49, language_name: 'C (GCC 8.3.0)' },
-    { language_id: 53, language_name: 'C++ (GCC 8.3.0)' },
-    { language_id: 71, language_name: 'Python (3.8.1)' },
-    { language_id: 62, language_name: 'Java (OpenJDK 13.0.1)' },
-    { language_id: 74, language_name: 'TypeScript (3.7.4)' },
+    { languageId: 49, languageName: 'C (GCC 8.3.0)' },
+    { languageId: 53, languageName: 'C++ (GCC 8.3.0)' },
+    { languageId: 71, languageName: 'Python (3.8.1)' },
+    { languageId: 62, languageName: 'Java (OpenJDK 13.0.1)' },
+    { languageId: 74, languageName: 'TypeScript (3.7.4)' },
 ];
 
 const CodeSubmission: React.FC = () => {
@@ -49,11 +48,11 @@ const CodeSubmission: React.FC = () => {
         setError(null);
         try {
             const response = await submitCode({
-                problem_code: problemCode,
-                source_code: code,
-                language_id: language?.language_id,
-                language_name: language?.language_name,
-                problem_id: problem?.id
+                problemCode: problemCode,
+                sourceCode: code,
+                languageId: language?.languageId,
+                languageName: language?.languageName,
+                problemId: problem?.id
             });
 
             let submissionId = response.data;
@@ -72,13 +71,13 @@ const CodeSubmission: React.FC = () => {
             <h1 className="text-3xl font-bold mb-4">Submit Your Code</h1>
             <select
                 id="language"
-                value={language?.language_id}
-                onChange={e => setLanguage(languages.find(lang => lang.language_id.toString() === e.target.value) || null)}
+                value={language?.languageId}
+                onChange={e => setLanguage(languages.find(lang => lang.languageId.toString() === e.target.value) || null)}
                 className="mb-4 block w-full p-2 border border-gray-300 rounded-md"
             >
                 {languages.map(lang => (
-                    <option key={lang.language_id} value={lang.language_id}>
-                        {lang.language_name}
+                    <option key={lang.languageId} value={lang.languageId}>
+                        {lang.languageName}
                     </option>
                 ))}
             </select>

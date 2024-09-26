@@ -8,12 +8,13 @@ namespace FU.OJ.Server.Service
 {
     public interface IBlogService
     {
-        Task<string> createAsync(CreateBlogRequest request);
-        public Task<BlogView?> getByIdAsync(string id);
-        Task updateAsync(string id, UpdateBlogRequest request);
-        Task deleteAsync(string id);
-        public Task<List<BlogView>> getAllBlogs();
+        Task<string> CreateAsync(CreateBlogRequest request);
+        Task<BlogView?> GetByIdAsync(string id);
+        Task UpdateAsync(string id, UpdateBlogRequest request);
+        Task DeleteAsync(string id);
+        Task<List<BlogView>> GetAllBlogsAsync();
     }
+
     public class BlogService : IBlogService
     {
         private readonly ApplicationDbContext _context;
@@ -24,59 +25,59 @@ namespace FU.OJ.Server.Service
         }
 
         // Create a new blog
-        public async Task<string> createAsync(CreateBlogRequest request)
+        public async Task<string> CreateAsync(CreateBlogRequest request)
         {
             var blog = new Blog
             {
-                title = request.title,
-                content = request.content,
-                user_id = request.user_id,
-                create_at = DateTime.UtcNow
+                Title = request.Title,
+                Content = request.Content,
+                UserId = request.UserId,
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.Blogs.Add(blog);
             await _context.SaveChangesAsync();
 
-            return blog.id; // Return the generated blog ID
+            return blog.Id; // Return the generated blog ID
         }
 
         // Get a blog by ID
-        public async Task<BlogView?> getByIdAsync(string id)
+        public async Task<BlogView?> GetByIdAsync(string id)
         {
             return await _context.Blogs
-                .Where(blog => blog.id == id)
+                .Where(blog => blog.Id == id)
                 .Select(blog => new BlogView
                 {
-                    id = blog.id,
-                    title = blog.title,
-                    content = blog.content,
-                    create_at = blog.create_at,
-                    user_id = blog.user_id,
-                    user_name = blog.user.UserName
+                    Id = blog.Id,
+                    Title = blog.Title,
+                    Content = blog.Content,
+                    CreatedAt = blog.CreatedAt,
+                    UserId = blog.UserId,
+                    UserName = blog.User.UserName
                 }).FirstOrDefaultAsync();
         }
 
-        public async Task<List<BlogView>> getAllBlogs()
+        public async Task<List<BlogView>> GetAllBlogsAsync()
         {
             return await _context.Blogs.Select(blog => new BlogView
             {
-                id = blog.id,
-                title = blog.title,
-                content = blog.content,
-                create_at = blog.create_at,
-                user_id = blog.user_id,
-                user_name = blog.user.UserName
+                Id = blog.Id,
+                Title = blog.Title,
+                Content = blog.Content,
+                CreatedAt = blog.CreatedAt,
+                UserId = blog.UserId,
+                UserName = blog.User.UserName
             }).ToListAsync();
         }
 
         // Update a blog
-        public async Task updateAsync(string id, UpdateBlogRequest request)
+        public async Task UpdateAsync(string id, UpdateBlogRequest request)
         {
-            var blog = await _context.Blogs.FirstOrDefaultAsync(b => b.id == id);
+            var blog = await _context.Blogs.FirstOrDefaultAsync(b => b.Id == id);
             if (blog != null)
             {
-                blog.title = request.title;
-                blog.content = request.content;
+                blog.Title = request.Title;
+                blog.Content = request.Content;
 
                 _context.Blogs.Update(blog);
                 await _context.SaveChangesAsync();
@@ -84,15 +85,14 @@ namespace FU.OJ.Server.Service
         }
 
         // Delete a blog
-        public async Task deleteAsync(string id)
+        public async Task DeleteAsync(string id)
         {
-            var blog = await _context.Blogs.FirstOrDefaultAsync(b => b.id == id);
+            var blog = await _context.Blogs.FirstOrDefaultAsync(b => b.Id == id);
             if (blog != null)
             {
                 _context.Blogs.Remove(blog);
                 await _context.SaveChangesAsync();
             }
         }
-
     }
 }

@@ -1,28 +1,41 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FU.OJ.Server.Infra.Models
 {
-    public class BlogComment : BlogComment_properties
+    public class BlogComment : BlogCommentProperties
     {
-        public User user { get; set; } = null!;
-        public Blog blog { get; set; } = null!;
-    }
-    public class BlogComment_properties
-    {
-        public string id { get; set; } = Guid.NewGuid().ToString();
-        public string? content { get; set; }
-        public DateTime create_at { get; set; } = DateTime.Now;
-        public string? user_id { get; set; }
-        public string? blog_id { get; set; }
+        [ForeignKey("UserId")]
+        public User User { get; set; } = null!;
+        [ForeignKey("BlogId")]
+        public Blog Blog { get; set; } = null!;
     }
 
-    public class BlogComment_configuration : IEntityTypeConfiguration<BlogComment>
+    public class BlogCommentProperties
+    {
+        [Key]
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string? Content { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? UserId { get; set; }
+        public string? BlogId { get; set; }
+    }
+
+    public class BlogCommentConfiguration : IEntityTypeConfiguration<BlogComment>
     {
         public void Configure(EntityTypeBuilder<BlogComment> builder)
         {
-            builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.user_id);
-            builder.HasOne(e => e.blog).WithMany().HasForeignKey(e => e.blog_id);
+            //builder.HasKey(s => s.Id);
+
+            //builder.HasOne(e => e.User)
+            //       .WithMany()
+            //       .HasForeignKey(e => e.UserId);
+
+            //builder.HasOne(e => e.Blog)
+            //       .WithMany()
+            //       .HasForeignKey(e => e.BlogId);
         }
     }
 }

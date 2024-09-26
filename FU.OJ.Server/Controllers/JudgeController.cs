@@ -8,20 +8,20 @@ namespace FU.OJ.Server.Controllers
     //[Authorize]
     public class JudgeController : BaseController
     {
-        private readonly string JudgeServerUrl = "";
+        private readonly string _judgeServerUrl;
         private readonly HttpClient _httpClient;
 
         public JudgeController(HttpClient httpClient, IConfiguration configuration, ILogger<JudgeController> logger) : base(logger)
         {
             _httpClient = httpClient;
-            JudgeServerUrl = configuration.GetValue<string>("JudgeServerUrl")!;
+            _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl")!;
         }
 
         [HttpGet(JudgeRoute.Action.GetAll)]
-        public async Task<IActionResult> GetLanguages()
+        public async Task<IActionResult> GetLanguagesAsync()
         {
-            string url = $"{JudgeServerUrl}/languages/all";
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            var url = $"{_judgeServerUrl}/languages/all";
+            var response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
@@ -32,10 +32,10 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpGet(JudgeRoute.Action.GetDetail)]
-        public async Task<IActionResult> GetLanguageById([FromRoute] int id)
+        public async Task<IActionResult> GetLanguageByIdAsync([FromRoute] int id)
         {
-            string url = $"{JudgeServerUrl}/languages/{id}";
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            var url = $"{_judgeServerUrl}/languages/{id}";
+            var response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
@@ -46,10 +46,10 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpGet(JudgeRoute.Action.GetStatus)]
-        public async Task<IActionResult> GetStatus()
+        public async Task<IActionResult> GetStatusAsync()
         {
-            string url = $"{JudgeServerUrl}/statuses";
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            var url = $"{_judgeServerUrl}/statuses";
+            var response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
@@ -60,10 +60,10 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpGet(JudgeRoute.Action.GetActive)]
-        public async Task<IActionResult> GetActiveLanguages()
+        public async Task<IActionResult> GetActiveLanguagesAsync()
         {
-            string url = $"{JudgeServerUrl}/languages/all";
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            var url = $"{_judgeServerUrl}/languages/all";
+            var response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
@@ -73,12 +73,11 @@ namespace FU.OJ.Server.Controllers
             return StatusCode((int)response.StatusCode);
         }
 
-        // API to get system info
         [HttpGet(JudgeRoute.Action.SystemInfo)]
-        public async Task<IActionResult> GetSystemInfo()
+        public async Task<IActionResult> GetSystemInfoAsync()
         {
-            string url = $"{JudgeServerUrl}/system_info";
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            var url = $"{_judgeServerUrl}/system_info";
+            var response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
@@ -88,12 +87,11 @@ namespace FU.OJ.Server.Controllers
             return StatusCode((int)response.StatusCode);
         }
 
-        // API to get configuration info
         [HttpGet(JudgeRoute.Action.ConfigInfo)]
-        public async Task<IActionResult> GetConfigInfo()
+        public async Task<IActionResult> GetConfigInfoAsync()
         {
-            string url = $"{JudgeServerUrl}/config_info";
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            var url = $"{_judgeServerUrl}/config_info";
+            var response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
@@ -103,12 +101,11 @@ namespace FU.OJ.Server.Controllers
             return StatusCode((int)response.StatusCode);
         }
 
-        // API to get statistics
         [HttpGet(JudgeRoute.Action.Statistics)]
-        public async Task<IActionResult> GetStatistics([FromQuery] bool invalidateCache = false)
+        public async Task<IActionResult> GetStatisticsAsync([FromQuery] bool invalidateCache = false)
         {
-            string url = $"{JudgeServerUrl}/statistics?invalidate_cache={invalidateCache.ToString().ToLower()}";
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            var url = $"{_judgeServerUrl}/statistics?invalidate_cache={invalidateCache.ToString().ToLower()}";
+            var response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {
@@ -118,12 +115,11 @@ namespace FU.OJ.Server.Controllers
             return StatusCode((int)response.StatusCode);
         }
 
-        // API to get workers info
         [HttpGet(JudgeRoute.Action.Workers)]
-        public async Task<IActionResult> GetWorkers()
+        public async Task<IActionResult> GetWorkersAsync()
         {
-            string url = $"{JudgeServerUrl}/workers";
-            HttpResponseMessage response = await _httpClient.GetAsync(url);
+            var url = $"{_judgeServerUrl}/workers";
+            var response = await _httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
             {

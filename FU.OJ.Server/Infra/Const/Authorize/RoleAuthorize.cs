@@ -2,9 +2,9 @@
 {
     public class RoleAuthorize
     {
-        public const string AdminManager = RoleStatic.Role_Admin + ", " + RoleStatic.Role_Manager;
-        public const string AnyRole = RoleStatic.Role_User + ", " + RoleStatic.Role_Admin + ", " + RoleStatic.Role_Manager;
-        public const string OnlyAdmin = RoleStatic.Role_Admin;
+        public const string AdminManager = RoleStatic.RoleAdmin + ", " + RoleStatic.RoleManager;
+        public const string AnyRole = RoleStatic.RoleAdmin + ", " + RoleStatic.RoleManager + ", " + RoleStatic.RoleUser;
+        public const string OnlyAdmin = RoleStatic.RoleAdmin;
 
     }
 }

@@ -1,25 +1,31 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 
 namespace FU.OJ.Server.Infra.Models
 {
-    public class TestCase : TestCase_properties
+    public class TestCase : TestCaseProperties
     {
-        public Problem problem { get; set; } = null!;
+        public Problem Problem { get; set; } = null!;
     }
-    public class TestCase_properties
+
+    public class TestCaseProperties
     {
         [Key]
-        public string id { get; set; } = Guid.NewGuid().ToString();
-        public string problem_id { get; set; } = null!;
-        public string folder_path { get; set; } = null!; // folder chứa test
+        public string Id { get; set; } = Guid.NewGuid().ToString();
+        public string ProblemId { get; set; } = null!;
+        public string FolderPath { get; set; } = null!; // folder chứa test
     }
-    public class TestCase_configuration : IEntityTypeConfiguration<TestCase>
+
+    public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
     {
         public void Configure(EntityTypeBuilder<TestCase> builder)
         {
-            builder.HasOne(e => e.problem).WithMany().HasForeignKey(e => e.problem_id);
+            //builder.HasKey(s => s.Id);
+
+            //builder.HasOne(e => e.Problem)
+            //       .WithMany()
+            //       .HasForeignKey(e => e.ProblemId);
         }
     }
 }

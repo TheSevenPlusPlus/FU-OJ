@@ -17,9 +17,9 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpGet(UserRoute.Action.GetByUsername)]
-        public async Task<IActionResult> GetUserByUsername(string userName)
+        public async Task<IActionResult> GetUserByUsername(string username)
         {
-            var user = await _userService.GetUserByUsername(userName);
+            var user = await _userService.GetUserByUsernameAsync(username);
             if (user == null) return NotFound("User not found");
 
             var userResponse = new UpdateUserRequest
@@ -27,7 +27,7 @@ namespace FU.OJ.Server.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                Fullname = user.Fullname,
+                FullName = user.FullName,
                 City = user.City,
                 Description = user.Description,
                 FacebookLink = user.FacebookLink,
@@ -52,7 +52,7 @@ namespace FU.OJ.Server.Controllers
                 UserName = updatedUser.UserName,
                 Email = updatedUser.Email,
                 PhoneNumber = updatedUser.PhoneNumber,
-                Fullname = updatedUser.Fullname,
+                FullName = updatedUser.FullName,
                 City = updatedUser.City,
                 Description = updatedUser.Description,
                 FacebookLink = updatedUser.FacebookLink,
@@ -63,6 +63,4 @@ namespace FU.OJ.Server.Controllers
             return Ok(userResponse);
         }
     }
-
-
 }

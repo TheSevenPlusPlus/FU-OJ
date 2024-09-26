@@ -2,7 +2,7 @@
 {
     public class UpdateBlogRequest
     {
-        public string title { get; set; }
-        public string content { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
     }
 }

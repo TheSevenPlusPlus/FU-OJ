@@ -19,7 +19,7 @@ namespace FU.OJ.Server.DTOs.User.Request
         public string Password { get; set; }
 
         [Required(ErrorMessage = "Full name is required")]
-        public string Fullname { get; set; }
+        public string FullName { get; set; }
 
         public string? City { get; set; } = null!;
         public string? Description { get; set; } = null!;
