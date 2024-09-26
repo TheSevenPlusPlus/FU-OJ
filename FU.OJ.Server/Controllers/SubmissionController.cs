@@ -3,7 +3,6 @@ using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers

@@ -1,4 +1,5 @@
 ﻿using FU.OJ.Server.DTOs.User.Request;
+using FU.OJ.Server.DTOs.User.Respond;
 using FU.OJ.Server.Infra.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,11 @@ namespace FU.OJ.Server.Service
         Task<User> CreateUserAsync(CreateUserRequest userRequest);
         Task<List<User>> GetAllUsersAsync();
         Task<User> GetUserByIdAsync(string userId);
+        Task<User> GetUserByUsername(string userName);
+
         Task<User> UpdateUserAsync(string userId, CreateUserRequest user);
+        Task<User> UpdateProfileAsync(UpdateUserRequest user);
+
         Task<bool> DeleteUserAsync(string userId);
     }
 
@@ -33,7 +38,6 @@ namespace FU.OJ.Server.Service
                 Description = userRequest.Description,
                 FacebookLink = userRequest.FacebookLink,
                 GithubLink = userRequest.GithubLink,
-                Slogan = userRequest.Slogan
             };
 
             var result = await _userManager.CreateAsync(user, userRequest.Password);
@@ -52,6 +56,11 @@ namespace FU.OJ.Server.Service
             return await _userManager.FindByIdAsync(userId);
         }
 
+        public async Task<User> GetUserByUsername(string userName)
+        {
+            return await _userManager.FindByNameAsync(userName);
+        }
+
         public async Task<User> UpdateUserAsync(string userId, CreateUserRequest updatedUser)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -64,7 +73,29 @@ namespace FU.OJ.Server.Service
                 user.Description = updatedUser.Description;
                 user.FacebookLink = updatedUser.FacebookLink;
                 user.GithubLink = updatedUser.GithubLink;
-                user.Slogan = updatedUser.Slogan;
+                user.PhoneNumber = updatedUser.PhoneNumber;
+                user.School = updatedUser.School;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded) return user;
+            }
+
+            return null;
+        }
+
+        public async Task<User> UpdateProfileAsync(UpdateUserRequest updatedUser)
+        {
+            var user = await _userManager.FindByNameAsync(updatedUser.UserName);
+            if (user != null)
+            {
+                user.Email = updatedUser.Email;
+                user.PhoneNumber = updatedUser.PhoneNumber;
+                user.Fullname = updatedUser.Fullname;
+                user.City = updatedUser.City;
+                user.Description = updatedUser.Description;
+                user.FacebookLink = updatedUser.FacebookLink;
+                user.GithubLink = updatedUser.GithubLink;
+                user.School = updatedUser.School;
 
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded) return user;

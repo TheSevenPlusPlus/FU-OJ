@@ -39,7 +39,7 @@ const HomePage: React.FC = () => {
                     </p>
                     <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
                         <Button asChild className="mr-4">
-                            <Link to="/signup">Get started</Link>
+                            <Link to="/register">Get started</Link>
                         </Button>
                         <Button variant="outline" className="text-black" asChild>
                             <Link to="/problems">View problems</Link>
@@ -170,7 +170,7 @@ const HomePage: React.FC = () => {
                         Join thousands of developers who are improving their coding skills every day.
                     </p>
                     <Button asChild size="lg" className="mt-8">
-                        <Link to="/signup">Sign up for free</Link>
+                        <Link to="/register">Register for free</Link>
                     </Button>
                 </div>
             </section>
