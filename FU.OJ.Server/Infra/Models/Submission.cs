@@ -1,15 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FU.OJ.Server.Infra.Models
 {
     public class Submission : Submission_properties
     {
-        public User user { get; set; } = null!;
-        public Problem problem { get; set; } = null!;
+        public User User { get; set; } = null!;
+        public Problem Problem { get; set; } = null!;
 
-        public ICollection<Result> results { get; set; } = null!;
+        public ICollection<Result> Results { get; set; } = null!;
     }
     public class Submission_properties
     {
@@ -28,8 +27,8 @@ namespace FU.OJ.Server.Infra.Models
     {
         public void Configure(EntityTypeBuilder<Submission> builder)
         {
-            builder.HasOne(e => e.user).WithMany().HasForeignKey(e => e.user_id);
-            builder.HasOne(e => e.problem).WithMany().HasForeignKey(e => e.problem_id);
+            builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.user_id);
+            builder.HasOne(e => e.Problem).WithMany().HasForeignKey(e => e.problem_id);
         }
     }
 }

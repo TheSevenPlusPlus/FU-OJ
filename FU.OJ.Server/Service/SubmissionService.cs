@@ -1,12 +1,11 @@
-﻿using FU.OJ.Server.Infra.Context;
-using System.Text.Json;
-using System.Text;
+﻿using FU.OJ.Server.DTOs.Submission.Request;
+using FU.OJ.Server.DTOs.Submission.Response;
 using FU.OJ.Server.Infra.Const;
-using FU.OJ.Server.DTOs.Submission.Request;
-using Microsoft.Extensions.Configuration;
+using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.Models;
 using Microsoft.EntityFrameworkCore;
-using FU.OJ.Server.DTOs.Submission.Response;
+using System.Text;
+using System.Text.Json;
 
 namespace FU.OJ.Server.Service
 {
@@ -123,7 +122,7 @@ namespace FU.OJ.Server.Service
             }
 
             submission.status = status;
-            submission.results = resultList;
+            submission.Results = resultList;
             await _context.SaveChangesAsync();
             return submission.id;
         }
@@ -153,7 +152,7 @@ namespace FU.OJ.Server.Service
         public async Task<Submission?> getById(string id)
         {
             var submission = await _context.Submissions.AsNoTracking()
-                .Include(s => s.results)
+                .Include(s => s.Results)
                 .FirstOrDefaultAsync(s => s.id == id);
 
             return submission;
@@ -167,7 +166,7 @@ namespace FU.OJ.Server.Service
                 throw new Exception(ErrorMessage.NotFound);
 
             var _results = new List<Result>();
-            foreach (var result in submission.results)
+            foreach (var result in submission.Results)
             {
                 _results.Add(result);
             }

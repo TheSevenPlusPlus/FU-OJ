@@ -19,7 +19,9 @@ namespace FU.OJ.Server
             services.AddScoped<ITestcaseService, TestcaseService>();
             services.AddScoped<ISubmissionService, SubmissionService>();
             services.AddScoped<IBlogService, BlogService>();
+            services.AddScoped<IGeneralService, GeneralService>();
             services.AddScoped<ITokenService, TokenService>();
+
             services.AddScoped<IDBInitializer, DBInitializer>();
 
 
@@ -30,7 +32,7 @@ namespace FU.OJ.Server
                 options.Password.RequireLowercase = true;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireNonAlphanumeric = true;
-                options.Password.RequiredLength = 10;
+                options.Password.RequiredLength = 8;
             }).AddEntityFrameworkStores<ApplicationDbContext>();
 
             var key = Encoding.UTF8.GetBytes("secretkey_992jeu9h33rnnc800x3n3003nx3033j3k45k6b6b6662sd"); // Thay đổi khóa bí mật của bạn

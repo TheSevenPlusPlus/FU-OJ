@@ -7,6 +7,7 @@ namespace FU.OJ.Server.Infra.Models
     public class Problem : Problem_properies
     {
         ICollection<Submission> Submissions { get; set; } = new List<Submission>();
+        public User User { get; set; } = null!;
     }
     public class Problem_properies
     {
@@ -33,6 +34,9 @@ namespace FU.OJ.Server.Infra.Models
     {
         public void Configure(EntityTypeBuilder<Problem> builder)
         {
+            builder.HasOne(p => p.User)
+                   .WithMany(u => u.Problems)
+                   .HasForeignKey(p => p.user_id);
         }
     }
 }
