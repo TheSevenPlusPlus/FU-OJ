@@ -30,17 +30,17 @@ namespace FU.OJ.Server.Controllers
             if (newUser == null)
                 return StatusCode(500, "User creation failed"); // Optionally, return specific error messages.
 
-            var userResponse = new UpdateUserRespond
+            var userResponse = new UpdateUserRequest
             {
-                Id = newUser.Id,
                 UserName = newUser.UserName,
                 Email = newUser.Email,
+                PhoneNumber = newUser.PhoneNumber,
                 Fullname = newUser.Fullname,
                 City = newUser.City,
                 Description = newUser.Description,
                 FacebookLink = newUser.FacebookLink,
                 GithubLink = newUser.GithubLink,
-                Slogan = newUser.Slogan
+                School = newUser.School,
             };
 
             return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, userResponse);
@@ -51,17 +51,17 @@ namespace FU.OJ.Server.Controllers
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
-            var userResponses = users.Select(u => new UpdateUserRespond
+            var userResponses = users.Select(u => new UpdateUserRequest
             {
-                Id = u.Id,
                 UserName = u.UserName,
                 Email = u.Email,
+                PhoneNumber = u.PhoneNumber,
                 Fullname = u.Fullname,
                 City = u.City,
                 Description = u.Description,
                 FacebookLink = u.FacebookLink,
                 GithubLink = u.GithubLink,
-                Slogan = u.Slogan
+                School = u.School,
             }).ToList();
 
             return Ok(userResponses);
@@ -74,17 +74,17 @@ namespace FU.OJ.Server.Controllers
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound("User not found");
 
-            var userResponse = new UpdateUserRespond
+            var userResponse = new UpdateUserRequest
             {
-                Id = user.Id,
                 UserName = user.UserName,
                 Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
                 Fullname = user.Fullname,
                 City = user.City,
                 Description = user.Description,
                 FacebookLink = user.FacebookLink,
                 GithubLink = user.GithubLink,
-                Slogan = user.Slogan
+                School = user.School,
             };
 
             return Ok(userResponse);
@@ -100,17 +100,17 @@ namespace FU.OJ.Server.Controllers
             var updatedUser = await _userService.UpdateUserAsync(id, updateUserRequest);
             if (updatedUser == null) return NotFound("User not found");
 
-            var userResponse = new UpdateUserRespond
+            var userResponse = new UpdateUserRequest
             {
-                Id = updatedUser.Id,
                 UserName = updatedUser.UserName,
                 Email = updatedUser.Email,
+                PhoneNumber = updatedUser.PhoneNumber,
                 Fullname = updatedUser.Fullname,
                 City = updatedUser.City,
                 Description = updatedUser.Description,
                 FacebookLink = updatedUser.FacebookLink,
                 GithubLink = updatedUser.GithubLink,
-                Slogan = updatedUser.Slogan
+                School = updatedUser.School,
             };
 
             return Ok(userResponse);

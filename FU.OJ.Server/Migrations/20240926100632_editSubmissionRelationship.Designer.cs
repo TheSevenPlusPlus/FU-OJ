@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240926071202_init-db")]
-    partial class initdb
+    [Migration("20240926100632_editSubmissionRelationship")]
+    partial class editSubmissionRelationship
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -185,6 +185,8 @@ namespace FU.OJ.Server.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("user_id");
+
                     b.ToTable("Problems");
                 });
 
@@ -223,6 +225,9 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
+
                     b.Property<string>("language_name")
                         .HasColumnType("text");
 
@@ -248,6 +253,8 @@ namespace FU.OJ.Server.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("problem_id");
 
@@ -333,13 +340,10 @@ namespace FU.OJ.Server.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Role")
+                    b.Property<string>("School")
                         .HasColumnType("text");
 
                     b.Property<string>("SecurityStamp")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Slogan")
                         .HasColumnType("text");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -549,10 +553,20 @@ namespace FU.OJ.Server.Migrations
                     b.Navigation("user");
                 });
 
+            modelBuilder.Entity("FU.OJ.Server.Infra.Models.Problem", b =>
+                {
+                    b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
+                        .WithMany("Problems")
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Result", b =>
                 {
                     b.HasOne("FU.OJ.Server.Infra.Models.Submission", null)
-                        .WithMany("results")
+                        .WithMany("Results")
                         .HasForeignKey("Submissionid");
 
                     b.HasOne("FU.OJ.Server.Infra.Models.Submission", "submission")
@@ -566,17 +580,22 @@ namespace FU.OJ.Server.Migrations
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Submission", b =>
                 {
-                    b.HasOne("FU.OJ.Server.Infra.Models.Problem", "problem")
+                    b.HasOne("FU.OJ.Server.Infra.Models.User", null)
+                        .WithMany("Submissions")
+                        .HasForeignKey("UserId");
+
+                    b.HasOne("FU.OJ.Server.Infra.Models.Problem", "Problem")
                         .WithMany()
                         .HasForeignKey("problem_id");
 
-                    b.HasOne("FU.OJ.Server.Infra.Models.User", "user")
+                    b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("user_id");
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("problem");
+                    b.Navigation("Problem");
 
-                    b.Navigation("user");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.TestCase", b =>
@@ -653,7 +672,14 @@ namespace FU.OJ.Server.Migrations
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Submission", b =>
                 {
-                    b.Navigation("results");
+                    b.Navigation("Results");
+                });
+
+            modelBuilder.Entity("FU.OJ.Server.Infra.Models.User", b =>
+                {
+                    b.Navigation("Problems");
+
+                    b.Navigation("Submissions");
                 });
 #pragma warning restore 612, 618
         }

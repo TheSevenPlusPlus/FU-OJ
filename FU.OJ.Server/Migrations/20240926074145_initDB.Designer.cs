@@ -3,6 +3,7 @@ using System;
 using FU.OJ.Server.Infra.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240926074145_initDB")]
+    partial class initDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,8 +185,6 @@ namespace FU.OJ.Server.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("user_id");
-
                     b.ToTable("Problems");
                 });
 
@@ -222,9 +223,6 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("id")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
                     b.Property<string>("language_name")
                         .HasColumnType("text");
 
@@ -250,8 +248,6 @@ namespace FU.OJ.Server.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("id");
-
-                    b.HasIndex("UserId");
 
                     b.HasIndex("problem_id");
 
@@ -550,20 +546,10 @@ namespace FU.OJ.Server.Migrations
                     b.Navigation("user");
                 });
 
-            modelBuilder.Entity("FU.OJ.Server.Infra.Models.Problem", b =>
-                {
-                    b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
-                        .WithMany("Problems")
-                        .HasForeignKey("user_id")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Result", b =>
                 {
                     b.HasOne("FU.OJ.Server.Infra.Models.Submission", null)
-                        .WithMany("Results")
+                        .WithMany("results")
                         .HasForeignKey("Submissionid");
 
                     b.HasOne("FU.OJ.Server.Infra.Models.Submission", "submission")
@@ -577,22 +563,17 @@ namespace FU.OJ.Server.Migrations
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Submission", b =>
                 {
-                    b.HasOne("FU.OJ.Server.Infra.Models.User", null)
-                        .WithMany("Submissions")
-                        .HasForeignKey("UserId");
-
-                    b.HasOne("FU.OJ.Server.Infra.Models.Problem", "Problem")
+                    b.HasOne("FU.OJ.Server.Infra.Models.Problem", "problem")
                         .WithMany()
                         .HasForeignKey("problem_id");
 
-                    b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
+                    b.HasOne("FU.OJ.Server.Infra.Models.User", "user")
                         .WithMany()
-                        .HasForeignKey("user_id")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("user_id");
 
-                    b.Navigation("Problem");
+                    b.Navigation("problem");
 
-                    b.Navigation("User");
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.TestCase", b =>
@@ -669,14 +650,7 @@ namespace FU.OJ.Server.Migrations
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Submission", b =>
                 {
-                    b.Navigation("Results");
-                });
-
-            modelBuilder.Entity("FU.OJ.Server.Infra.Models.User", b =>
-                {
-                    b.Navigation("Problems");
-
-                    b.Navigation("Submissions");
+                    b.Navigation("results");
                 });
 #pragma warning restore 612, 618
         }
