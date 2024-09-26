@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240925164808_initDB")]
+    [Migration("20240926074145_initDB")]
     partial class initDB
     {
         /// <inheritdoc />
@@ -226,14 +226,17 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("language_name")
                         .HasColumnType("text");
 
+                    b.Property<string>("problem_code")
+                        .HasColumnType("text");
+
                     b.Property<string>("problem_id")
                         .HasColumnType("text");
 
                     b.Property<string>("source_code")
                         .HasColumnType("text");
 
-                    b.Property<bool?>("status")
-                        .HasColumnType("boolean");
+                    b.Property<string>("status")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("submit_at")
                         .HasColumnType("timestamp with time zone");

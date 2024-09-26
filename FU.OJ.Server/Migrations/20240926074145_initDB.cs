@@ -235,12 +235,13 @@ namespace FU.OJ.Server.Migrations
                 {
                     id = table.Column<string>(type: "text", nullable: false),
                     problem_id = table.Column<string>(type: "text", nullable: true),
+                    problem_code = table.Column<string>(type: "text", nullable: true),
                     source_code = table.Column<string>(type: "text", nullable: true),
                     language_name = table.Column<string>(type: "text", nullable: true),
                     submit_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     user_id = table.Column<string>(type: "text", nullable: true),
                     user_name = table.Column<string>(type: "text", nullable: true),
-                    status = table.Column<bool>(type: "boolean", nullable: true)
+                    status = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

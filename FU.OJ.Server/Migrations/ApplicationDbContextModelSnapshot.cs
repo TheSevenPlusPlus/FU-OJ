@@ -223,14 +223,17 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("language_name")
                         .HasColumnType("text");
 
+                    b.Property<string>("problem_code")
+                        .HasColumnType("text");
+
                     b.Property<string>("problem_id")
                         .HasColumnType("text");
 
                     b.Property<string>("source_code")
                         .HasColumnType("text");
 
-                    b.Property<bool?>("status")
-                        .HasColumnType("boolean");
+                    b.Property<string>("status")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("submit_at")
                         .HasColumnType("timestamp with time zone");
