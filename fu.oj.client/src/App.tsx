@@ -8,6 +8,7 @@ import ProblemDetail from './components/ProblemDetail';
 import CodeSubmission from './components/SubmitCode';
 import BlogList from './components/BlogList';
 import BlogPost from './components/BlogPost'; // Import BlogPost component
+import SubmissionDetail from './components/SubmissionDetail'
 
 const App: React.FC = () => {
     return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
                         <Route path="/problems" element={<ProblemList />} />
                         <Route path="/problem/:problemCode" element={<ProblemDetail />} />
                         <Route path="/problem/:problemCode/submit" element={<CodeSubmission />} />
+                        <Route path="/submissions/:id" element={<SubmissionDetail />} />
                         <Route path="/submissions" element={<SubmissionList />} />
                         <Route path="/blog" element={<BlogList />} />
                         {/* Update this route to pass the blog_id */}
