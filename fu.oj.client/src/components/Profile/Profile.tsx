@@ -7,20 +7,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { getProfile } from '../../api/profile';
+import { UserProfile } from '../../models/UserProfileModel';
 
-interface UserProfile {
-    userName: string;
-    email: string;
-    phoneNumber: string;
-    fullname: string;
-    city: string;
-    description: string;
-    facebookLink: string;
-    githubLink: string;
-    school: string;
-    joinDate: string;
-    role: string;
-}
+
 
 export default function ProfileView() {
     const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -75,7 +64,7 @@ export default function ProfileView() {
                         <div className="text-center md:text-left">
                             <CardTitle className="text-2xl font-bold">{profile.fullname || 'Unknown User'}</CardTitle>
                             <p className="text-sm text-gray-500">@{profile.userName || 'unknown'}</p>
-                            <Badge variant="secondary" className="mt-2">{profile.role || 'User'}</Badge>
+                            {/*<Badge variant="secondary" className="mt-2">{profile.role || 'User'}</Badge>*/}
                         </div>
                     </div>
                 </CardHeader>
@@ -102,10 +91,10 @@ export default function ProfileView() {
                                     <School className="w-5 h-5 text-gray-500" />
                                     <span className="text-sm">{profile.school || "School not provided"}</span>
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                    <Calendar className="w-5 h-5 text-gray-500" />
-                                    <span className="text-sm">{profile.joinDate || "Join date not available"}</span>
-                                </div>
+                                {/*<div className="flex items-center space-x-2">*/}
+                                {/*    <Calendar className="w-5 h-5 text-gray-500" />*/}
+                                {/*    <span className="text-sm">{profile.joinDate || "Join date not available"}</span>*/}
+                                {/*</div>*/}
                             </div>
                         </div>
 
