@@ -1,12 +1,11 @@
 ﻿using FU.OJ.Server.Infra.Const.Route;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers
 {
     [Route(JudgeRoute.INDEX)]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class JudgeController : BaseController
     {
         private readonly string JudgeServerUrl = "";
