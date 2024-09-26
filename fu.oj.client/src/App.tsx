@@ -12,6 +12,7 @@ import AuthPage from './components/AuthPage';
 import ProfileView from './components/Profile/Profile';
 import ProfileEdit from './components/Profile/ProfileEdit';
 import Rank from './components/Rank';
+import SubmissionDetail from './components/SubmissionDetail'
 
 const App: React.FC = () => {
 
@@ -39,6 +40,7 @@ const App: React.FC = () => {
                         <Route path="/problems" element={<ProblemList />} />
                         <Route path="/problem/:problemCode" element={<ProblemDetail />} />
                         <Route path="/problem/:problemCode/submit" element={<CodeSubmission />} />
+                        <Route path="/submissions/:id" element={<SubmissionDetail />} />
                         {/*Submissions*/}
                         <Route path="/submissions" element={<SubmissionList />} />
                         {/*Blogs*/}

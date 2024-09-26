@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button"; // Giả sử bạn có button component riêng
 import { getAllSubmissions } from '../api/submission';
 import { Submission } from '../models/SubmissionModel';
 
@@ -56,18 +57,17 @@ const SubmissionList: React.FC = () => {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[50px]">ID</TableHead>
                         <TableHead>User</TableHead>
                         <TableHead>Problem</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead>Language</TableHead>
                         <TableHead className="text-right">Submitted At</TableHead>
+                        <TableHead className="text-center">Action</TableHead> {/* Điều chỉnh căn giữa */}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {submissions.map((submission) => (
                         <TableRow key={submission.id}>
-                            <TableCell className="font-medium">{submission.id}</TableCell>
                             <TableCell>
                                 {submission.user_name ? (
                                     <Link to={`/user/${submission.user_id}`} className="text-blue-600 hover:underline">
@@ -94,6 +94,15 @@ const SubmissionList: React.FC = () => {
                             </TableCell>
                             <TableCell>{submission.language_name}</TableCell>
                             <TableCell className="text-right">{formatDate(submission.submit_at)}</TableCell>
+                            <TableCell className="text-center">
+                                <Link to={`/submissions/${submission.id}`}>
+                                    <Button
+                                        className="bg-black text-white hover:bg-gray-800 py-2 px-4 rounded-md" // Style nút với màu đen và hover xám
+                                    >
+                                        View Detail
+                                    </Button>
+                                </Link>
+                            </TableCell> {/* Căn giữa nút */}
                         </TableRow>
                     ))}
                 </TableBody>
