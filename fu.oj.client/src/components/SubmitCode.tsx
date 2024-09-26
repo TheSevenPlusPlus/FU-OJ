@@ -2,17 +2,17 @@
 import { Button } from "@/components/ui/button";
 import { submitCode } from '../api/submission';
 import Textarea_manual from './ui/textarea-manual';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Problem } from '../models/ProblemModel';
 import { getProblemByCode } from '../api/problem';
 
-// Định nghĩa model cho ngôn ngữ
+// Define model for language
 interface Language {
     language_id: number;
     language_name: string;
 }
 
-// Tạo danh sách ngôn ngữ
+// Create a list of languages
 const languages: Language[] = [
     { language_id: 49, language_name: 'C (GCC 8.3.0)' },
     { language_id: 53, language_name: 'C++ (GCC 8.3.0)' },
@@ -23,10 +23,10 @@ const languages: Language[] = [
 
 const CodeSubmission: React.FC = () => {
     const { problemCode } = useParams<{ problemCode: string }>();
+    const navigate = useNavigate(); // Hook for navigation
     const [code, setCode] = useState<string>('');
     const [problem, setProblem] = useState<Problem | null>(null);
     const [language, setLanguage] = useState<Language | null>(languages[0]);
-    const [input, setInput] = useState<string>('');
     const [result, setResult] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -38,8 +38,6 @@ const CodeSubmission: React.FC = () => {
                 setProblem(response.data);
             } catch (err) {
                 setError('Failed to fetch problem details');
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -50,14 +48,24 @@ const CodeSubmission: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await submitCode({ problem_code: problemCode, source_code: code, language_id: language?.language_id, language_name: language?.language_name, problem_id: problem.id });
-            setResult(response.data.result);
+            const response = await submitCode({
+                problem_code: problemCode,
+                source_code: code,
+                language_id: language?.language_id,
+                language_name: language?.language_name,
+                problem_id: problem?.id
+            });
+
+            let submissionId = response.data;
+            navigate(`/submissions/${submissionId}`);
         } catch (err) {
             setError('Failed to submit code');
         } finally {
             setLoading(false);
         }
     };
+
+
 
     return (
         <div className="container mx-auto py-8">
@@ -78,7 +86,6 @@ const CodeSubmission: React.FC = () => {
             <Button onClick={handleSubmit} disabled={loading}>
                 {loading ? 'Submitting...' : 'Submit Code'}
             </Button>
-            {result && <div className="mt-4">{result}</div>}
             {error && <p className="text-red-500">{error}</p>}
         </div>
     );

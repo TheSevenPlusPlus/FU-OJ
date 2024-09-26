@@ -32,6 +32,7 @@
     "react-dom": "^18.3.1",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.26.2",
+    "react-syntax-highlighter": "^15.5.0",
     "shadcn": "^2.0.8",
     "shadcn-ui": "^0.9.1",
     "tailwind-merge": "^2.5.2",
