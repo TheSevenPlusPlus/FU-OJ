@@ -10,7 +10,7 @@ namespace FU.OJ.Server.Controllers
 {
     [Route(SubmissionRoute.INDEX)]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class SubmissionController : BaseController
     {
         private readonly string _judgeServerUrl;

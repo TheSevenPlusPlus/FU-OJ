@@ -1,23 +1,56 @@
-import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { submitCode } from '../api/submission';
 import Textarea_manual from './ui/textarea-manual';
 import { useParams } from 'react-router-dom';
+import { Problem } from '../models/ProblemModel';
+import { getProblemByCode } from '../api/problem';
+
+// Định nghĩa model cho ngôn ngữ
+interface Language {
+    language_id: number;
+    language_name: string;
+}
+
+// Tạo danh sách ngôn ngữ
+const languages: Language[] = [
+    { language_id: 49, language_name: 'C (GCC 8.3.0)' },
+    { language_id: 53, language_name: 'C++ (GCC 8.3.0)' },
+    { language_id: 71, language_name: 'Python (3.8.1)' },
+    { language_id: 62, language_name: 'Java (OpenJDK 13.0.1)' },
+    { language_id: 74, language_name: 'TypeScript (3.7.4)' },
+];
 
 const CodeSubmission: React.FC = () => {
     const { problemCode } = useParams<{ problemCode: string }>();
     const [code, setCode] = useState<string>('');
-    const [language, setLanguage] = useState<string>('JavaScript');
+    const [problem, setProblem] = useState<Problem | null>(null);
+    const [language, setLanguage] = useState<Language | null>(languages[0]);
     const [input, setInput] = useState<string>('');
     const [result, setResult] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchProblem = async () => {
+            try {
+                const response = await getProblemByCode(problemCode);
+                setProblem(response.data);
+            } catch (err) {
+                setError('Failed to fetch problem details');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProblem();
+    }, [problemCode]);
+
     const handleSubmit = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await submitCode({ problemCode, code, language });
+            const response = await submitCode({ problem_code: problemCode, source_code: code, language_id: language?.language_id, language_name: language?.language_name, problem_id: problem.id });
             setResult(response.data.result);
         } catch (err) {
             setError('Failed to submit code');
@@ -31,14 +64,15 @@ const CodeSubmission: React.FC = () => {
             <h1 className="text-3xl font-bold mb-4">Submit Your Code</h1>
             <select
                 id="language"
-                value={language}
-                onChange={e => setLanguage(e.target.value)}
+                value={language?.language_id}
+                onChange={e => setLanguage(languages.find(lang => lang.language_id.toString() === e.target.value) || null)}
                 className="mb-4 block w-full p-2 border border-gray-300 rounded-md"
             >
-                <option value="JavaScript">JavaScript</option>
-                <option value="Python">Python</option>
-                <option value="Java">Java</option>
-                {/* Add more languages as needed */}
+                {languages.map(lang => (
+                    <option key={lang.language_id} value={lang.language_id}>
+                        {lang.language_name}
+                    </option>
+                ))}
             </select>
             <Textarea_manual value={code} onChange={e => setCode(e.target.value)} placeholder="Write your code here..." rows={10} />
             <Button onClick={handleSubmit} disabled={loading}>

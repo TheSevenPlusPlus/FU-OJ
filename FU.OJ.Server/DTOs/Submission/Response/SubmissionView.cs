@@ -7,6 +7,7 @@ namespace FU.OJ.Server.DTOs.Submission.Response
     {
         public string id { get; set; } = null!;
         public string? problem_id { get; set; }
+        public string? problem_name { get; set; }
         [Required]
         public string? source_code { get; set; }
         [Required]
@@ -14,7 +15,7 @@ namespace FU.OJ.Server.DTOs.Submission.Response
         public DateTime submit_at { get; set; }
         public string? user_id { get; set; }
         public string? user_name { get; set; }
-        public bool? status { get; set; }
+        public string? status { get; set; }
 
         public List<Result> results { get; set; } = new List<Result>();
     }
