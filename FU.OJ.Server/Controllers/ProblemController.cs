@@ -8,7 +8,7 @@ namespace FU.OJ.Server.Controllers
 {
     [ApiController]
     [Route(ProblemRoute.INDEX)]
-    [Authorize]
+    //[Authorize]
     public class ProblemController : BaseController
     {
         private readonly IProblemService _service;
@@ -24,7 +24,7 @@ namespace FU.OJ.Server.Controllers
             try
             {
                 var code = await _service.createAsync(request);
-                return CreatedAtAction(nameof(getProblemByCodeAsync), new { code = code }, request);
+                return Ok(code);
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace FU.OJ.Server.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("all")]
         public async Task<IActionResult> updateProblemAsync(string id, [FromBody] UpdateProblemRequest request)
         {
             try

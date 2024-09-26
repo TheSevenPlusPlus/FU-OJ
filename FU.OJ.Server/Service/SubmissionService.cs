@@ -55,6 +55,7 @@ namespace FU.OJ.Server.Service
             var submission = new Submission
             {
                 problem_id = request.problem_id,
+                problem_code = request.problem_code,
                 source_code = request.source_code,
                 language_name = request.language_name,
                 submit_at = DateTime.UtcNow
@@ -79,7 +80,7 @@ namespace FU.OJ.Server.Service
                         language_id = request.language_id,
                         problem_code = request.problem_code,
                         stdin = inputContent,
-                        stdout = outputContent,
+                        expected_output = outputContent,
                         cpu_time_limit = problem.time_limit,
                         memory_limit = problem.memory_limit
                     };
@@ -96,7 +97,7 @@ namespace FU.OJ.Server.Service
                 }
             }
 
-            bool ac = true;
+            string status = "Accepted";
             var resultList = new List<Result>();
             foreach (var token in tokenList)
             {
@@ -112,13 +113,16 @@ namespace FU.OJ.Server.Service
                 };
 
                 if (JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString() != "Accepted")
-                    ac = false;
+                {
+                    if (status == "Accepted")
+                        status = JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString()!;
+                }
 
                 _context.Results.Add(newResult);
                 resultList.Add(newResult);
             }
 
-            submission.status = ac;
+            submission.status = status;
             submission.results = resultList;
             await _context.SaveChangesAsync();
             return submission.id;
@@ -172,6 +176,7 @@ namespace FU.OJ.Server.Service
             {
                 id = submission.id,
                 problem_id = submission.problem_id,
+                problem_name = submission.problem_code,
                 source_code = submission.source_code,
                 language_name = submission.language_name,
                 submit_at = submission.submit_at,
@@ -199,10 +204,11 @@ namespace FU.OJ.Server.Service
             {
                 id = submission.id,
                 problem_id = submission.problem_id,
+                problem_name = submission.problem_code,
                 source_code = submission.source_code,
                 language_name = submission.language_name,
                 submit_at = submission.submit_at,
-                status = submission.status
+                status = submission.status,
             };
         }
 
@@ -213,6 +219,7 @@ namespace FU.OJ.Server.Service
                 {
                     id = submission.id,
                     problem_id = submission.problem_id,
+                    problem_name = submission.problem_code,
                     source_code = submission.source_code,
                     language_name = submission.language_name,
                     submit_at = submission.submit_at,
@@ -229,6 +236,7 @@ namespace FU.OJ.Server.Service
                 {
                     id = submission.id,
                     problem_id = submission.problem_id,
+                    problem_name = submission.problem_code,
                     source_code = submission.source_code,
                     language_name = submission.language_name,
                     submit_at = submission.submit_at,

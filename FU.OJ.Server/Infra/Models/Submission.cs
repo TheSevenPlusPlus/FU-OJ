@@ -15,12 +15,13 @@ namespace FU.OJ.Server.Infra.Models
     {
         public string id { get; set; } = Guid.NewGuid().ToString();
         public string? problem_id { get; set; }
+        public string? problem_code { get; set; }
         public string? source_code { get; set; }
         public string? language_name { get; set; }
         public DateTime submit_at { get; set; }
         public string? user_id { get; set; }
         public string? user_name { get; set; }
-        public bool? status { get; set; }
+        public string? status { get; set; }
     }
 
     public class Submission_configuration : IEntityTypeConfiguration<Submission>

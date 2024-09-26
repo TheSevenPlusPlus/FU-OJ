@@ -41,7 +41,6 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-
                 await _service.deleteAsync(problem_code);
                 return Ok("Delete success");
             }
