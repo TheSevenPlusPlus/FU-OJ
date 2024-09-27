@@ -31,27 +31,23 @@ const Navbar: React.FC = () => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
             const parsedUser: User = JSON.parse(storedUser);
-
-            // Chỉ gửi request lấy profile nếu người dùng đã đăng nhập (có token)
-            if (parsedUser.token) {
-                fetchUserProfile(parsedUser.userName);
-            } else {
-                setUser(parsedUser); // Cập nhật state user nếu không có token
+            if (parsedUser.userName) {
+                fetchUserProfile(parsedUser.userName, parsedUser.token);
             }
+            else setUser(parsedUser);
         }
     }, []);
 
-    const fetchUserProfile = async (userName: string) => {
+    const fetchUserProfile = async (userName: string, token: string) => {
         try {
             const response = await getProfile(userName);
             if (response) {
                 const updatedUser: User = {
                     userName: response.userName,
                     email: response.email,
-                    token: response.token, // giữ nguyên token cũ
+                    token: token, // giữ nguyên token cũ
                     avatarUrl: response.avatarUrl,
                 };
-
                 setUser(updatedUser);
                 localStorage.setItem('user', JSON.stringify(updatedUser));
             } else {

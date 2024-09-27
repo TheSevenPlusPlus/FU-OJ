@@ -80,8 +80,8 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
             if (!passwordRegex.number.test(formData.password)) newErrors.password = 'Password must include at least one number';
             if (!passwordRegex.specialChar.test(formData.password)) newErrors.password = 'Password must include at least one special character';
             if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
-            if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone Number is required';
-            if (!/^\d{10}$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Phone Number must be 10 digits';
+            //if (!formData.phoneNumber.trim()) newErrors.phoneNumber = 'Phone Number is required';
+            //if (!/^\d{10}$/.test(formData.phoneNumber)) newErrors.phoneNumber = 'Phone Number must be 10 digits';
 
             // Confirm password check
             if (formData.password !== formData.confirmPassword) {
@@ -124,7 +124,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                     email: formData.email,
                     password: formData.password,
                     fullName: formData.fullName,
-                    phoneNumber: formData.phoneNumber,
+                    //phoneNumber: formData.phoneNumber,
                 })
                 console.log('Registration successful:', data)
                 localStorage.setItem('user', JSON.stringify(data))

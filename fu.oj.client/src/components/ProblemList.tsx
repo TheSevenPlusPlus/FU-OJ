@@ -75,8 +75,8 @@ const ProblemList: React.FC = () => {
                                     {problem.title}
                                 </Link>
                             </TableCell>
-                            <TableCell className="font-medium">{problem.time_limit == 0 ? 1 : problem.time_limit}s</TableCell>
-                            <TableCell className="font-medium">{formatDate(problem.create_at)}</TableCell>
+                            <TableCell className="font-medium">{problem.timeLimit == 0 ? 1 : problem.timeLimit}s</TableCell>
+                            <TableCell className="font-medium">{formatDate(problem.createdAt)}</TableCell>
                             {/*<TableCell className="font-medium">{}</TableCell>*/}
 
                             {/*<TableCell>*/}

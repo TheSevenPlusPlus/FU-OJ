@@ -17,7 +17,7 @@ export default function AuthPage() {
 
     const additionalFields = [
         { name: 'fullName', label: 'Full Name' },
-        { name: 'phoneNumber', label: 'Phone Number' },
+        //{ name: 'phoneNumber', label: 'Phone Number' },
     ]
 
     return (

@@ -37,7 +37,7 @@ namespace FU.OJ.Server.Controllers
                     UserName = registerRequest.UserName,
                     Email = registerRequest.Email,
                     FullName = registerRequest.FullName,
-                    PhoneNumber = registerRequest.PhoneNumber,
+                    //PhoneNumber = registerRequest.PhoneNumber,
                     CreatedAt = DateTime.UtcNow,
                 };
                 var createUser = await _userManager.CreateAsync(user, registerRequest.Password);
@@ -52,7 +52,8 @@ namespace FU.OJ.Server.Controllers
                             {
                                 UserName = user.UserName,
                                 Email = user.Email,
-                                Token = token
+                                Token = token,
+                                AvatarUrl = user.AvatarUrl
                             }
                         );
                     }
