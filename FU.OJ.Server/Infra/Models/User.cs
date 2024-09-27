@@ -12,6 +12,8 @@ namespace FU.OJ.Server.Infra.Models
         public string? Description { get; set; }
         public string? FacebookLink { get; set; }
         public string? GithubLink { get; set; }
+        public string? AvatarUrl { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
 
         // Mối quan hệ một-nhiều với Submission
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>();

@@ -32,7 +32,6 @@ namespace FU.OJ.Server.Controllers
 
             var userResponse = new UpdateUserRequest
             {
-                UserName = newUser.UserName,
                 Email = newUser.Email,
                 PhoneNumber = newUser.PhoneNumber,
                 FullName = newUser.FullName,
@@ -52,7 +51,6 @@ namespace FU.OJ.Server.Controllers
             var users = await _userService.GetAllUsersAsync();
             var userResponses = users.Select(u => new UpdateUserRequest
             {
-                UserName = u.UserName,
                 Email = u.Email,
                 PhoneNumber = u.PhoneNumber,
                 FullName = u.FullName,
@@ -74,7 +72,6 @@ namespace FU.OJ.Server.Controllers
 
             var userResponse = new UpdateUserRequest
             {
-                UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 FullName = user.FullName,
@@ -99,7 +96,6 @@ namespace FU.OJ.Server.Controllers
 
             var userResponse = new UpdateUserRequest
             {
-                UserName = updatedUser.UserName,
                 Email = updatedUser.Email,
                 PhoneNumber = updatedUser.PhoneNumber,
                 FullName = updatedUser.FullName,

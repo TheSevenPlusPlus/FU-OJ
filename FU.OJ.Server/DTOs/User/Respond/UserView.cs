@@ -1,11 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FU.OJ.Server.DTOs.User.Respond
+﻿namespace FU.OJ.Server.DTOs.User.Respond
 {
-    public class UpdateUserRequest
+    public class UserView
     {
-
-        [Required(ErrorMessage = "Username is required")]
         public string UserName { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
@@ -17,5 +13,6 @@ namespace FU.OJ.Server.DTOs.User.Respond
         public string? GithubLink { get; set; } = null!;
         public string? School { get; set; } = null!;
         public string? AvatarUrl { get; set; } = null!;
+        public DateTime? CreatedAt { get; set; } = null!;
     }
 }

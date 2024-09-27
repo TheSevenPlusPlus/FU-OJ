@@ -5,3 +5,8 @@ export const getRank = async (pageNumber: number, pageSize: number) => {
     //console.log(respond);
     return respond.data;
 };
+
+export const getRole = async (userName: string) => {
+    const respond = await apiClient.get(`/auth/checkrole/${userName}`);
+    return respond.data.roles[0];
+}

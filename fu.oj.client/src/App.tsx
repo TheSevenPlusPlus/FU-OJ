@@ -34,6 +34,7 @@ const App: React.FC = () => {
                         <Route path="/register" element={<AuthPage />} />
                         {/*Profile*/}
                         <Route path="/profile" element={<ProfileView />} />
+                        <Route path="/profile/:userName" element={<ProfileView />} />
                         <Route path="/profile/edit" element={<ProfileEdit />} />
                         {/*<Route path="/change-password" element={<PasswordEditPage />} />*/}
                         {/*Problem*/}

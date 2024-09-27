@@ -1,44 +1,74 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Code, Menu, X, User, LogOut, Edit } from 'lucide-react';
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
     Sheet,
     SheetContent,
     SheetTrigger,
-} from "@/components/ui/sheet"
+} from "@/components/ui/sheet";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getProfile } from '../api/profile';
 
 interface User {
     userName: string;
-    email: string,
-    token: string,
+    email: string;
+    token: string;
+    avatarUrl: string;
 }
 
 const Navbar: React.FC = () => {
-    const [isOpen, setIsOpen] = useState(false);
     const [user, setUser] = useState<User | null>(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-            setUser(JSON.parse(storedUser));
+            const parsedUser: User = JSON.parse(storedUser);
+
+            // Chỉ gửi request lấy profile nếu người dùng đã đăng nhập (có token)
+            if (parsedUser.token) {
+                fetchUserProfile(parsedUser.userName);
+            } else {
+                setUser(parsedUser); // Cập nhật state user nếu không có token
+            }
         }
     }, []);
 
-    const toggleMenu = () => setIsOpen(!isOpen);
+    const fetchUserProfile = async (userName: string) => {
+        try {
+            const response = await getProfile(userName);
+            if (response) {
+                const updatedUser: User = {
+                    userName: response.userName,
+                    email: response.email,
+                    token: response.token, // giữ nguyên token cũ
+                    avatarUrl: response.avatarUrl,
+                };
+
+                setUser(updatedUser);
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+            } else {
+                console.error('Failed to fetch user profile');
+            }
+        } catch (error) {
+            console.error('Error fetching user profile:', error);
+        }
+    };
 
     const handleLogout = () => {
         localStorage.removeItem('user');
         setUser(null);
-        // Add any additional logout logic here (e.g., redirecting to home page)
+        // Thêm logic logout khác nếu cần (vd: chuyển hướng về trang home)
     };
+
+    const toggleMenu = () => setIsOpen(!isOpen);
 
     return (
         <nav className="bg-black text-white">
@@ -67,7 +97,11 @@ const Navbar: React.FC = () => {
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" className="flex items-center space-x-2">
                                             <Avatar className="w-8 h-8 mr-2">
-                                                <AvatarImage className="rounded-full" src={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"} alt={user.userName} />
+                                                <AvatarImage
+                                                    className="rounded-full"
+                                                    src={user.avatarUrl || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"}
+                                                    alt={user.userName}
+                                                />
                                                 <AvatarFallback>{user.userName[0].toUpperCase()}</AvatarFallback>
                                             </Avatar>
                                             <span>{user.userName}</span>

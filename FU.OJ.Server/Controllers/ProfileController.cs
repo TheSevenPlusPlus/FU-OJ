@@ -22,7 +22,7 @@ namespace FU.OJ.Server.Controllers
             var user = await _userService.GetUserByUsernameAsync(username);
             if (user == null) return NotFound("User not found");
 
-            var userResponse = new UpdateUserRequest
+            var userResponse = new UserView
             {
                 UserName = user.UserName,
                 Email = user.Email,
@@ -33,6 +33,8 @@ namespace FU.OJ.Server.Controllers
                 FacebookLink = user.FacebookLink,
                 GithubLink = user.GithubLink,
                 School = user.School,
+                CreatedAt = user.CreatedAt,
+                AvatarUrl = user.AvatarUrl,
             };
 
             return Ok(userResponse);
@@ -47,7 +49,7 @@ namespace FU.OJ.Server.Controllers
             var updatedUser = await _userService.UpdateProfileAsync(updateUserRequest);
             if (updatedUser == null) return NotFound("User not found");
 
-            var userResponse = new UpdateUserRequest
+            var userResponse = new UserView
             {
                 UserName = updatedUser.UserName,
                 Email = updatedUser.Email,
@@ -58,6 +60,7 @@ namespace FU.OJ.Server.Controllers
                 FacebookLink = updatedUser.FacebookLink,
                 GithubLink = updatedUser.GithubLink,
                 School = updatedUser.School,
+                AvatarUrl = updatedUser.AvatarUrl,
             };
 
             return Ok(userResponse);

@@ -37,12 +37,13 @@ namespace FU.OJ.Server.Service
                 Description = userRequest.Description,
                 FacebookLink = userRequest.FacebookLink,
                 GithubLink = userRequest.GithubLink,
+                CreatedAt = DateTime.UtcNow,
             };
 
             var result = await _userManager.CreateAsync(user, userRequest.Password);
             if (result.Succeeded) return user;
 
-            return null; // Consider throwing an exception or handling this differently.
+            return user; // Consider throwing an exception or handling this differently.
         }
 
         public async Task<List<User>> GetAllUsersAsync()
@@ -74,12 +75,13 @@ namespace FU.OJ.Server.Service
                 user.GithubLink = updatedUser.GithubLink;
                 user.PhoneNumber = updatedUser.PhoneNumber;
                 user.School = updatedUser.School;
+                user.AvatarUrl = updatedUser.AvatarUrl;
 
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded) return user;
             }
 
-            return null;
+            return user;
         }
 
         public async Task<User> UpdateProfileAsync(UpdateUserRequest updatedUser)
@@ -95,12 +97,13 @@ namespace FU.OJ.Server.Service
                 user.FacebookLink = updatedUser.FacebookLink;
                 user.GithubLink = updatedUser.GithubLink;
                 user.School = updatedUser.School;
+                user.AvatarUrl = updatedUser.AvatarUrl;
 
                 var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded) return user;
             }
 
-            return null;
+            return user;
         }
 
         public async Task<bool> DeleteUserAsync(string userId)
