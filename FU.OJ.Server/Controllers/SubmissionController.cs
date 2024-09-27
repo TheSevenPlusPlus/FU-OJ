@@ -18,7 +18,7 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpPost(SubmissionRoute.Action.Create)]
-        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request, [FromQuery] bool base64Encoded = false, [FromQuery] bool wait = true)
+        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request, [FromQuery] bool base64Encoded = true, [FromQuery] bool wait = true)
         {
             try
             {

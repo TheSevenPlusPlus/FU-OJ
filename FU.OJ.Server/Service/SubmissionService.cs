@@ -83,8 +83,7 @@ namespace FU.OJ.Server.Service
                         stdin = inputContent,
                         expected_output = outputContent,
                         cpu_time_limit = problem.TimeLimit,
-                        memory_limit = problem.MemoryLimit > 256000 ? problem.MemoryLimit : 256000,
-                        stdout = ""
+                        memory_limit = problem.MemoryLimit > 256000 ? problem.MemoryLimit : 256000
                     };
 
                     var jsonContent = new StringContent(JsonSerializer.Serialize(submissionRequest), Encoding.UTF8, "application/json");
@@ -103,6 +102,23 @@ namespace FU.OJ.Server.Service
             foreach (var token in tokenList)
             {
                 var tokenResult = await GetByTokenAsync(token);
+                if (JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString() == "Compilation Error")
+                {
+                    var _newResult = new Result
+                    {
+                        SubmissionId = submission.Id,
+                        StatusDescription = "Compilation Error",
+                        Time = "0.001s",
+                        Memory = 0.0
+                    };
+
+                    status = "Compilation Error";
+                    _context.Results.Add(_newResult);
+                    resultList.Add(_newResult);
+
+                    continue;
+                }
+
                 var newResult = new Result
                 {
                     SubmissionId = submission.Id,
@@ -129,7 +145,7 @@ namespace FU.OJ.Server.Service
             return submission.Id;
         }
 
-        public async Task<string> GetByTokenAsync(string token, bool base64Encoded = false, string fields = "stdout,time,memory,stderr,token,compile_output,message,status")
+        public async Task<string> GetByTokenAsync(string token, bool base64Encoded = true, string fields = "stdout,time,memory,stderr,token,compile_output,message,status")
         {
             string url = $"{_judgeServerUrl}/submissions/{token}?base64_encoded={base64Encoded.ToString().ToLower()}&fields={fields}";
             HttpResponseMessage response;
