@@ -1,4 +1,5 @@
-﻿using FU.OJ.Server.DTOs.Blog.Request;
+﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Blog.Request;
 using FU.OJ.Server.DTOs.Blog.Response;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.Models;
@@ -12,7 +13,7 @@ namespace FU.OJ.Server.Service
         Task<BlogView?> GetByIdAsync(string id);
         Task UpdateAsync(string id, UpdateBlogRequest request);
         Task DeleteAsync(string id);
-        Task<List<BlogView>> GetAllBlogsAsync();
+        Task<(List<BlogView> blogs, int totalPages)> GetAllBlogsAsync(Paging query);
     }
 
     public class BlogService : IBlogService
@@ -57,9 +58,15 @@ namespace FU.OJ.Server.Service
                 }).FirstOrDefaultAsync();
         }
 
-        public async Task<List<BlogView>> GetAllBlogsAsync()
+        public async Task<(List<BlogView> blogs, int totalPages)> GetAllBlogsAsync(Paging query)
         {
-            return await _context.Blogs.Select(blog => new BlogView
+            // Đếm tổng số submissions
+            int totalItems = await _context.Blogs.CountAsync();
+
+            // Tính toán tổng số trang
+
+            int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
+            var blogs = await _context.Blogs.Select(blog => new BlogView
             {
                 Id = blog.Id,
                 Title = blog.Title,
@@ -67,7 +74,12 @@ namespace FU.OJ.Server.Service
                 CreatedAt = blog.CreatedAt,
                 UserId = blog.UserId,
                 UserName = blog.User.UserName
-            }).ToListAsync();
+            })
+            .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
+            .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
+            .ToListAsync();
+
+            return (blogs, totalPages);
         }
 
         // Update a blog

@@ -6,7 +6,6 @@ namespace FU.OJ.Server.Infra.Models
 {
     public class TestCase : TestCaseProperties
     {
-        public Problem Problem { get; set; } = null!;
     }
 
     public class TestCaseProperties

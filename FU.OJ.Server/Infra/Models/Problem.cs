@@ -29,6 +29,7 @@ namespace FU.OJ.Server.Infra.Models
         public DateTime CreatedAt { get; set; }
         public string? UserId { get; set; }
         public string? TestCaseId { get; set; }
+        public int totalTests { get; set; }
         public int? AcQuantity { get; set; }
         public string? Difficulty { get; set; }
         public string? HasSolution { get; set; }

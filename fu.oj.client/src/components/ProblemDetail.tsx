@@ -13,10 +13,6 @@ const ProblemDetail: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Fake data for progress (replace with real data when integrating with backend)
-    const [testPassed, setTestPassed] = useState<number>(5); // số lượng test qua
-    const [totalTests, setTotalTests] = useState<number>(10); // tổng số test
-
     useEffect(() => {
         const fetchProblem = async () => {
             try {
@@ -110,8 +106,8 @@ const ProblemDetail: React.FC = () => {
                         {/* Progress Bar */}
                         <div>
                             <h2 className="text-xl font-semibold mb-2">Progress</h2>
-                            <p>Tests passed: {testPassed}/{totalTests}</p>
-                            <Progress value={(testPassed / totalTests) * 100} />
+                            <p>Tests passed: {problem.acQuantity ?? 0}/{problem.totalTests ?? 0}</p>
+                            <Progress value={((problem.acQuantity ?? 0) / (problem.totalTests ?? 1)) * 100} />
                         </div>
                     </div>
                 </CardContent>

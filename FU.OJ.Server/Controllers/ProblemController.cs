@@ -1,5 +1,7 @@
-﻿using FU.OJ.Server.DTOs.Problem.Request;
+﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Problem.Request;
 using FU.OJ.Server.Infra.Const.Route;
+using FU.OJ.Server.Infra.Models;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -50,12 +52,12 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProblemsAsync()
+        public async Task<IActionResult> GetAllProblemsAsync([FromQuery] Paging query)
         {
             try
             {
-                var problems = await _service.GetAllAsync();
-                return Ok(problems);
+                var (problems, totalPages) = await _service.GetAllAsync(query);
+                return Ok(new { problems, totalPages });
             }
             catch (Exception ex)
             {

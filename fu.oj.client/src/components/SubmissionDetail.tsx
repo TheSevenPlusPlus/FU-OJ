@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -20,8 +20,8 @@ const SubmissionDetail: React.FC = () => {
         const fetchSubmission = async () => {
             try {
                 const response = await getSubmissionById(id);
-                console.log(response);
-                console.log(response.data);
+                //console.log(response);
+                //console.log(response.data);
                 setSubmission(response.data);
             } catch (err) {
                 setError('Failed to fetch problem details');
@@ -46,12 +46,28 @@ const SubmissionDetail: React.FC = () => {
         }
     }
 
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        });
+    };
+
     return (
         <div className="container mx-auto py-8 bg-gray-100 min-h-screen">
             <Card className="w-full max-w-4xl mx-auto bg-white text-black">
                 <CardHeader className="border-b border-gray-200">
                     {submission ? (
-                        <CardTitle className="text-2xl font-bold">{submission.problemName}</CardTitle>
+                        <CardTitle className="text-2xl font-bold">
+                            <Link to={`/problem/${submission.problemName}`} className="text-blue-600 hover:underline">
+                                {submission.problemName}
+                            </Link>
+                        </CardTitle>
                     ) : (
                         <CardTitle className="text-2xl font-bold">Loading...</CardTitle>
                     )}
@@ -69,7 +85,7 @@ const SubmissionDetail: React.FC = () => {
                                 <div className="flex items-center">
                                     <Clock className="mr-2 text-gray-600" />
                                     <span className="font-semibold">Submitted:</span>
-                                    <span className="ml-2">{new Date(submission.submittedAt).toLocaleString()}</span>
+                                    <span className="ml-2">{formatDate(submission.submittedAt)}</span>
                                 </div>
                                 <div className="flex items-center">
                                     <User className="mr-2 text-gray-600" />

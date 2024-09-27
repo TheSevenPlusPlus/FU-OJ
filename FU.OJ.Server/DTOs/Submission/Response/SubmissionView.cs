@@ -18,7 +18,6 @@ namespace FU.OJ.Server.DTOs.Submission.Response
         [Required]
         public string? LanguageName { get; set; }
         public DateTime SubmittedAt { get; set; }
-        public string? UserId { get; set; }
         public string? UserName { get; set; }
         public string? Status { get; set; }
 
