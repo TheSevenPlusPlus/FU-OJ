@@ -6,10 +6,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { Upload, X } from 'lucide-react';
+import { AlertCircle, Upload, X } from 'lucide-react';
 import { createProblem } from '../../../api/problem';
-import { addTestCaseWithFile } from '../../../api/testCase';
-import CreateProblemModel from '../../../models/ProblemModel';
+import { CreateProblemModel } from '../../../models/ProblemModel';
+import { createTestCase } from '../../../api/testcase';
+import { Alert, AlertDescription } from '../../ui/alert';
 
 interface User {
     userName: string;
@@ -68,7 +69,7 @@ const CreateProblem: React.FC = () => {
                 const formData = new FormData();
                 formData.append('TestcaseFile', testCaseFile);
                 formData.append('ProblemCode', problemCode);
-                await addTestCaseWithFile(formData);
+                await createTestCase(formData);
             }
 
             navigate('/manager/problems');
@@ -220,6 +221,14 @@ const CreateProblem: React.FC = () => {
                             )}
                         </CardContent>
                     </Card>
+                    <Alert className="mt-2 bg-blue-50 border-blue-200">
+                        <AlertCircle className="h-4 w-4 text-blue-600" />
+                        <AlertDescription className="text-blue-800">
+                            Please submit the test case as ProblemCode.zip, which is a compressed file of the ProblemCode folder. <br />
+                            Inside contains folders in the form Test1, Test2, Test3, ... TestN-th. <br />
+                            Inside each folder of each test case contains two files ProblemCode.inp, ProblemCode.out, which are input and output files.
+                        </AlertDescription>
+                    </Alert>
                 </div>
                 <Button type="submit">Create Problem</Button>
             </form>

@@ -47,12 +47,8 @@ namespace FU.OJ.Server.Service
             if (problem == null)
                 throw new Exception(ErrorMessage.NotFound);
 
-            if (problem.TestCaseId == null)
+            if (problem.TestCasePath == null)
                 throw new Exception(ErrorMessage.NotHaveTest);
-
-            var testcase = await _testcaseService.GetByIdAsync(problem.TestCaseId);
-            if (testcase == null)
-                throw new Exception(ErrorMessage.NotFound);
 
             var user = await _userService.GetUserByUsernameAsync(request.username);
             if (user == null)
@@ -72,7 +68,7 @@ namespace FU.OJ.Server.Service
             _context.Submissions.Add(submission);
 
             var tokenList = new List<string>();
-            var testFolders = Directory.GetDirectories(testcase.FolderPath);
+            var testFolders = Directory.GetDirectories(problem.TestCasePath);
             string url = $"{_judgeServerUrl}/submissions/?base64_encoded={base64Encoded.ToString().ToLower()}&wait={wait.ToString().ToLower()}";
 
             foreach (var testFolder in testFolders)

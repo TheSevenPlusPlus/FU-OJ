@@ -10,8 +10,6 @@ namespace FU.OJ.Server.Infra.Models
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
         [ForeignKey("UserId")]
         public User User { get; set; } = null!;
-        [ForeignKey("TestCaseId")]
-        public TestCase TestCase { get; set; }
     }
 
     public class ProblemProperties
@@ -28,11 +26,12 @@ namespace FU.OJ.Server.Infra.Models
         public double? MemoryLimit { get; set; }
         public DateTime CreatedAt { get; set; }
         public string? UserId { get; set; }
-        public string? TestCaseId { get; set; }
-        public int totalTests { get; set; }
+        public int TotalTests { get; set; }
         public int? AcQuantity { get; set; }
         public string? Difficulty { get; set; }
         public string? HasSolution { get; set; }
+        public string? TestCasePath { get; set; } = null!; // folder chứa test
+
     }
 
     public class ProblemConfiguration : IEntityTypeConfiguration<Problem>

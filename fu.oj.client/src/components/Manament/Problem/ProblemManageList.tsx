@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Pencil, Trash2, Eye } from 'lucide-react';
+import { Plus, Pencil, Trash2, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
@@ -12,10 +12,9 @@ import {
 import {
     Pagination,
     PaginationContent,
+    PaginationEllipsis,
     PaginationItem,
     PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
 } from "@/components/ui/pagination"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getAllProblems, deleteProblem } from '../../../api/problem';
@@ -71,12 +70,74 @@ const ProblemManageList: React.FC = () => {
     };
 
     const handlePageChange = (page: number) => {
-        setCurrentPage(page);
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+        }
     };
 
     const handleItemsPerPageChange = (value: string) => {
         setItemsPerPage(Number(value));
         setCurrentPage(1); // Reset to first page when changing items per page
+    };
+
+    const renderPageNumbers = () => {
+        const pageNumbers = [];
+        const maxVisiblePages = 5;
+
+        if (totalPages <= maxVisiblePages) {
+            for (let i = 1; i <= totalPages; i++) {
+                pageNumbers.push(
+                    <PaginationItem key={i}>
+                        <PaginationLink onClick={() => handlePageChange(i)} isActive={currentPage === i}>
+                            {i}
+                        </PaginationLink>
+                    </PaginationItem>
+                );
+            }
+        } else {
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+            if (startPage > 1) {
+                pageNumbers.push(
+                    <PaginationItem key={1}>
+                        <PaginationLink onClick={() => handlePageChange(1)}>1</PaginationLink>
+                    </PaginationItem>
+                );
+                if (startPage > 2) {
+                    pageNumbers.push(<PaginationEllipsis key="ellipsis-start" />);
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                pageNumbers.push(
+                    <PaginationItem key={i}>
+                        <PaginationLink onClick={() => handlePageChange(i)} isActive={currentPage === i}>
+                            {i}
+                        </PaginationLink>
+                    </PaginationItem>
+                );
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    pageNumbers.push(<PaginationEllipsis key="ellipsis-end" />);
+                }
+                pageNumbers.push(
+                    <PaginationItem key={totalPages}>
+                        <PaginationLink onClick={() => handlePageChange(totalPages)}>
+                            {totalPages}
+                        </PaginationLink>
+                    </PaginationItem>
+                );
+            }
+        }
+
+        return pageNumbers;
     };
 
     if (loading) return <div>Loading...</div>;
@@ -126,7 +187,7 @@ const ProblemManageList: React.FC = () => {
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Link to={`/problems/edit/${problem.id}`}>
+                                            <Link to={`/manager/problems/update/${problem.code}`}>
                                                 <Button variant="outline" size="sm" className="mr-2">
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
@@ -148,7 +209,7 @@ const ProblemManageList: React.FC = () => {
                                     </Tooltip>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Link to={`/problems/${problem.code}`}>
+                                            <Link to={`/problem/${problem.code}`}>
                                                 <Button variant="outline" size="sm">
                                                     <Eye className="h-4 w-4" />
                                                 </Button>
@@ -167,26 +228,27 @@ const ProblemManageList: React.FC = () => {
             <Pagination className="mt-4">
                 <PaginationContent>
                     <PaginationItem>
-                        <PaginationPrevious
+                        <Button
+                            variant="outline"
+                            size="icon"
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                        />
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                            <span className="sr-only">Go to previous page</span>
+                        </Button>
                     </PaginationItem>
-                    {[...Array(totalPages)].map((_, index) => (
-                        <PaginationItem key={index}>
-                            <PaginationLink
-                                onClick={() => handlePageChange(index + 1)}
-                                isActive={currentPage === index + 1}
-                            >
-                                {index + 1}
-                            </PaginationLink>
-                        </PaginationItem>
-                    ))}
+                    {renderPageNumbers()}
                     <PaginationItem>
-                        <PaginationNext
+                        <Button
+                            variant="outline"
+                            size="icon"
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                        />
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                            <span className="sr-only">Go to next page</span>
+                        </Button>
                     </PaginationItem>
                 </PaginationContent>
             </Pagination>

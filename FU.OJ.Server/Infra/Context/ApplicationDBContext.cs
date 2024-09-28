@@ -17,7 +17,6 @@ namespace FU.OJ.Server.Infra.Context
         public DbSet<Problem> Problems { get; set; }
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<Result> Results { get; set; }
-        public DbSet<TestCase> TestCases { get; set; }
         public DbSet<Contest> Contests { get; set; }
         public DbSet<ContestParticipant> ContestParticipants { get; set; }
         public DbSet<Blog> Blogs { get; set; }
@@ -30,7 +29,6 @@ namespace FU.OJ.Server.Infra.Context
             modelBuilder.ApplyConfiguration(new SubmissionConfiguration());
             modelBuilder.ApplyConfiguration(new ResultConfiguration());
             modelBuilder.ApplyConfiguration(new ContestParticipantConfiguration());
-            modelBuilder.ApplyConfiguration(new TestCaseConfiguration());
             modelBuilder.ApplyConfiguration(new ProblemConfiguration());
             modelBuilder.ApplyConfiguration(new BlogConfiguration());
         }

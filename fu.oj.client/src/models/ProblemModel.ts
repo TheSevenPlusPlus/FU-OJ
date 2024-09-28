@@ -1,4 +1,16 @@
-export default interface CreateProblemModel {
+export  interface CreateProblemModel {
+    code: string;
+    title: string;
+    description: string;
+    constraints: string;
+    exampleInput: string;
+    exampleOutput: string;
+    timeLimit: string;
+    memoryLimit: string;
+    userName: string;
+    difficulty: string;
+}
+export  interface UpdateProblemModel {
     code: string;
     title: string;
     description: string;

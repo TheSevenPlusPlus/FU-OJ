@@ -60,19 +60,6 @@ namespace FU.OJ.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "TestCases",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    ProblemId = table.Column<string>(type: "text", nullable: false),
-                    FolderPath = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TestCases", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -234,11 +221,11 @@ namespace FU.OJ.Server.Migrations
                     MemoryLimit = table.Column<double>(type: "double precision", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: true),
-                    TestCaseId = table.Column<string>(type: "text", nullable: true),
-                    totalTests = table.Column<int>(type: "integer", nullable: false),
+                    TotalTests = table.Column<int>(type: "integer", nullable: false),
                     AcQuantity = table.Column<int>(type: "integer", nullable: true),
                     Difficulty = table.Column<string>(type: "text", nullable: true),
-                    HasSolution = table.Column<string>(type: "text", nullable: true)
+                    HasSolution = table.Column<string>(type: "text", nullable: true),
+                    TestCasePath = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -247,11 +234,6 @@ namespace FU.OJ.Server.Migrations
                         name: "FK_Problems_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Problems_TestCases_TestCaseId",
-                        column: x => x.TestCaseId,
-                        principalTable: "TestCases",
                         principalColumn: "Id");
                 });
 
@@ -421,11 +403,6 @@ namespace FU.OJ.Server.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Problems_TestCaseId",
-                table: "Problems",
-                column: "TestCaseId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Problems_UserId",
                 table: "Problems",
                 column: "UserId");
@@ -490,9 +467,6 @@ namespace FU.OJ.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "TestCases");
         }
     }
 }

@@ -15,7 +15,6 @@ import Rank from './components/Rank';
 import SubmissionDetail from './components/SubmissionDetail'
 import UserManagement from './components/Manament/UserManagement';
 import BlogManagement from './components/Manament/BlogManagement';
-import ProblemDetails from './components/Manament/Problem/ProblemDetails';
 import CreateProblem from './components/Manament/Problem/CreateProblem';
 import UpdateProblem from './components/Manament/Problem/UpdateProblem';
 import ProblemManageList from './components/Manament/Problem/ProblemManageList';
@@ -59,8 +58,7 @@ const App: React.FC = () => {
                         {/*Management*/}
                         <Route path="/manager/problems" element={<ProblemManageList />} />
                         <Route path="/manager/problems/create" element={<CreateProblem />} />
-                        <Route path="/manager/problems/edit/:problemCode" element={<UpdateProblem />} />
-                        <Route path="/manager/problems/:problemCode" element={<ProblemDetails />} />
+                        <Route path="/manager/problems/update/:problemCode" element={<UpdateProblem />} />
                         <Route path="/manager/users" element={<UserManagement />} />
                         <Route path="/manager/blogs" element={<BlogManagement />} />
                     </Routes>

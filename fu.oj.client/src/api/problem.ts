@@ -1,4 +1,4 @@
-﻿import CreateProblemModel from '../models/ProblemModel';
+﻿import { CreateProblemModel, UpdateProblemModel } from '../models/ProblemModel';
 import apiClient from './client';
 
 export const getAllProblems = async (pageIndex: number, pageSize: number) => {
@@ -14,16 +14,8 @@ export const createProblem = async (problem: CreateProblemModel) => {
 };
 
 // Cập nhật problem
-export const updateProblem = async (id: string, problem: {
-    title?: string;
-    description?: string;
-    constraints?: string;
-    exampleInput?: string;
-    exampleOutput?: string;
-    timeLimit: number;
-    memoryLimit: number;
-}) => {
-    return await apiClient.put(`/problem/update/${id}`, problem);
+export const updateProblem = async (problem: UpdateProblemModel) => {
+    return await apiClient.put(`/problem/update/`, problem);
 };
 
 export const getProblemByCode = async (code: string) => {

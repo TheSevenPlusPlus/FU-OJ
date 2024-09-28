@@ -38,12 +38,13 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpDelete("{problemCode}")]
-        public async Task<IActionResult> DeleteTestCase(string problemCode)
+        public async Task<IActionResult> DeleteTestCase(string problemId)
         {
             try
             {
-                await _service.DeleteAsync(problemCode);
-                return Ok("Delete success");
+                bool isDeleted = await _service.DeleteAsync(problemId);
+                if (isDeleted) return Ok("Delete success");
+                else return BadRequest(new { message = "Delete not succcess" });
             }
             catch (Exception ex)
             {

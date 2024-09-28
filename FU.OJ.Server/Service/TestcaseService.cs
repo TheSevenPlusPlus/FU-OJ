@@ -1,7 +1,5 @@
 ﻿using FU.OJ.Server.DTOs.Testcase.Request;
-using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Context;
-using FU.OJ.Server.Infra.Models;
 using Microsoft.EntityFrameworkCore;
 using System.IO.Compression;
 
@@ -10,9 +8,9 @@ namespace FU.OJ.Server.Service
     public interface ITestcaseService
     {
         Task<string> CreateAsync(CreateTestcaseRequest request);
-        Task<TestCase?> GetByIdAsync(string id);
-        Task UpdateAsync(CreateTestcaseRequest request);
-        Task DeleteAsync(string problemCode);
+        Task<string?> GetByIdAsync(string problemId);
+        Task<string?> UpdateAsync(CreateTestcaseRequest request);
+        Task<bool> DeleteAsync(string problemId);
     }
 
     public class TestcaseService : ITestcaseService
@@ -27,18 +25,26 @@ namespace FU.OJ.Server.Service
             _problemService = problemService;
         }
 
-        public async Task<TestCase?> GetByIdAsync(string id)
+        public async Task<string?> GetByIdAsync(string id)
         {
-            var testcase = await _context.TestCases.AsNoTracking()
+            var problem = await _context.Problems.AsNoTracking()
                 .FirstOrDefaultAsync(tc => tc.Id == id); // Use Id instead of id
+            if (problem == null)
+            {
+                return null;
+            }
 
-            return testcase;
+            return problem.TestCasePath;
         }
 
-        public async Task<TestCase?> GetByProblemIdAsync(string problemId)
+        public async Task<string?> GetByProblemIdAsync(string problemId)
         {
-            return await _context.TestCases.AsNoTracking()
-                .FirstOrDefaultAsync(tc => tc.ProblemId == problemId); // Use ProblemId instead of problem_id
+            var problem = await _context.Problems.FindAsync(problemId);
+            if (problem == null)
+            {
+                return null;
+            }
+            return problem.TestCasePath;
         }
 
         public async Task<string> CreateAsync(CreateTestcaseRequest request)
@@ -46,10 +52,6 @@ namespace FU.OJ.Server.Service
             var problem = await _problemService.GetByCodeAsync(request.ProblemCode); // Use ProblemCode instead of problem_code
             if (problem == null)
                 throw new Exception("This problem " + request.ProblemCode + " not found");
-
-            var existingTestCase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.ProblemId == problem.Id); // Use Id instead of id
-            if (existingTestCase != null)
-                throw new Exception("Test case already exists for this problem.");
 
             // Handle ZIP file
             var zipFolderName = Path.GetFileNameWithoutExtension(request.TestcaseFile.FileName); // Use TestcaseFile instead of testcase_file
@@ -107,30 +109,22 @@ namespace FU.OJ.Server.Service
             // Delete temporary folder
             DeleteDirectoryRecursively(tempFolderPath);
 
-            var newTestCase = new TestCase
-            {
-                ProblemId = problem.Id, // Use ProblemId instead of problem_id
-                FolderPath = finalFolderPath // Use FolderPath instead of folder_path
-            };
-
-            _context.TestCases.Add(newTestCase);
-            problem.TestCaseId = newTestCase.Id; // Use TestCaseId instead of test_case_id
-            problem.totalTests = testCaseCount;
+            problem.TotalTests = testCaseCount;
+            problem.TestCasePath = finalFolderPath;
             _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
 
-            // Return test case ID and the number of test cases added
-            return newTestCase.Id;
+            return "Success";
         }
 
 
-        public async Task UpdateAsync(CreateTestcaseRequest request)
+        public async Task<string?> UpdateAsync(CreateTestcaseRequest request)
         {
             var problem = await _problemService.GetByCodeAsync(request.ProblemCode);
             if (problem == null)
                 throw new Exception("Problem not found");
 
-            var testcase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.ProblemId == problem.Id);
+            var testcase = problem.TestCasePath;
             if (testcase == null)
                 throw new Exception("Test case not found");
 
@@ -184,9 +178,10 @@ namespace FU.OJ.Server.Service
             // Delete temporary folder
             DeleteDirectoryRecursively(tempFolderPath);
 
-            testcase.FolderPath = finalFolderPath; // Use FolderPath instead of folder_path
-            _context.TestCases.Update(testcase);
+            problem.TestCasePath = finalFolderPath; // Use FolderPath instead of folder_path
+            _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
+            return "Updated successful";
         }
 
         private void DeleteDirectoryRecursively(string path)
@@ -210,23 +205,21 @@ namespace FU.OJ.Server.Service
             }
         }
 
-        public async Task DeleteAsync(string problemCode)
+        public async Task<bool> DeleteAsync(string problemId)
         {
-            var problem = await _context.Problems.AsNoTracking().FirstOrDefaultAsync(u => u.Code == problemCode); // Use Code instead of code
+            var problem = await _context.Problems.AsNoTracking().FirstOrDefaultAsync(u => u.Id == problemId);
             if (problem == null)
-                throw new Exception(ErrorMessage.NotFound);
+                return false;
 
-            var testcase = await _context.TestCases.AsNoTracking().FirstOrDefaultAsync(u => u.ProblemId == problem.Id); // Use ProblemId instead of problem_id
-            if (testcase == null)
-                throw new Exception("Test case not found");
-
-            if (Directory.Exists(testcase.FolderPath)) // Use FolderPath instead of folder_path
+            if (Directory.Exists(problem.TestCasePath))
             {
-                DeleteDirectoryRecursively(testcase.FolderPath);
+                DeleteDirectoryRecursively(problem.TestCasePath);
             }
 
-            _context.TestCases.Remove(testcase);
+            problem.TestCasePath = null;
+            _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

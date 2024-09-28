@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240928025852_initDB")]
+    [Migration("20240928075713_initDB")]
     partial class initDB
     {
         /// <inheritdoc />
@@ -158,7 +158,8 @@ namespace FU.OJ.Server.Migrations
                     b.Property<double?>("MemoryLimit")
                         .HasColumnType("double precision");
 
-                    b.Property<string>("TestCaseId")
+                    b.Property<string>("TestCasePath")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<double?>("TimeLimit")
@@ -167,15 +168,13 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("text");
 
+                    b.Property<int>("TotalTests")
+                        .HasColumnType("integer");
+
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
-                    b.Property<int>("totalTests")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("TestCaseId");
 
                     b.HasIndex("UserId");
 
@@ -243,24 +242,6 @@ namespace FU.OJ.Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Submissions");
-                });
-
-            modelBuilder.Entity("FU.OJ.Server.Infra.Models.TestCase", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FolderPath")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProblemId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TestCases");
                 });
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.User", b =>
@@ -533,15 +514,9 @@ namespace FU.OJ.Server.Migrations
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Problem", b =>
                 {
-                    b.HasOne("FU.OJ.Server.Infra.Models.TestCase", "TestCase")
-                        .WithMany()
-                        .HasForeignKey("TestCaseId");
-
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
                         .WithMany("Problems")
                         .HasForeignKey("UserId");
-
-                    b.Navigation("TestCase");
 
                     b.Navigation("User");
                 });

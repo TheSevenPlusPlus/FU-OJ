@@ -14,7 +14,7 @@ namespace FU.OJ.Server.Service
         Task<Problem?> GetByIdAsync(string id);
         Task<Problem?> GetByCodeAsync(string code);
         Task<(List<Problem> problems, int totalPages)> GetAllAsync(Paging query);
-        Task<bool> UpdateAsync(string id, UpdateProblemRequest request);
+        Task<bool> UpdateAsync(UpdateProblemRequest request);
         Task<bool> DeleteAsync(string id);
     }
 
@@ -42,7 +42,6 @@ namespace FU.OJ.Server.Service
 
         public async Task<string> CreateAsync(CreateProblemRequest request)
         {
-            Console.WriteLine(request);
             var problem = await GetByCodeAsync(request.Code);
 
             if (problem != null)
@@ -88,9 +87,10 @@ namespace FU.OJ.Server.Service
             return (problems, totalPages);
         }
 
-        public async Task<bool> UpdateAsync(string id, UpdateProblemRequest request)
+        public async Task<bool> UpdateAsync(UpdateProblemRequest request)
         {
-            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Id == id);
+            if (request.Code == null) throw new Exception("Problem Code isn's existed");
+            var problem = await GetByCodeAsync(request.Code);
 
             if (problem == null)
                 return false;
@@ -102,6 +102,7 @@ namespace FU.OJ.Server.Service
             problem.ExampleOutput = request.ExampleOutput;
             problem.TimeLimit = request.TimeLimit;
             problem.MemoryLimit = request.MemoryLimit;
+            problem.Difficulty = request.Difficulty;
 
             _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
@@ -112,10 +113,6 @@ namespace FU.OJ.Server.Service
         public async Task<bool> DeleteAsync(string id)
         {
             var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Id == id);
-
-            if (problem == null)
-                return false;
-
             _context.Problems.Remove(problem);
             await _context.SaveChangesAsync();
 
