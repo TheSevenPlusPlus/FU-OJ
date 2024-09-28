@@ -11,7 +11,7 @@
             public const string GetByUsername = "get/{userName}";
 
             public const string Update = "update";
-            public const string Delete = "delete";
+            public const string Delete = "delete/{userName}";
 
         }
     }

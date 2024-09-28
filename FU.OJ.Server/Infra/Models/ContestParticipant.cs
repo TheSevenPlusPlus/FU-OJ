@@ -1,15 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FU.OJ.Server.Infra.Models
 {
     public class ContestParticipant : ContestParticipantProperties
     {
-        [ForeignKey("UserId")]
         public User User { get; set; } = null!;
-        [ForeignKey("ContestId")]
         public Contest Contest { get; set; } = null!;
     }
 
@@ -25,10 +22,15 @@ namespace FU.OJ.Server.Infra.Models
     {
         public void Configure(EntityTypeBuilder<ContestParticipant> builder)
         {
-            //builder.HasKey(s => s.Id);
+            builder.HasOne(cp => cp.User)
+               .WithMany()
+               .HasForeignKey(cp => cp.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
 
-            //builder.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId);
-            //builder.HasOne(e => e.Contest).WithMany().HasForeignKey(e => e.ContestId);
+            builder.HasOne(cp => cp.Contest)
+                   .WithMany(c => c.ContestParticipants)
+                   .HasForeignKey(cp => cp.ContestId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

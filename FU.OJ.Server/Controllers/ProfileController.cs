@@ -46,7 +46,7 @@ namespace FU.OJ.Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updatedUser = await _userService.UpdateProfileAsync(updateUserRequest);
+            var updatedUser = await _userService.UpdateUserAsync(updateUserRequest);
             if (updatedUser == null) return NotFound("User not found");
 
             var userResponse = new UserView

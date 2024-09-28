@@ -1,4 +1,5 @@
-﻿using FU.OJ.Server.DTOs.User.Request;
+﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.User.Request;
 using FU.OJ.Server.DTOs.User.Respond;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
@@ -43,36 +44,55 @@ namespace FU.OJ.Server.Controllers
                 CreatedAt = newUser.CreatedAt,
             };
 
-            return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, userResponse);
+            return Ok(userResponse);
         }
 
         [HttpGet(UserRoute.Action.GetAll)]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers([FromQuery] Paging query)
         {
-            var users = await _userService.GetAllUsersAsync();
-            var userResponses = users.Select(u => new UserView
+            try
             {
-                UserName = u.UserName,
-                Email = u.Email,
-                PhoneNumber = u.PhoneNumber,
-                FullName = u.FullName,
-                City = u.City,
-                Description = u.Description,
-                FacebookLink = u.FacebookLink,
-                GithubLink = u.GithubLink,
-                School = u.School,
-                AvatarUrl = u.AvatarUrl,
-                CreatedAt = u.CreatedAt,
-            }).ToList();
+                // Gọi dịch vụ để lấy danh sách users và tổng số trang
+                var (users, totalPages) = await _userService.GetAllUsersAsync(query);
 
-            return Ok(userResponses);
+                // Trả về kết quả dưới dạng JSON
+                return Ok(new { users, totalPages });
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
         }
+        //Duplicate route and param with GetUserByUserName
+        //[HttpGet(UserRoute.Action.GetById)]
+        //public async Task<IActionResult> GetUserById(string id)
+        //{
+        //    var user = await _userService.GetUserByIdAsync(id);
+        //    if (user == null) return NotFound("User not found");
 
-        [HttpGet(UserRoute.Action.GetById)]
-        public async Task<IActionResult> GetUserById(string id)
+        //    var userResponse = new UserView
+        //    {
+        //        UserName = user.UserName,
+        //        Email = user.Email,
+        //        PhoneNumber = user.PhoneNumber,
+        //        FullName = user.FullName,
+        //        City = user.City,
+        //        Description = user.Description,
+        //        FacebookLink = user.FacebookLink,
+        //        GithubLink = user.GithubLink,
+        //        School = user.School,
+        //        AvatarUrl = user.AvatarUrl,
+        //        CreatedAt = user.CreatedAt,
+        //    };
+
+        //    return Ok(userResponse);
+        //}
+
+        [HttpGet(UserRoute.Action.GetByUsername)]
+        public async Task<IActionResult> GetUserByUserName(string userName)
         {
-            var user = await _userService.GetUserByIdAsync(id);
-            if (user == null) return NotFound("User not found");
+            var user = await _userService.GetUserByUsernameAsync(userName);
+            if (user == null) return null;
 
             var userResponse = new UserView
             {
@@ -93,12 +113,12 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpPut(UserRoute.Action.Update)]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] UpdateUserRequest updateUserRequest)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userService.UpdateUserAsync(id, updateUserRequest);
+            var user = await _userService.UpdateUserAsync(updateUserRequest);
             if (user == null) return NotFound("User not found");
 
             var userResponse = new UserView
@@ -120,9 +140,9 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpDelete(UserRoute.Action.Delete)]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<IActionResult> DeleteUser(string userName)
         {
-            var result = await _userService.DeleteUserAsync(id);
+            var result = await _userService.DeleteUserAsync(userName);
             if (!result) return NotFound("User not found");
 
             return NoContent();

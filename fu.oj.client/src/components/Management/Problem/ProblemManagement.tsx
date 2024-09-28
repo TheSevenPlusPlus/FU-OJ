@@ -33,7 +33,7 @@ interface Problem {
     hasSolution: string;
 }
 
-const ProblemManageList: React.FC = () => {
+const ProblemManagement: React.FC = () => {
     const [problems, setProblems] = useState<Problem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -256,4 +256,4 @@ const ProblemManageList: React.FC = () => {
     );
 };
 
-export default ProblemManageList;
+export default ProblemManagement;
