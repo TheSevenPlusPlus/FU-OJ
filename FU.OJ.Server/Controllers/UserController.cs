@@ -1,16 +1,14 @@
 ﻿using FU.OJ.Server.DTOs.User.Request;
 using FU.OJ.Server.DTOs.User.Respond;
-using FU.OJ.Server.Infra.Const.Authorize;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers
 {
     [Route(UserRoute.INDEX)]
     [ApiController]
-    [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
+    //[Authorize(Roles = RoleAuthorize.OnlyAdmin)]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
@@ -30,8 +28,9 @@ namespace FU.OJ.Server.Controllers
             if (newUser == null)
                 return StatusCode(500, "User creation failed");
 
-            var userResponse = new UpdateUserRequest
+            var userResponse = new UserView
             {
+                UserName = newUser.UserName,
                 Email = newUser.Email,
                 PhoneNumber = newUser.PhoneNumber,
                 FullName = newUser.FullName,
@@ -40,6 +39,8 @@ namespace FU.OJ.Server.Controllers
                 FacebookLink = newUser.FacebookLink,
                 GithubLink = newUser.GithubLink,
                 School = newUser.School,
+                AvatarUrl = newUser.AvatarUrl,
+                CreatedAt = newUser.CreatedAt,
             };
 
             return CreatedAtAction(nameof(GetUserById), new { id = newUser.Id }, userResponse);
@@ -49,8 +50,9 @@ namespace FU.OJ.Server.Controllers
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userService.GetAllUsersAsync();
-            var userResponses = users.Select(u => new UpdateUserRequest
+            var userResponses = users.Select(u => new UserView
             {
+                UserName = u.UserName,
                 Email = u.Email,
                 PhoneNumber = u.PhoneNumber,
                 FullName = u.FullName,
@@ -59,6 +61,8 @@ namespace FU.OJ.Server.Controllers
                 FacebookLink = u.FacebookLink,
                 GithubLink = u.GithubLink,
                 School = u.School,
+                AvatarUrl = u.AvatarUrl,
+                CreatedAt = u.CreatedAt,
             }).ToList();
 
             return Ok(userResponses);
@@ -70,8 +74,9 @@ namespace FU.OJ.Server.Controllers
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound("User not found");
 
-            var userResponse = new UpdateUserRequest
+            var userResponse = new UserView
             {
+                UserName = user.UserName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 FullName = user.FullName,
@@ -80,6 +85,8 @@ namespace FU.OJ.Server.Controllers
                 FacebookLink = user.FacebookLink,
                 GithubLink = user.GithubLink,
                 School = user.School,
+                AvatarUrl = user.AvatarUrl,
+                CreatedAt = user.CreatedAt,
             };
 
             return Ok(userResponse);
@@ -91,19 +98,22 @@ namespace FU.OJ.Server.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updatedUser = await _userService.UpdateUserAsync(id, updateUserRequest);
-            if (updatedUser == null) return NotFound("User not found");
+            var user = await _userService.UpdateUserAsync(id, updateUserRequest);
+            if (user == null) return NotFound("User not found");
 
-            var userResponse = new UpdateUserRequest
+            var userResponse = new UserView
             {
-                Email = updatedUser.Email,
-                PhoneNumber = updatedUser.PhoneNumber,
-                FullName = updatedUser.FullName,
-                City = updatedUser.City,
-                Description = updatedUser.Description,
-                FacebookLink = updatedUser.FacebookLink,
-                GithubLink = updatedUser.GithubLink,
-                School = updatedUser.School,
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                FullName = user.FullName,
+                City = user.City,
+                Description = user.Description,
+                FacebookLink = user.FacebookLink,
+                GithubLink = user.GithubLink,
+                School = user.School,
+                AvatarUrl = user.AvatarUrl,
+                CreatedAt = user.CreatedAt,
             };
 
             return Ok(userResponse);

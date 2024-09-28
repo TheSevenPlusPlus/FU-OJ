@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +11,7 @@ import { getProfile, updateProfile } from '../../api/profile';
 import { UpdateUserProfile, UserProfile } from '../../models/UserProfileModel';
 
 export default function ProfileEdit() {
+    const navigate = useNavigate();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [updateData, setUpdateData] = useState<UpdateUserProfile>({
         userName: "",
@@ -71,6 +73,7 @@ export default function ProfileEdit() {
         try {
             await updateProfile(updateData);
             setSuccess("Profile updated successfully!");
+            navigate('/manager/problems');
         } catch (error) {
             console.error("Failed to update profile:", error);
             setError("Failed to update profile. Please try again.");
@@ -93,7 +96,6 @@ export default function ProfileEdit() {
                 </CardHeader>
                 <CardContent>
                     {error && <div className="text-red-500 mb-4">{error}</div>}
-                    {success && <div className="text-green-500 mb-4">{success}</div>}
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="userName">Username</Label>
@@ -136,6 +138,7 @@ export default function ProfileEdit() {
                             <Input id="avatarUrl" name="avatarUrl" value={updateData.avatarUrl} onChange={handleChange} />
                         </div>
                         <Button type="submit">Save Changes</Button>
+                        {success && <div className="text-green-500 mb-4">{success}</div>}
                     </form>
                 </CardContent>
             </Card>

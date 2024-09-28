@@ -32,12 +32,15 @@ namespace FU.OJ.Server.Service
             {
                 UserName = userRequest.UserName,
                 Email = userRequest.Email,
+                PhoneNumber = userRequest.PhoneNumber,
                 FullName = userRequest.FullName,
                 City = userRequest.City,
                 Description = userRequest.Description,
                 FacebookLink = userRequest.FacebookLink,
                 GithubLink = userRequest.GithubLink,
                 CreatedAt = DateTime.UtcNow,
+                AvatarUrl = userRequest.AvatarUrl,
+                School = userRequest.School,
             };
 
             var result = await _userManager.CreateAsync(user, userRequest.Password);
