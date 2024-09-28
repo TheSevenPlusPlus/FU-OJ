@@ -13,6 +13,7 @@ import ProfileView from './components/Profile/Profile';
 import ProfileEdit from './components/Profile/ProfileEdit';
 import Rank from './components/Rank';
 import SubmissionDetail from './components/SubmissionDetail'
+import SubmissionListBelongsUser from './components/SubmissionListBelongsUser';
 
 const App: React.FC = () => {
 
@@ -42,7 +43,8 @@ const App: React.FC = () => {
                         <Route path="/problem/:problemCode/submit" element={<CodeSubmission />} />
                         {/*Submissions*/}
                         <Route path="/submissions/:id" element={<SubmissionDetail />} />
-                        <Route path="/submissions" element={<SubmissionList />} />
+                        <Route path="/submissions/all/:username" element={<SubmissionListBelongsUser />} />
+                        <Route path="/submissions/all" element={<SubmissionList />} />
                         {/*Blogs*/}
                         <Route path="/blog" element={<BlogList />} />
                         <Route path="/blog/:blog_id" element={<BlogPost />} />

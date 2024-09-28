@@ -1,11 +1,11 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button"; // Giả sử bạn có button component riêng
-import { getAllSubmissions } from '../api/submission';
+import { Button } from "@/components/ui/button";
+import { getAllSubmissions, getAllSubmissionsBelongsUser } from '../api/submission';
 import { Submission } from '../models/SubmissionModel';
 
-const SubmissionList: React.FC = () => {
+export default function SubmissionList() {
     const navigate = useNavigate();
     const [submissions, setSubmissions] = useState<Submission[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -14,6 +14,13 @@ const SubmissionList: React.FC = () => {
     const [pageSize, setPageSize] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [searchParams] = useSearchParams();
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    const userName = userData?.userName;
+
+    useEffect(() => {
+        console.log("userName: ", userName);
+    }, [userName]);
+
 
     useEffect(() => {
         const index = searchParams.get('pageIndex');
@@ -30,6 +37,7 @@ const SubmissionList: React.FC = () => {
                 const { submissions, totalPages } = response.data;
                 setSubmissions(submissions);
                 setTotalPages(totalPages);
+
                 setLoading(false);
             } catch (err) {
                 setError('Failed to fetch submissions.');
@@ -55,25 +63,25 @@ const SubmissionList: React.FC = () => {
     const handlePageChange = (newPageIndex: number) => {
         if (newPageIndex > 0 && newPageIndex <= totalPages) {
             setPageIndex(newPageIndex);
-            navigate(`/submissions?pageIndex=${newPageIndex}&pageSize=${pageSize}`);
+            navigate(`/submissions/all?pageIndex=${newPageIndex}&pageSize=${pageSize}`);
         }
     };
 
     const renderPagination = () => {
         const paginationItems = [];
-        const maxPagesToShow = 5; // Adjust this for how many page numbers to show
+        const maxPagesToShow = 5;
         const startPage = Math.max(1, pageIndex - Math.floor(maxPagesToShow / 2));
         const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
 
         if (startPage > 1) {
             paginationItems.push(
-                <Button key={1} onClick={() => handlePageChange(1)} className="bg-gray-700 text-white">
+                <Button key={1} onClick={() => handlePageChange(1)} variant="outline" size="sm">
                     1
                 </Button>
             );
             if (startPage > 2) {
                 paginationItems.push(
-                    <Button key="ellipsis-start" className="bg-gray-700 text-white" disabled>
+                    <Button key="ellipsis-start" variant="outline" size="sm" disabled>
                         ...
                     </Button>
                 );
@@ -85,7 +93,8 @@ const SubmissionList: React.FC = () => {
                 <Button
                     key={i}
                     onClick={() => handlePageChange(i)}
-                    className={`bg-gray-700 text-white ${i === pageIndex ? 'font-bold bg-blue-500' : ''}`} // Highlight current page
+                    variant={i === pageIndex ? "default" : "outline"}
+                    size="sm"
                 >
                     {i}
                 </Button>
@@ -95,13 +104,13 @@ const SubmissionList: React.FC = () => {
         if (endPage < totalPages) {
             if (endPage < totalPages - 1) {
                 paginationItems.push(
-                    <Button key="ellipsis-end" className="bg-gray-700 text-white" disabled>
+                    <Button key="ellipsis-end" variant="outline" size="sm" disabled>
                         ...
                     </Button>
                 );
             }
             paginationItems.push(
-                <Button key={totalPages} onClick={() => handlePageChange(totalPages)} className="bg-gray-700 text-white">
+                <Button key={totalPages} onClick={() => handlePageChange(totalPages)} variant="outline" size="sm">
                     {totalPages}
                 </Button>
             );
@@ -113,7 +122,7 @@ const SubmissionList: React.FC = () => {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center h-full">
-                <div className="spinner"></div>
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
                 <p className="text-center text-lg mt-2">Loading submissions...</p>
             </div>
         );
@@ -125,7 +134,16 @@ const SubmissionList: React.FC = () => {
 
     return (
         <div className="container mx-auto py-8">
-            <h1 className="text-3xl font-bold mb-6">All Submissions</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold">All Submissions</h1>
+                <Button
+                    onClick={() => navigate(`/submissions/all/${userName}?pageIndex=${1}&pageSize=${10}`)}
+                    variant="secondary"
+                    size="sm"
+                >
+                    View my submissions
+                </Button>
+            </div>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -158,13 +176,13 @@ const SubmissionList: React.FC = () => {
                             <TableCell>{submission.languageName}</TableCell>
                             <TableCell className="text-right">{formatDate(submission.submittedAt)}</TableCell>
                             <TableCell className="text-center">
-                                <Link to={`/submissions/${submission.id}`}>
-                                    <Button
-                                        className="bg-black text-white hover:bg-gray-800 py-2 px-4 rounded-md"
-                                    >
-                                        View Detail
-                                    </Button>
-                                </Link>
+                                <Button
+                                    onClick={() => navigate(`/submissions/${submission.id}`)}
+                                    variant="secondary"
+                                    size="sm"
+                                >
+                                    View Detail
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -172,25 +190,25 @@ const SubmissionList: React.FC = () => {
             </Table>
 
             {/* Pagination Controls */}
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4 space-x-2">
                 <Button
-                    className="mr-2 bg-gray-700 text-white font-bold"
                     onClick={() => handlePageChange(pageIndex - 1)}
                     disabled={pageIndex === 1}
+                    variant="outline"
+                    size="sm"
                 >
                     Previous
                 </Button>
                 {renderPagination()}
                 <Button
-                    className="ml-2 bg-gray-700 text-white font-bold"
                     onClick={() => handlePageChange(pageIndex + 1)}
                     disabled={pageIndex === totalPages}
+                    variant="outline"
+                    size="sm"
                 >
                     Next
                 </Button>
             </div>
         </div>
     );
-};
-
-export default SubmissionList;
+}

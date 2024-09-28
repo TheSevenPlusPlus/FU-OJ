@@ -76,5 +76,22 @@ namespace FU.OJ.Server.Controllers
             }
         }
 
+        [HttpGet(SubmissionRoute.Action.GetAllBelongUser)]
+        public async Task<IActionResult> GetAllSubmissionsBelongsUser([FromQuery] Paging query, [FromRoute] string username)
+        {
+            try
+            {
+                // Gọi dịch vụ để lấy danh sách submissions và tổng số trang
+                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsBelongsUserAsync(query, username);
+
+                // Trả về kết quả dưới dạng JSON
+                return Ok(new { submissions, totalPages });
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
     }
 }

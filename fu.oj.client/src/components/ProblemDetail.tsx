@@ -7,7 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { getProblemByCode } from '../api/problem'; // Ensure this function is correctly imported
 import { Problem } from '../models/ProblemModel';
 
-const ProblemDetail: React.FC = () => {
+export default function ProblemDetail() {
     const { problemCode } = useParams<{ problemCode: string }>();
     const [problem, setProblem] = useState<Problem | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -117,14 +117,19 @@ const ProblemDetail: React.FC = () => {
                         <Button>Submit Solution</Button>
                     </Link>
 
-                    {/* View Submissions Button */}
-                    <Link to={`/problem/${problem.code}/submissions`}>
-                        <Button variant="secondary">View Submissions</Button>
-                    </Link>
+                    <div className="space-x-2">
+                        {/* View All Submissions Button */}
+                        <Link to={`/problem/${problem.code}/submissions`}>
+                            <Button variant="secondary">View all submissions</Button>
+                        </Link>
+
+                        {/* View My Submissions Button */}
+                        <Link to={`/problem/${problem.code}/my-submissions`}>
+                            <Button variant="secondary">View my submissions</Button>
+                        </Link>
+                    </div>
                 </CardFooter>
             </Card>
         </div>
     );
-};
-
-export default ProblemDetail;
+}
