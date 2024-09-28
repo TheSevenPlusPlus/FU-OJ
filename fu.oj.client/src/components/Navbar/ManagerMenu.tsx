@@ -19,19 +19,19 @@ const ManagerMenu: React.FC = () => {
             <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                     <DropdownMenuItem asChild>
-                        <Link to="/manager/problem" className="flex items-center">
+                        <Link to="/manager/problems" className="flex items-center">
                             <FileQuestion className="mr-2 h-4 w-4" />
                             <span>Problem</span>
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                        <Link to="/manager/blog" className="flex items-center">
+                        <Link to="/manager/blogs" className="flex items-center">
                             <BookOpen className="mr-2 h-4 w-4" />
                             <span>Blog</span>
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                        <Link to="/manager/user" className="flex items-center">
+                        <Link to="/manager/users" className="flex items-center">
                             <Users className="mr-2 h-4 w-4" />
                             <span>User</span>
                         </Link>

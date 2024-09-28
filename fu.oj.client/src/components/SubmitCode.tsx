@@ -29,6 +29,8 @@ const CodeSubmission: React.FC = () => {
     const [result, setResult] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    const userName = userData?.userName;
 
     useEffect(() => {
         const fetchProblem = async () => {
@@ -48,11 +50,12 @@ const CodeSubmission: React.FC = () => {
         setError(null);
         try {
             const response = await submitCode({
+                username: userName,
                 problemCode: problemCode,
                 sourceCode: code,
                 languageId: language?.languageId,
                 languageName: language?.languageName,
-                problemId: problem?.id
+                problemId: problem?.id,
             });
 
             let submissionId = response.data;

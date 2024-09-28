@@ -1,14 +1,17 @@
-import apiClient from './client';
+﻿import apiClient from './client';
 
 // 
-export const submitCode = async (data: { problemCode: string; sourceCode: string; languageId: number, languageName: string, problemId: string }) => {
+export const submitCode = async (data: { problemCode: string; sourceCode: string; languageId: number, languageName: string, problemId: string, username: string }) => {
     return await apiClient.post('/submissions/submit', data);
 };
 
-// 
-export const getAllSubmissions = async () => {
-    return await apiClient.get(`/submissions`);
+// Cập nhật hàm gọi API để hỗ trợ phân trang
+export const getAllSubmissions = async (pageIndex: number, pageSize: number) => {
+    return await apiClient.get(`/submissions`, {
+        params: { pageIndex, pageSize } // Thêm query params cho phân trang
+    });
 };
+
 
 export const getSubmissionById = async (id: string) => {
     //console.log("id = ", id);

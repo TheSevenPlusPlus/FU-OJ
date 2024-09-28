@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class initDb : Migration
+    public partial class initDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -37,6 +37,8 @@ namespace FU.OJ.Server.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     FacebookLink = table.Column<string>(type: "text", nullable: true),
                     GithubLink = table.Column<string>(type: "text", nullable: true),
+                    AvatarUrl = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -233,6 +235,7 @@ namespace FU.OJ.Server.Migrations
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: true),
                     TestCaseId = table.Column<string>(type: "text", nullable: true),
+                    totalTests = table.Column<int>(type: "integer", nullable: false),
                     AcQuantity = table.Column<int>(type: "integer", nullable: true),
                     Difficulty = table.Column<string>(type: "text", nullable: true),
                     HasSolution = table.Column<string>(type: "text", nullable: true)
@@ -420,8 +423,7 @@ namespace FU.OJ.Server.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Problems_TestCaseId",
                 table: "Problems",
-                column: "TestCaseId",
-                unique: true);
+                column: "TestCaseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Problems_UserId",

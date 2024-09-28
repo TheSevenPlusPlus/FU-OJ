@@ -18,7 +18,7 @@ interface FormErrors {
     [key: string]: string
 }
 
-export default function AuthForm({ additionalFields = [] }: RegisterProps) {
+export default function AuthFosrm({ additionalFields = [] }: RegisterProps) {
     const [activeTab, setActiveTab] = useState<string>("login")
     const [formData, setFormData] = useState({
         username: '',

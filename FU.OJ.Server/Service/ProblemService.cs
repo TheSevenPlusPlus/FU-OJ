@@ -1,7 +1,9 @@
-﻿using FU.OJ.Server.DTOs.Problem.Request;
+﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Problem.Request;
 using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace FU.OJ.Server.Service
@@ -11,7 +13,7 @@ namespace FU.OJ.Server.Service
         Task<string> CreateAsync(CreateProblemRequest request);
         Task<Problem?> GetByIdAsync(string id);
         Task<Problem?> GetByCodeAsync(string code);
-        Task<List<Problem>> GetAllAsync();
+        Task<(List<Problem> problems, int totalPages)> GetAllAsync(Paging query);
         Task<bool> UpdateAsync(string id, UpdateProblemRequest request);
         Task<bool> DeleteAsync(string id);
     }
@@ -19,10 +21,11 @@ namespace FU.OJ.Server.Service
     public class ProblemService : IProblemService
     {
         private readonly ApplicationDbContext _context;
-
-        public ProblemService(ApplicationDbContext context)
+        private readonly UserManager<User> _userManager;
+        public ProblemService(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<Problem?> GetByCodeAsync(string code)
@@ -39,10 +42,14 @@ namespace FU.OJ.Server.Service
 
         public async Task<string> CreateAsync(CreateProblemRequest request)
         {
+            Console.WriteLine(request);
             var problem = await GetByCodeAsync(request.Code);
 
             if (problem != null)
                 throw new Exception(ErrorMessage.CodeExisted);
+
+            var user = await _userManager.FindByNameAsync(request.UserName);
+            if (user == null) throw new Exception(ErrorMessage.UserNotFound);
 
             var newProblem = new Problem
             {
@@ -54,7 +61,9 @@ namespace FU.OJ.Server.Service
                 ExampleOutput = request.ExampleOutput,
                 TimeLimit = request.TimeLimit,
                 MemoryLimit = request.MemoryLimit,
-                CreatedAt = request.CreatedAt
+                CreatedAt = DateTime.UtcNow,
+                UserId = user.Id,
+                Difficulty = request.Difficulty
             };
 
             _context.Problems.Add(newProblem);
@@ -63,9 +72,20 @@ namespace FU.OJ.Server.Service
             return newProblem.Code;
         }
 
-        public async Task<List<Problem>> GetAllAsync()
+        public async Task<(List<Problem> problems, int totalPages)> GetAllAsync(Paging query)
         {
-            return await _context.Problems.ToListAsync();
+            // Đếm tổng số submissions
+            int totalItems = await _context.Problems.CountAsync();
+
+            // Tính toán tổng số trang
+            int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
+
+            var problems = await _context.Problems.AsNoTracking()
+                .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
+                .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
+                .ToListAsync();
+
+            return (problems, totalPages);
         }
 
         public async Task<bool> UpdateAsync(string id, UpdateProblemRequest request)

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240926164610_initDb")]
-    partial class initDb
+    [Migration("20240928025852_initDB")]
+    partial class initDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,10 +170,12 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
+                    b.Property<int>("totalTests")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("TestCaseId")
-                        .IsUnique();
+                    b.HasIndex("TestCaseId");
 
                     b.HasIndex("UserId");
 
@@ -269,12 +271,18 @@ namespace FU.OJ.Server.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
+                    b.Property<string>("AvatarUrl")
+                        .HasColumnType("text");
+
                     b.Property<string>("City")
                         .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -526,8 +534,8 @@ namespace FU.OJ.Server.Migrations
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Problem", b =>
                 {
                     b.HasOne("FU.OJ.Server.Infra.Models.TestCase", "TestCase")
-                        .WithOne("Problem")
-                        .HasForeignKey("FU.OJ.Server.Infra.Models.Problem", "TestCaseId");
+                        .WithMany()
+                        .HasForeignKey("TestCaseId");
 
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
                         .WithMany("Problems")
@@ -633,12 +641,6 @@ namespace FU.OJ.Server.Migrations
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Submission", b =>
                 {
                     b.Navigation("Results");
-                });
-
-            modelBuilder.Entity("FU.OJ.Server.Infra.Models.TestCase", b =>
-                {
-                    b.Navigation("Problem")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.User", b =>

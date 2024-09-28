@@ -8,6 +8,5 @@
         public string? expected_output { get; set; }
         public double? cpu_time_limit { get; set; }
         public double? memory_limit { get; set; }
-        public string? stdout { get; set; }
     }
 }

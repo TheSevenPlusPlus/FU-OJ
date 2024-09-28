@@ -1,7 +1,8 @@
 ﻿import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { getAllBlogs } from '../api/blog';
 
 interface Blog {
@@ -13,23 +14,110 @@ interface Blog {
 }
 
 export default function BlogList() {
+    const navigate = useNavigate();
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [totalPages, setTotalPages] = useState<number>(0);
+    const [pageIndex, setPageIndex] = useState<number>(1);
+    const [pageSize, setPageSize] = useState<number>(10); // Define page size
+    const [searchParams] = useSearchParams();
 
     useEffect(() => {
+        const index = searchParams.get('pageIndex');
+        const size = searchParams.get('pageSize');
+        if (index) setPageIndex(Number(index));
+        if (size) setPageSize(Number(size));
+    }, [searchParams]);
+
+    // Fetch blogs with pagination
+    useEffect(() => {
         const fetchBlogs = async () => {
+            setLoading(true);
             try {
-                const response = await getAllBlogs();
-                setBlogs(response.data);
+                const response = await getAllBlogs(pageIndex, pageSize);
+                setBlogs(response.data.blogs); // Assuming API returns { blogs, totalPages }
+                setTotalPages(response.data.totalPages);
                 setLoading(false);
             } catch (error) {
-                console.error('Error fetching blogs:', error);
+                setError('Error fetching blogs');
                 setLoading(false);
             }
         };
 
         fetchBlogs();
-    }, []);
+    }, [pageIndex, pageSize]);
+
+    const handlePageChange = (newPageIndex: number) => {
+        if (newPageIndex > 0 && newPageIndex <= totalPages) {
+            setPageIndex(newPageIndex);
+            navigate(`/blog?pageIndex=${newPageIndex}&pageSize=${pageSize}`);
+        }
+    };
+
+    const renderPagination = () => {
+        const paginationItems = [];
+        const maxPagesToShow = 5;
+        const startPage = Math.max(1, pageIndex - Math.floor(maxPagesToShow / 2));
+        const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+        if (startPage > 1) {
+            paginationItems.push(
+                <Button key={1} onClick={() => handlePageChange(1)} className="bg-gray-700 text-white">
+                    1
+                </Button>
+            );
+            if (startPage > 2) {
+                paginationItems.push(
+                    <Button key="ellipsis-start" className="bg-gray-700 text-white" disabled>
+                        ...
+                    </Button>
+                );
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationItems.push(
+                <Button
+                    key={i}
+                    onClick={() => handlePageChange(i)}
+                    className={`bg-gray-700 text-white ${i === pageIndex ? 'font-bold bg-blue-500' : ''}`}
+                >
+                    {i}
+                </Button>
+            );
+        }
+
+        if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+                paginationItems.push(
+                    <Button key="ellipsis-end" className="bg-gray-700 text-white" disabled>
+                        ...
+                    </Button>
+                );
+            }
+            paginationItems.push(
+                <Button key={totalPages} onClick={() => handlePageChange(totalPages)} className="bg-gray-700 text-white">
+                    {totalPages}
+                </Button>
+            );
+        }
+
+        return paginationItems;
+    };
+
+    if (loading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full">
+                <div className="spinner"></div>
+                <p className="text-center text-lg mt-2">Loading blogs...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return <p className="text-center text-red-500">{error}</p>;
+    }
 
     return (
         <div className="container mx-auto py-8 px-4">
@@ -38,6 +126,25 @@ export default function BlogList() {
                 {blogs.map((blog) => (
                     <BlogCard key={blog.id} blog={blog} />
                 ))}
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-center mt-6">
+                <Button
+                    className="mr-2 bg-gray-700 text-white font-bold"
+                    onClick={() => handlePageChange(pageIndex - 1)}
+                    disabled={pageIndex === 1}
+                >
+                    Previous
+                </Button>
+                {renderPagination()}
+                <Button
+                    className="ml-2 bg-gray-700 text-white font-bold"
+                    onClick={() => handlePageChange(pageIndex + 1)}
+                    disabled={pageIndex === totalPages}
+                >
+                    Next
+                </Button>
             </div>
         </div>
     );
@@ -72,8 +179,6 @@ function BlogCard({ blog }: { blog: Blog }) {
                 >
                     Read More
                 </button>
-
-
             </CardFooter>
         </Card>
     );

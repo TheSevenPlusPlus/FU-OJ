@@ -45,7 +45,7 @@ namespace FU.OJ.Server.Service
         {
             var problem = await _problemService.GetByCodeAsync(request.ProblemCode); // Use ProblemCode instead of problem_code
             if (problem == null)
-                throw new Exception("Problem not found");
+                throw new Exception("This problem " + request.ProblemCode + " not found");
 
             var existingTestCase = await _context.TestCases.FirstOrDefaultAsync(tc => tc.ProblemId == problem.Id); // Use Id instead of id
             if (existingTestCase != null)
@@ -90,12 +90,18 @@ namespace FU.OJ.Server.Service
             // Create new directory for test cases
             Directory.CreateDirectory(finalFolderPath);
 
-            // Move sub-testcase directories to finalFolderPath
+            // Initialize a counter for test cases
+            int testCaseCount = 0;
+
+            // Move sub-testcase directories to finalFolderPath and count them
             foreach (var dir in Directory.GetDirectories(Path.Combine(tempFolderPath, zipFolderName)))
             {
                 var dirName = Path.GetFileName(dir);
                 var targetDir = Path.Combine(finalFolderPath, dirName);
                 Directory.Move(dir, targetDir);
+
+                // Increment test case count
+                testCaseCount++;
             }
 
             // Delete temporary folder
@@ -109,11 +115,14 @@ namespace FU.OJ.Server.Service
 
             _context.TestCases.Add(newTestCase);
             problem.TestCaseId = newTestCase.Id; // Use TestCaseId instead of test_case_id
+            problem.totalTests = testCaseCount;
             _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
 
-            return newTestCase.Id; // Use Id instead of id
+            // Return test case ID and the number of test cases added
+            return newTestCase.Id;
         }
+
 
         public async Task UpdateAsync(CreateTestcaseRequest request)
         {

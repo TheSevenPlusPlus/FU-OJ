@@ -17,7 +17,7 @@ namespace FU.OJ.Server.DTOs.Problem.Request
         public double TimeLimit { get; set; } = 1;
         public float MemoryLimit { get; set; } = 256 * 1024;
 
-        public DateTime CreatedAt { get; set; }
-        public string? UserId { get; set; }
+        public string? UserName { get; set; }
+        public string? Difficulty { get; set; }
     }
 }

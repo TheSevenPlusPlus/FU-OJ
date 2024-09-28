@@ -1,4 +1,5 @@
-﻿using FU.OJ.Server.DTOs.Submission.Request;
+﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Submission.Request;
 using FU.OJ.Server.DTOs.Submission.Response;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
@@ -59,17 +60,21 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpGet(SubmissionRoute.Action.GetAll)]
-        public async Task<IActionResult> GetAllSubmissions()
+        public async Task<IActionResult> GetAllSubmissions([FromQuery] Paging query)
         {
             try
             {
-                List<SubmissionView> submissions = await _submissionService.GetAllSubmissionsAsync();
-                return Ok(submissions);
+                // Gọi dịch vụ để lấy danh sách submissions và tổng số trang
+                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsAsync(query);
+
+                // Trả về kết quả dưới dạng JSON
+                return Ok(new { submissions, totalPages });
             }
             catch (Exception ex)
             {
                 return HandleException(ex);
             }
         }
+
     }
 }

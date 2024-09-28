@@ -167,10 +167,12 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
+                    b.Property<int>("totalTests")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("TestCaseId")
-                        .IsUnique();
+                    b.HasIndex("TestCaseId");
 
                     b.HasIndex("UserId");
 
@@ -529,8 +531,8 @@ namespace FU.OJ.Server.Migrations
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Problem", b =>
                 {
                     b.HasOne("FU.OJ.Server.Infra.Models.TestCase", "TestCase")
-                        .WithOne("Problem")
-                        .HasForeignKey("FU.OJ.Server.Infra.Models.Problem", "TestCaseId");
+                        .WithMany()
+                        .HasForeignKey("TestCaseId");
 
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
                         .WithMany("Problems")
@@ -636,12 +638,6 @@ namespace FU.OJ.Server.Migrations
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Submission", b =>
                 {
                     b.Navigation("Results");
-                });
-
-            modelBuilder.Entity("FU.OJ.Server.Infra.Models.TestCase", b =>
-                {
-                    b.Navigation("Problem")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.User", b =>

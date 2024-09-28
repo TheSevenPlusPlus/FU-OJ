@@ -1,4 +1,5 @@
-﻿using FU.OJ.Server.DTOs.Submission.Request;
+﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Submission.Request;
 using FU.OJ.Server.DTOs.Submission.Response;
 using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Context;
@@ -14,7 +15,7 @@ namespace FU.OJ.Server.Service
         Task<string> CreateAsync(CreateSubmissionRequest request, bool base64Encoded, bool wait); //
         Task<SubmissionView> GetByIdAsync(string id);//
         Task<SubmissionView?> GetByIdWithoutResultAsync(string id);//
-        Task<List<SubmissionView>> GetAllSubmissionsAsync();//
+        Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query);//
         Task<List<SubmissionView>> GetAllSubmissionsBelongsUserAsync(string userId);
         Task<string> GetByTokenAsync(string token, bool base64Encoded = false, string fields = "stdout,time,memory,stderr,token,compile_output,message,status");
         Task<Submission?> getByIdWithoutResult(string id); // Trả về Submission mà không kèm Result
@@ -27,15 +28,17 @@ namespace FU.OJ.Server.Service
         private readonly HttpClient _httpClient;
         private readonly IProblemService _problemService;
         private readonly ITestcaseService _testcaseService;
+        private readonly IUserService _userService;
         private readonly ApplicationDbContext _context;
 
-        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDbContext context, IConfiguration configuration)
+        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDbContext context, IConfiguration configuration, IUserService userService)
         {
             _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl")!;
             _httpClient = httpClient;
             _problemService = problemService;
             _testcaseService = testcaseService;
             _context = context;
+            _userService = userService;
         }
 
         public async Task<string> CreateAsync(CreateSubmissionRequest request, bool base64Encoded, bool wait)
@@ -51,13 +54,19 @@ namespace FU.OJ.Server.Service
             if (testcase == null)
                 throw new Exception(ErrorMessage.NotFound);
 
+            var user = await _userService.GetUserByUsernameAsync(request.username);
+            if (user == null)
+                throw new Exception(ErrorMessage.NotFound);
+
             var submission = new Submission
             {
                 ProblemId = request.ProblemId,
                 ProblemCode = request.ProblemCode,
                 SourceCode = request.SourceCode,
                 LanguageName = request.LanguageName,
-                SubmittedAt = DateTime.UtcNow
+                SubmittedAt = DateTime.UtcNow,
+                UserId = user.Id,
+                UserName = user.UserName
             };
 
             _context.Submissions.Add(submission);
@@ -83,8 +92,7 @@ namespace FU.OJ.Server.Service
                         stdin = inputContent,
                         expected_output = outputContent,
                         cpu_time_limit = problem.TimeLimit,
-                        memory_limit = problem.MemoryLimit > 256000 ? problem.MemoryLimit : 256000,
-                        stdout = ""
+                        memory_limit = problem.MemoryLimit > 256000 ? problem.MemoryLimit : 256000
                     };
 
                     var jsonContent = new StringContent(JsonSerializer.Serialize(submissionRequest), Encoding.UTF8, "application/json");
@@ -99,10 +107,27 @@ namespace FU.OJ.Server.Service
             }
 
             string status = "Accepted";
-            var resultList = new List<Result>();
+            int acQuantity = 0;
+
             foreach (var token in tokenList)
             {
                 var tokenResult = await GetByTokenAsync(token);
+                if (tokenResult == "Compilation Error" || JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString() == "Compilation Error")
+                {
+                    var _newResult = new Result
+                    {
+                        SubmissionId = submission.Id,
+                        StatusDescription = "Compilation Error",
+                        Time = "0.001s",
+                        Memory = 0.0
+                    };
+
+                    status = "Compilation Error";
+                    _context.Results.Add(_newResult);
+
+                    continue;
+                }
+
                 var newResult = new Result
                 {
                     SubmissionId = submission.Id,
@@ -118,13 +143,18 @@ namespace FU.OJ.Server.Service
                     if (status == "Accepted")
                         status = JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString()!;
                 }
+                else acQuantity++;
 
                 _context.Results.Add(newResult);
-                resultList.Add(newResult);
             }
 
             submission.Status = status;
-            submission.Results = resultList;
+            if (problem.AcQuantity == null || problem.AcQuantity < acQuantity)
+            {
+                problem.AcQuantity = acQuantity;
+                _context.Problems.Update(problem);
+            }
+
             await _context.SaveChangesAsync();
             return submission.Id;
         }
@@ -138,6 +168,9 @@ namespace FU.OJ.Server.Service
             while (true)
             {
                 response = await _httpClient.GetAsync(url);
+                if (response.ReasonPhrase == "Bad Request")
+                    return "Compilation Error";
+
                 responseContent = await response.Content.ReadAsStringAsync();
 
                 var tokenResult = JsonDocument.Parse(responseContent).RootElement;
@@ -175,7 +208,6 @@ namespace FU.OJ.Server.Service
                 SourceCode = submission.SourceCode,
                 LanguageName = submission.LanguageName,
                 SubmittedAt = submission.SubmittedAt,
-                UserId = submission.UserId,
                 UserName = submission.UserName,
                 Status = submission.Status
             };
@@ -208,7 +240,6 @@ namespace FU.OJ.Server.Service
                 SourceCode = submission.SourceCode,
                 LanguageName = submission.LanguageName,
                 SubmittedAt = submission.SubmittedAt,
-                UserId = submission.UserId,
                 UserName = submission.UserName,
                 Status = submission.Status,
                 Results = submission.Results.Select(result => new ResultView
@@ -220,9 +251,16 @@ namespace FU.OJ.Server.Service
             };
         }
 
-        public async Task<List<SubmissionView>> GetAllSubmissionsAsync()
+        public async Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query)
         {
-            return await _context.Submissions.AsNoTracking()
+            // Đếm tổng số submissions
+            int totalItems = await _context.Submissions.CountAsync();
+
+            // Tính toán tổng số trang
+            int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
+
+            // Lấy danh sách submissions đã phân trang
+            var submissions = await _context.Submissions.AsNoTracking()
                 .Select(submission => new SubmissionView
                 {
                     Id = submission.Id,
@@ -231,12 +269,19 @@ namespace FU.OJ.Server.Service
                     SourceCode = submission.SourceCode,
                     LanguageName = submission.LanguageName,
                     SubmittedAt = submission.SubmittedAt,
-                    UserId = submission.UserId,
                     UserName = submission.UserName,
                     Status = submission.Status
                 })
+                .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
+                .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
                 .ToListAsync();
+
+            // Trả về cả danh sách submissions và tổng số trang
+            return (submissions, totalPages);
         }
+
+
+
 
         public async Task<List<SubmissionView>> GetAllSubmissionsBelongsUserAsync(string userId)
         {
@@ -250,7 +295,6 @@ namespace FU.OJ.Server.Service
                     SourceCode = submission.SourceCode,
                     LanguageName = submission.LanguageName,
                     SubmittedAt = submission.SubmittedAt,
-                    UserId = submission.UserId,
                     UserName = submission.UserName,
                     Status = submission.Status
                 })
