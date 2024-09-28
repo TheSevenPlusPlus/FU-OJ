@@ -13,6 +13,9 @@ import ProfileView from './components/Profile/Profile';
 import ProfileEdit from './components/Profile/ProfileEdit';
 import Rank from './components/Rank';
 import SubmissionDetail from './components/SubmissionDetail'
+import ProblemManagement from './components/Manament/ProblemManagement';
+import UserManagement from './components/Manament/UserManagement';
+import BlogManagement from './components/Manament/BlogManagement';
 
 const App: React.FC = () => {
 
@@ -50,6 +53,10 @@ const App: React.FC = () => {
                         {/*RankBoard*/}
                         <Route path="/rank" element={<Rank />} /> {/* Default route when no page param */}
                         <Route path="/rank/:page" element={<Rank />} />
+                        {/*Management*/}
+                        <Route path="/manager/problem" element={<ProblemManagement />} />
+                        <Route path="/manager/user" element={<UserManagement />} />
+                        <Route path="/manager/blog" element={<BlogManagement />} />
                     </Routes>
                 </main>
             </div>

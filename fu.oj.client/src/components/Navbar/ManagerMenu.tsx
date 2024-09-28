@@ -31,9 +31,9 @@ const ManagerMenu: React.FC = () => {
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                        <Link to="/manager/account" className="flex items-center">
+                        <Link to="/manager/user" className="flex items-center">
                             <Users className="mr-2 h-4 w-4" />
-                            <span>Account</span>
+                            <span>User</span>
                         </Link>
                     </DropdownMenuItem>
                 </DropdownMenuSubContent>
