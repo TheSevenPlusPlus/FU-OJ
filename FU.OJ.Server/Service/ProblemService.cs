@@ -1,8 +1,11 @@
-﻿using FU.OJ.Server.DTOs.Problem.Request;
+﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Problem.Request;
+using FU.OJ.Server.DTOs.Submission.Response;
 using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.Models;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FU.OJ.Server.Service
 {
@@ -11,7 +14,7 @@ namespace FU.OJ.Server.Service
         Task<string> CreateAsync(CreateProblemRequest request);
         Task<Problem?> GetByIdAsync(string id);
         Task<Problem?> GetByCodeAsync(string code);
-        Task<List<Problem>> GetAllAsync();
+        Task<(List<Problem> problems, int totalPages)> GetAllAsync(Paging query);
         Task<bool> UpdateAsync(string id, UpdateProblemRequest request);
         Task<bool> DeleteAsync(string id);
     }
@@ -63,9 +66,20 @@ namespace FU.OJ.Server.Service
             return newProblem.Code;
         }
 
-        public async Task<List<Problem>> GetAllAsync()
+        public async Task<(List<Problem> problems, int totalPages)> GetAllAsync(Paging query)
         {
-            return await _context.Problems.ToListAsync();
+            // Đếm tổng số submissions
+            int totalItems = await _context.Problems.CountAsync();
+
+            // Tính toán tổng số trang
+            int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
+
+            var problems = await _context.Problems.AsNoTracking()
+                .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
+                .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
+                .ToListAsync();
+
+            return (problems, totalPages);
         }
 
         public async Task<bool> UpdateAsync(string id, UpdateProblemRequest request)

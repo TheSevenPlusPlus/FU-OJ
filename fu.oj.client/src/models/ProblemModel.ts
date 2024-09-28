@@ -12,4 +12,6 @@
     userId: string;              
     testCaseId?: string | null;  
     difficulty: string;
+    acQuantity: number | null;
+    totalTests: number | null;
 }

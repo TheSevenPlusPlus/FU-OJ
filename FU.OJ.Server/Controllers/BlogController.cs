@@ -1,4 +1,5 @@
-﻿using FU.OJ.Server.DTOs.Blog.Request;
+﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Blog.Request;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Authorization;
@@ -60,12 +61,12 @@ namespace FU.OJ.Server.Controllers
         }
 
         [HttpGet(BlogRoute.Action.GetAll)]
-        public async Task<IActionResult> GetAllBlogsAsync()
+        public async Task<IActionResult> GetAllBlogsAsync([FromQuery] Paging query)
         {
             try
             {
-                var blogs = await _blogService.GetAllBlogsAsync();
-                return Ok(blogs);
+                var (blogs, totalPages) = await _blogService.GetAllBlogsAsync(query);
+                return Ok(new {blogs, totalPages});
             }
             catch (Exception ex)
             {

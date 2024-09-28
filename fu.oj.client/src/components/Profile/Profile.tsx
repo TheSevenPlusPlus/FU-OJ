@@ -23,6 +23,7 @@ export default function ProfileView() {
         const fetchProfileData = async () => {
             if (userName) {
                 try {
+                    //console.log(userData);
                     const fetchedProfile = await getProfile(userName);
                     setProfile(fetchedProfile);
                 } catch (err) {
