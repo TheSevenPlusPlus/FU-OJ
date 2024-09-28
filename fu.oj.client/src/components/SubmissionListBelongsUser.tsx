@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+﻿import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { getAllProblems } from '../api/problem';
-import { Problem } from '../models/ProblemModel';
+import { getAllSubmissions, getAllSubmissionsBelongsUser } from '../api/submission';
+import { Submission } from '../models/SubmissionModel';
 
-const ProblemList: React.FC = () => {
+export default function SubmissionListBelongsUser() {
     const navigate = useNavigate();
-    const [problems, setProblems] = useState<Problem[]>([]);
+    const { username } = useParams<{ username: string }>();
+    const [submissions, setSubmissions] = useState<Submission[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [pageIndex, setPageIndex] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(10); // Define page size
+    const [pageSize, setPageSize] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [searchParams] = useSearchParams();
 
@@ -23,21 +24,22 @@ const ProblemList: React.FC = () => {
     }, [searchParams]);
 
     useEffect(() => {
-        const fetchProblems = async () => {
+        const fetchSubmissions = async () => {
             setLoading(true);
             try {
-                const response = await getAllProblems(pageIndex, pageSize);
-                const { problems, totalPages } = response.data;
-                setProblems(problems);
+                const response = await getAllSubmissionsBelongsUser(pageIndex, pageSize, username);
+                const { submissions, totalPages } = response.data;
+                setSubmissions(submissions);
                 setTotalPages(totalPages);
+
                 setLoading(false);
             } catch (err) {
-                setError('Failed to fetch problems.');
+                setError('Failed to fetch submissions.');
                 setLoading(false);
             }
         };
 
-        fetchProblems();
+        fetchSubmissions();
     }, [pageIndex, pageSize]);
 
     const formatDate = (dateString: string) => {
@@ -55,7 +57,7 @@ const ProblemList: React.FC = () => {
     const handlePageChange = (newPageIndex: number) => {
         if (newPageIndex > 0 && newPageIndex <= totalPages) {
             setPageIndex(newPageIndex);
-            navigate(`/problems?pageIndex=${newPageIndex}&pageSize=${pageSize}`);
+            navigate(`/submissions/all?pageIndex=${newPageIndex}&pageSize=${pageSize}`);
         }
     };
 
@@ -114,8 +116,8 @@ const ProblemList: React.FC = () => {
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center h-full">
-                <div className="spinner"></div>
-                <p className="text-center text-lg mt-2">Loading problems...</p>
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+                <p className="text-center text-lg mt-2">Loading submissions...</p>
             </div>
         );
     }
@@ -126,27 +128,49 @@ const ProblemList: React.FC = () => {
 
     return (
         <div className="container mx-auto py-8">
-            <h1 className="text-3xl font-bold mb-6">All Problems</h1>
+            <div className="flex justify-between items-center mb-6">
+                <h1 className="text-3xl font-bold">All Submissions</h1>
+            </div>
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[100px]">ID</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Time Limit</TableHead>
-                        <TableHead>Create At</TableHead>
+                        <TableHead>User</TableHead>
+                        <TableHead>Problem</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Language</TableHead>
+                        <TableHead className="text-right">Submitted At</TableHead>
+                        <TableHead className="text-center">Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {problems.map((problem) => (
-                        <TableRow key={problem.code}>
-                            <TableCell className="font-medium">{problem.code}</TableCell>
+                    {submissions.map((submission) => (
+                        <TableRow key={submission.id}>
                             <TableCell>
-                                <Link to={`/problem/${problem.code}`} className="text-blue-600 hover:underline">
-                                    {problem.title}
+                                {submission.userName ? (
+                                    <Link to={`/user/${submission.userId}`} className="text-blue-600 hover:underline">
+                                        {submission.userName}
+                                    </Link>
+                                ) : 'Anonymous'}
+                            </TableCell>
+                            <TableCell>
+                                <Link to={`/problem/${submission.problemName}`} className="text-blue-600 hover:underline">
+                                    {submission.problemName}
                                 </Link>
                             </TableCell>
-                            <TableCell className="font-medium">{problem.timeLimit === 0 ? 1 : problem.timeLimit}s</TableCell>
-                            <TableCell className="font-medium">{formatDate(problem.createdAt)}</TableCell>
+                            <TableCell>
+                                {submission.status}
+                            </TableCell>
+                            <TableCell>{submission.languageName}</TableCell>
+                            <TableCell className="text-right">{formatDate(submission.submittedAt)}</TableCell>
+                            <TableCell className="text-center">
+                                <Button
+                                    onClick={() => navigate(`/submissions/${submission.id}`)}
+                                    variant="secondary"
+                                    size="sm"
+                                >
+                                    View Detail
+                                </Button>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
@@ -174,6 +198,4 @@ const ProblemList: React.FC = () => {
             </div>
         </div>
     );
-};
-
-export default ProblemList;
+}

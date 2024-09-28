@@ -8,8 +8,8 @@
             public const string Create = "submit";
             public const string Get = "{id}";
             public const string GetWithoutResult = "non-result/{id}";
-            public const string GetAll = "";
-            public const string GetAllBelongUser = "all/user";
+            public const string GetAll = "all";
+            public const string GetAllBelongUser = "all/{username}";
         }
     }
 }

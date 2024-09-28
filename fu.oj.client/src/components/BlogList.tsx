@@ -63,13 +63,13 @@ export default function BlogList() {
 
         if (startPage > 1) {
             paginationItems.push(
-                <Button key={1} onClick={() => handlePageChange(1)} className="bg-gray-700 text-white">
+                <Button key={1} onClick={() => handlePageChange(1)} variant="outline" size="sm">
                     1
                 </Button>
             );
             if (startPage > 2) {
                 paginationItems.push(
-                    <Button key="ellipsis-start" className="bg-gray-700 text-white" disabled>
+                    <Button key="ellipsis-start" variant="outline" size="sm" disabled>
                         ...
                     </Button>
                 );
@@ -81,7 +81,8 @@ export default function BlogList() {
                 <Button
                     key={i}
                     onClick={() => handlePageChange(i)}
-                    className={`bg-gray-700 text-white ${i === pageIndex ? 'font-bold bg-blue-500' : ''}`}
+                    variant={i === pageIndex ? "default" : "outline"}
+                    size="sm"
                 >
                     {i}
                 </Button>
@@ -91,13 +92,13 @@ export default function BlogList() {
         if (endPage < totalPages) {
             if (endPage < totalPages - 1) {
                 paginationItems.push(
-                    <Button key="ellipsis-end" className="bg-gray-700 text-white" disabled>
+                    <Button key="ellipsis-end" variant="outline" size="sm" disabled>
                         ...
                     </Button>
                 );
             }
             paginationItems.push(
-                <Button key={totalPages} onClick={() => handlePageChange(totalPages)} className="bg-gray-700 text-white">
+                <Button key={totalPages} onClick={() => handlePageChange(totalPages)} variant="outline" size="sm">
                     {totalPages}
                 </Button>
             );
@@ -129,19 +130,21 @@ export default function BlogList() {
             </div>
 
             {/* Pagination Controls */}
-            <div className="flex justify-center mt-6">
+            <div className="flex justify-center mt-4 space-x-2">
                 <Button
-                    className="mr-2 bg-gray-700 text-white font-bold"
                     onClick={() => handlePageChange(pageIndex - 1)}
                     disabled={pageIndex === 1}
+                    variant="outline"
+                    size="sm"
                 >
                     Previous
                 </Button>
                 {renderPagination()}
                 <Button
-                    className="ml-2 bg-gray-700 text-white font-bold"
                     onClick={() => handlePageChange(pageIndex + 1)}
                     disabled={pageIndex === totalPages}
+                    variant="outline"
+                    size="sm"
                 >
                     Next
                 </Button>

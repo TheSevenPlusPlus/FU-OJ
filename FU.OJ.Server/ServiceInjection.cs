@@ -21,7 +21,7 @@ namespace FU.OJ.Server
             services.AddScoped<IBlogService, BlogService>();
             services.AddScoped<IGeneralService, GeneralService>();
             services.AddScoped<ITokenService, TokenService>();
-
+            services.AddScoped<IBlogCommentService, BlogCommentService>();
             services.AddScoped<IDbInitializer, DbInitializer>();
 
 

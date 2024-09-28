@@ -7,6 +7,7 @@ using FU.OJ.Server.Infra.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Text.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FU.OJ.Server.Service
 {
@@ -16,7 +17,7 @@ namespace FU.OJ.Server.Service
         Task<SubmissionView> GetByIdAsync(string id);//
         Task<SubmissionView?> GetByIdWithoutResultAsync(string id);//
         Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query);//
-        Task<List<SubmissionView>> GetAllSubmissionsBelongsUserAsync(string userId);
+        Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsBelongsUserAsync(Paging query, string username);
         Task<string> GetByTokenAsync(string token, bool base64Encoded = false, string fields = "stdout,time,memory,stderr,token,compile_output,message,status");
         Task<Submission?> getByIdWithoutResult(string id); // Trả về Submission mà không kèm Result
         Task<Submission?> getById(string id); // Trả về Submission kèm theo Result
@@ -280,13 +281,14 @@ namespace FU.OJ.Server.Service
             return (submissions, totalPages);
         }
 
-
-
-
-        public async Task<List<SubmissionView>> GetAllSubmissionsBelongsUserAsync(string userId)
+        public async Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsBelongsUserAsync(Paging query, string username)
         {
-            return await _context.Submissions.AsNoTracking()
-                .Where(submission => submission.UserId == userId)
+            var user = await _userService.GetUserByUsernameAsync(username);
+            if (user == null)
+                throw new Exception(ErrorMessage.NotFound);
+
+            var submissions = await _context.Submissions.AsNoTracking()
+                .Where(submission => submission.UserId == user.Id)
                 .Select(submission => new SubmissionView
                 {
                     Id = submission.Id,
@@ -298,7 +300,11 @@ namespace FU.OJ.Server.Service
                     UserName = submission.UserName,
                     Status = submission.Status
                 })
+                .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
+                .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
                 .ToListAsync();
+
+            return (submissions, submissions.Count);
         }
     }
 }
