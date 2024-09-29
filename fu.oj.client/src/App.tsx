@@ -26,87 +26,116 @@ import UserManagement from "./components/Management/User/UserManagement";
 import ChangePassword from "./components/Profile/ChangePassword";
 
 const App: React.FC = () => {
-  const mockProfile = {
-    username: "mock_user",
-    avatar: "https://github.com/shadcn.png",
-    description: "Welcome to my profile!",
-  };
+    const mockProfile = {
+        username: "mock_user",
+        avatar: "https://github.com/shadcn.png",
+        description: "Welcome to my profile!",
+    };
 
-  return (
-    <Router>
-      <div className="flex flex-col min-h-screen bg-white">
-        <Navbar />
-        <main className="flex-grow">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            {/* Auth */}
-            <Route path="/login" element={<AuthPage />} />
-            <Route path="/register" element={<AuthPage />} />
+    return (
+        <Router>
+            <div className="flex flex-col min-h-screen bg-white">
+                <Navbar />
+                <main className="flex-grow">
+                    <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        {/* Auth */}
+                        <Route path="/login" element={<AuthPage />} />
+                        <Route path="/register" element={<AuthPage />} />
 
-            {/* Profile */}
-            <Route path="/profile" element={<ProfileView />} />
-            <Route path="/profile/:userName" element={<ProfileView />} />
-            <Route path="/profile/edit" element={<ProfileEdit />} />
-            <Route path="/changepassword" element={<ChangePassword />} />
+                        {/* Profile */}
+                        <Route path="/profile" element={<ProfileView />} />
+                        <Route
+                            path="/profile/:userName"
+                            element={<ProfileView />}
+                        />
+                        <Route path="/profile/edit" element={<ProfileEdit />} />
+                        <Route
+                            path="/changepassword"
+                            element={<ChangePassword />}
+                        />
 
-            {/* Problem */}
-            <Route path="/problems" element={<ProblemList />} />
-            <Route path="/problem/:problemCode" element={<ProblemDetail />} />
-            <Route
-              path="/problem/:problemCode/submit"
-              element={<CodeSubmission />}
-            />
+                        {/* Problem */}
+                        <Route path="/problems" element={<ProblemList />} />
+                        <Route
+                            path="/problem/:problemCode"
+                            element={<ProblemDetail />}
+                        />
+                        <Route
+                            path="/problem/:problemCode/submit"
+                            element={<CodeSubmission />}
+                        />
 
-            {/* Submissions */}
-            <Route path="/submissions/:id" element={<SubmissionDetail />} />
-            <Route
-              path="/submissions/all/:username"
-              element={<SubmissionListBelongsUser />}
-            />
-            <Route path="/submissions/all" element={<SubmissionList />} />
+                        {/* Submissions */}
+                        <Route
+                            path="/submissions/:id"
+                            element={<SubmissionDetail />}
+                        />
+                        <Route
+                            path="/submissions/all/:username"
+                            element={<SubmissionListBelongsUser />}
+                        />
+                        <Route
+                            path="/submissions/all"
+                            element={<SubmissionList />}
+                        />
 
-            {/* Blogs */}
-            <Route path="/blog" element={<BlogList />} />
-            <Route path="/blog/:blog_id" element={<BlogPost />} />
+                        {/* Blogs */}
+                        <Route path="/blog" element={<BlogList />} />
+                        <Route path="/blog/:blog_id" element={<BlogPost />} />
 
-            {/* RankBoard */}
-            <Route path="/rank" element={<Rank />} />
-            <Route path="/rank/:page" element={<Rank />} />
+                        {/* RankBoard */}
+                        <Route path="/rank" element={<Rank />} />
+                        <Route path="/rank/:page" element={<Rank />} />
 
-            {/* Contests */}
-            <Route
-              path="/contests"
-              element={
-                <ComingSoon targetDate={new Date("2024-10-07T00:00:00")} />
-              }
-            />
+                        {/* Contests */}
+                        <Route
+                            path="/contests"
+                            element={
+                                <ComingSoon
+                                    targetDate={new Date("2024-10-07T00:00:00")}
+                                />
+                            }
+                        />
 
-            {/* Management */}
-            <Route path="/manager/problems" element={<ProblemManagement />} />
-            <Route
-              path="/manager/problems/create"
-              element={<CreateProblem />}
-            />
-            <Route
-              path="/manager/problems/update/:problemCode"
-              element={<UpdateProblem />}
-            />
+                        {/* Management */}
+                        <Route
+                            path="/manager/problems"
+                            element={<ProblemManagement />}
+                        />
+                        <Route
+                            path="/manager/problems/create"
+                            element={<CreateProblem />}
+                        />
+                        <Route
+                            path="/manager/problems/update/:problemCode"
+                            element={<UpdateProblem />}
+                        />
 
-            <Route path="/manager/users" element={<UserManagement />} />
-            <Route path="/manager/users/create" element={<CreateUser />} />
-            <Route
-              path="/manager/users/update/:userName"
-              element={<UpdateUser />}
-            />
-            <Route path="/manager/blogs" element={<BlogManagement />} />
+                        <Route
+                            path="/manager/users"
+                            element={<UserManagement />}
+                        />
+                        <Route
+                            path="/manager/users/create"
+                            element={<CreateUser />}
+                        />
+                        <Route
+                            path="/manager/users/update/:userName"
+                            element={<UpdateUser />}
+                        />
+                        <Route
+                            path="/manager/blogs"
+                            element={<BlogManagement />}
+                        />
 
-            {/* 404 Not Found */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-      </div>
-    </Router>
-  );
+                        {/* 404 Not Found */}
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </main>
+            </div>
+        </Router>
+    );
 };
 
 export default App;
