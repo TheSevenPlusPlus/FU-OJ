@@ -1,8 +1,4 @@
-﻿using FU.OJ.Server.Infra.Const.Route;
-using Microsoft.AspNetCore.Mvc;
-
-namespace FU.OJ.Server.Controllers
-{
+using FU.OJ.Server.Infra.Const.Route;using Microsoft.AspNetCore.Mvc;namespace FU.OJ.Server.Controllers{
     [Route(JudgeRoute.INDEX)]
     [ApiController]
     //[Authorize]
@@ -128,5 +124,4 @@ namespace FU.OJ.Server.Controllers
             }
             return StatusCode((int)response.StatusCode);
         }
-    }
-}
+    }}

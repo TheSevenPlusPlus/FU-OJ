@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace FU.OJ.Server.Infra.Enum
-{
+using System.ComponentModel;namespace FU.OJ.Server.Infra.Enum{
     public enum eStatus_Submission
     {
         [Description("Accept")]
@@ -14,5 +11,4 @@ namespace FU.OJ.Server.Infra.Enum
         mle = 3,
         [Description("Complier error")]
         ce = 4
-    }
-}
+    }}

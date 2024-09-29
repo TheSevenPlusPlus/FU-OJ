@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+﻿import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { UserView, CreateUserRequest, UpdateUserRequest } from '../../../models/UserDTO'
+import { Eye, EyeOff } from 'lucide-react'
 
 interface UserFormProps {
     user?: UserView | null
@@ -25,6 +26,8 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
         school: '',
         avatarUrl: '',
     })
+    const [showPassword, setShowPassword] = useState(false)
+    const [errors, setErrors] = useState<Record<string, string>>({})
 
     useEffect(() => {
         if (user) {
@@ -35,11 +38,64 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target
         setFormData((prev) => ({ ...prev, [name]: value }))
+        validateField(name, value)
+    }
+
+    const validateField = (name: string, value: string) => {
+        let error = ''
+        switch (name) {
+            case 'userName':
+                if (value.length < 3) {
+                    error = 'Username must be at least 3 characters long'
+                }
+                break
+            case 'email':
+                if (!/\S+@\S+\.\S+/.test(value)) {
+                    error = 'Invalid email address'
+                }
+                break
+            case 'phoneNumber':
+                if (!/^\d{10}$/.test(value)) {
+                    error = 'Phone number must be 10 digits'
+                }
+                break
+            case 'password':
+                if (!user) {
+                    if (value.length < 8) {
+                        error = 'Password must be at least 8 characters long'
+                    } else if (!/(?=.*[a-z])/.test(value)) {
+                        error = 'Password must contain at least one lowercase letter'
+                    } else if (!/(?=.*[A-Z])/.test(value)) {
+                        error = 'Password must contain at least one uppercase letter'
+                    } else if (!/(?=.*\d)/.test(value)) {
+                        error = 'Password must contain at least one number'
+                    } else if (!/(?=.*[!@#$%^&*])/.test(value)) {
+                        error = 'Password must contain at least one special character (!@#$%^&*)'
+                    }
+                }
+                break
+            case 'facebookLink':
+            case 'githubLink':
+                if (value && !/^https?:\/\//.test(value)) {
+                    error = 'Link must start with http:// or https://'
+                }
+                break
+        }
+        setErrors(prev => ({ ...prev, [name]: error }))
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+        const formErrors = Object.values(errors).filter(error => error !== '')
+        if (formErrors.length > 0) {
+            alert('Please correct the errors before submitting')
+            return
+        }
         await onSubmit(formData)
+    }
+
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword)
     }
 
     return (
@@ -49,11 +105,13 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
                 <Input
                     id="userName"
                     name="userName"
-                    disabled
                     value={formData.userName}
                     onChange={handleChange}
                     required
+                    minLength={3}
+                    disabled={!!user}
                 />
+                {errors.userName && <p className="text-red-500 text-sm mt-1">{errors.userName}</p>}
             </div>
             <div>
                 <Label htmlFor="email">Email</Label>
@@ -65,6 +123,7 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
                     onChange={handleChange}
                     required
                 />
+                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
             </div>
             <div>
                 <Label htmlFor="phoneNumber">Phone Number</Label>
@@ -74,7 +133,9 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     required
+                    pattern="\d{10}"
                 />
+                {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>}
             </div>
             <div>
                 <Label htmlFor="fullName">Full Name</Label>
@@ -89,14 +150,34 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
             {!user && (
                 <div>
                     <Label htmlFor="password">Password</Label>
-                    <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                    />
+                    <div className="relative">
+                        <Input
+                            id="password"
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            value={formData.password}
+                            onChange={handleChange}
+                            required
+                            minLength={8}
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-2 top-1/2 -translate-y-1/2"
+                            onClick={togglePasswordVisibility}
+                        >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </Button>
+                    </div>
+                    {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+                    <ul className="text-sm text-gray-600 mt-2">
+                        <li>At least 8 characters long</li>
+                        <li>Contains at least one uppercase letter</li>
+                        <li>Contains at least one lowercase letter</li>
+                        <li>Contains at least one number</li>
+                        <li>Contains at least one special character (!@#$%^&*)</li>
+                    </ul>
                 </div>
             )}
             <div>
@@ -125,6 +206,7 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
                     value={formData.facebookLink}
                     onChange={handleChange}
                 />
+                {errors.facebookLink && <p className="text-red-500 text-sm mt-1">{errors.facebookLink}</p>}
             </div>
             <div>
                 <Label htmlFor="githubLink">GitHub Link</Label>
@@ -134,6 +216,7 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
                     value={formData.githubLink}
                     onChange={handleChange}
                 />
+                {errors.githubLink && <p className="text-red-500 text-sm mt-1">{errors.githubLink}</p>}
             </div>
             <div>
                 <Label htmlFor="school">School</Label>

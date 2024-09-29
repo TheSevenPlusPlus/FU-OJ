@@ -1,5 +1,4 @@
-﻿namespace FU.OJ.Server.Infra.Const.Route
-{
+namespace FU.OJ.Server.Infra.Const.Route{
     public class AuthRoute
     {
         public const string INDEX = "auth";
@@ -10,5 +9,4 @@
             public const string Logout = "logout";
 
         }
-    }
-}
+    }}

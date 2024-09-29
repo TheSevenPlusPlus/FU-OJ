@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
 
@@ -28,7 +28,7 @@ namespace FU.OJ.Server.Infra.Models
         public int? AcQuantity { get; set; }
         public string? Difficulty { get; set; }
         public string? HasSolution { get; set; }
-        public string? TestCasePath { get; set; } = null!; // folder chứa test
+        public string? TestCasePath { get; set; } = null!; // folder ch?a test
 
     }
 

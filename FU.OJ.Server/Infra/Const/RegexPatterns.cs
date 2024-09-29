@@ -1,5 +1,4 @@
-﻿namespace FU.OJ.Server.Infra.Const
-{
+namespace FU.OJ.Server.Infra.Const{
     public static class RegexPatterns
     {
         public const string EnglishAlphabet = @"^[a-zA-Z]+$";
@@ -10,5 +9,4 @@
         public const string CCCD = @"0[0-9]{11}$";
         public const string NoVietnameseAlphabetNoWhiteSpace = @"^[^àáảãạâầấẩẫậăằắẳẵặèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđÀÁẢÃẠÂẦẤẨẪẬĂẰẮẲẴẶÈÉẺẼẸÊỀẾỂỄỆÌÍỈĨỊÒÓỎÕỌÔỒỐỔỖỘƠỜỚỞỠỢÙÚỦŨỤƯỪỨỬỮỰỲÝỶỸỴĐ\s]+$";
         public const string TaxCode = @"^\d{10}(-\d{3})?$";
-    }
-}
+    }}

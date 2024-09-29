@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +17,7 @@ export default function ProfileEdit() {
         userName: "",
         email: "",
         phoneNumber: "",
-        fullname: "",
+        fullName: "",
         city: "",
         description: "",
         facebookLink: "",
@@ -41,7 +41,7 @@ export default function ProfileEdit() {
                     userName: profileData.userName,
                     email: profileData.email,
                     phoneNumber: profileData.phoneNumber,
-                    fullname: profileData.fullname,
+                    fullName: profileData.fullname,
                     city: profileData.city,
                     description: profileData.description,
                     facebookLink: profileData.facebookLink,
@@ -73,7 +73,7 @@ export default function ProfileEdit() {
         try {
             await updateProfile(updateData);
             setSuccess("Profile updated successfully!");
-            navigate('/manager/problems');
+            navigate('/profile');
         } catch (error) {
             console.error("Failed to update profile:", error);
             setError("Failed to update profile. Please try again.");
@@ -110,8 +110,8 @@ export default function ProfileEdit() {
                             <Input id="phoneNumber" name="phoneNumber" value={updateData.phoneNumber} onChange={handleChange} />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="fullname">Full Name</Label>
-                            <Input id="fullname" name="fullname" value={updateData.fullname} onChange={handleChange} />
+                            <Label htmlFor="fullName">Full Name</Label>
+                            <Input id="fullName" name="fullName" value={updateData.fullName} onChange={handleChange} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="school">School</Label>

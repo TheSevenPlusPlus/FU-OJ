@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FU.OJ.Server.DTOs.Auth.Request
-{
+using System.ComponentModel.DataAnnotations;namespace FU.OJ.Server.DTOs.Auth.Request{
     public class LoginRequest
     {
         [Required]
@@ -14,6 +11,4 @@ namespace FU.OJ.Server.DTOs.Auth.Request
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; } = null!;
-    }
-
-}
+    }}

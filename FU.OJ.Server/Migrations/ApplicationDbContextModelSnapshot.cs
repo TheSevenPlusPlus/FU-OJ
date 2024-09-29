@@ -69,7 +69,7 @@ namespace FU.OJ.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BlogComment");
+                    b.ToTable("BlogComments");
                 });
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Contest", b =>
@@ -479,7 +479,8 @@ namespace FU.OJ.Server.Migrations
 
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Blog");
 

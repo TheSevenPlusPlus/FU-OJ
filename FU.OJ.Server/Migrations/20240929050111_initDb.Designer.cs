@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240928151209_initDbSuccess")]
-    partial class initDbSuccess
+    [Migration("20240929050111_initDb")]
+    partial class initDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -72,7 +72,7 @@ namespace FU.OJ.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BlogComment");
+                    b.ToTable("BlogComments");
                 });
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Contest", b =>
@@ -482,7 +482,8 @@ namespace FU.OJ.Server.Migrations
 
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Blog");
 

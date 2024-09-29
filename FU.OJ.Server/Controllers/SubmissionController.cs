@@ -1,12 +1,4 @@
-﻿using FU.OJ.Server.DTOs;
-using FU.OJ.Server.DTOs.Submission.Request;
-using FU.OJ.Server.DTOs.Submission.Response;
-using FU.OJ.Server.Infra.Const.Route;
-using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Mvc;
-
-namespace FU.OJ.Server.Controllers
-{
+using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Submission.Request;using FU.OJ.Server.DTOs.Submission.Response;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Mvc;namespace FU.OJ.Server.Controllers{
     [Route(SubmissionRoute.INDEX)]
     [ApiController]
     public class SubmissionController : BaseController
@@ -76,5 +68,21 @@ namespace FU.OJ.Server.Controllers
             }
         }
 
-    }
-}
+        [HttpGet(SubmissionRoute.Action.GetAllBelongUser)]
+        public async Task<IActionResult> GetAllSubmissionsBelongsUser([FromQuery] Paging query, [FromRoute] string username)
+        {
+            try
+            {
+                // Gọi dịch vụ để lấy danh sách submissions và tổng số trang
+                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsBelongsUserAsync(query, username);
+
+                // Trả về kết quả dưới dạng JSON
+                return Ok(new { submissions, totalPages });
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
+    }}

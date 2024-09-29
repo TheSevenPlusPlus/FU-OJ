@@ -1,8 +1,7 @@
-﻿using FU.OJ.Server.DTOs.Testcase.Request;
+using FU.OJ.Server.DTOs.Testcase.Request;
 using FU.OJ.Server.Infra.Context;
 using Microsoft.EntityFrameworkCore;
 using System.IO.Compression;
-
 namespace FU.OJ.Server.Service
 {
     public interface ITestcaseService
@@ -56,6 +55,7 @@ namespace FU.OJ.Server.Service
             // Handle ZIP file
             var zipFolderName = Path.GetFileNameWithoutExtension(request.TestcaseFile.FileName); // Use TestcaseFile instead of testcase_file
             var tempFolderPath = Path.Combine("TempDirectory");
+
             DeleteDirectoryRecursively(tempFolderPath);
             Directory.CreateDirectory(tempFolderPath);
 

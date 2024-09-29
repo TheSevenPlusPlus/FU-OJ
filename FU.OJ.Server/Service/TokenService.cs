@@ -1,12 +1,4 @@
-﻿using FU.OJ.Server.Infra.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
-namespace FU.OJ.Server.Service
-{
+using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Identity;using Microsoft.IdentityModel.Tokens;using System.IdentityModel.Tokens.Jwt;using System.Security.Claims;using System.Text;namespace FU.OJ.Server.Service{
     public interface ITokenService
     {
         Task<string> CreateToken(User user); // Đổi kiểu trả về thành Task<string>
@@ -30,10 +22,7 @@ namespace FU.OJ.Server.Service
             // Lấy danh sách roles của người dùng từ UserManager (phải dùng await)
             var roles = await _userManager.GetRolesAsync(user);
 
-            var claims = new List<Claim> {
-                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            };
+            var claims = new List<Claim> {                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName),                new Claim(JwtRegisteredClaimNames.Email, user.Email),            };
 
             // Thêm roles vào token claims
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -54,5 +43,4 @@ namespace FU.OJ.Server.Service
 
             return tokenHandler.WriteToken(token);
         }
-    }
-}
+    }}

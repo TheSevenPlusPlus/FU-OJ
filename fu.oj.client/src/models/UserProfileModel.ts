@@ -2,7 +2,7 @@ export interface UserProfile {
     userName: string;
     email: string;
     phoneNumber: string;
-    fullname: string;
+    fullName: string;
     city: string;
     description: string;
     facebookLink: string;
@@ -17,7 +17,7 @@ export interface UpdateUserProfile {
     userName: string;
     email: string;
     phoneNumber: string;
-    fullname: string;
+    fullName: string;
     city: string;
     description: string;
     facebookLink: string;

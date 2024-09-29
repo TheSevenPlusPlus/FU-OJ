@@ -1,4 +1,4 @@
-﻿namespace FU.OJ.Server.Infra.Const
+namespace FU.OJ.Server.Infra.Const
 {
     public class ErrorMessage
     {
@@ -13,4 +13,4 @@
         public const string NotHaveTest = "Bài tập này chưa được khởi tạo bộ test. Vui lòng thử lại sau";
         public const string UserNotFound = "Không tìm thấy người dùng";
     }
-}
+}

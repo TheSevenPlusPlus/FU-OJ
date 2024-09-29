@@ -1,5 +1,5 @@
-import { SubmissionRequest } from '../models/SubmissionRequest';
-import apiClient from './client';
+import { SubmissionRequest } from "../models/SubmissionRequest";
+import apiClient from "./client";
 
 export const submitSolution = async (data: SubmissionRequest) => {
     //console.log(data);

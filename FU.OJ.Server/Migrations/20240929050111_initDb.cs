@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class initDbSuccess : Migration
+    public partial class initDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -241,7 +241,7 @@ namespace FU.OJ.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BlogComment",
+                name: "BlogComments",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -252,14 +252,15 @@ namespace FU.OJ.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BlogComment", x => x.Id);
+                    table.PrimaryKey("PK_BlogComments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BlogComment_AspNetUsers_UserId",
+                        name: "FK_BlogComments_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BlogComment_Blogs_BlogId",
+                        name: "FK_BlogComments_Blogs_BlogId",
                         column: x => x.BlogId,
                         principalTable: "Blogs",
                         principalColumn: "Id",
@@ -381,13 +382,13 @@ namespace FU.OJ.Server.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_BlogComment_BlogId",
-                table: "BlogComment",
+                name: "IX_BlogComments_BlogId",
+                table: "BlogComments",
                 column: "BlogId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BlogComment_UserId",
-                table: "BlogComment",
+                name: "IX_BlogComments_UserId",
+                table: "BlogComments",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -450,7 +451,7 @@ namespace FU.OJ.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "BlogComment");
+                name: "BlogComments");
 
             migrationBuilder.DropTable(
                 name: "ContestParticipants");

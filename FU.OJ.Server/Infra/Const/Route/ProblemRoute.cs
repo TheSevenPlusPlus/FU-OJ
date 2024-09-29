@@ -1,5 +1,4 @@
-﻿namespace FU.OJ.Server.Infra.Const.Route
-{
+namespace FU.OJ.Server.Infra.Const.Route{
     public class ProblemRoute
     {
         public const string INDEX = "problem";
@@ -7,5 +6,4 @@
         {
             public const string Create = "create";
         }
-    }
-}
+    }}

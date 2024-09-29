@@ -1,4 +1,4 @@
-﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs;
 using FU.OJ.Server.DTOs.Problem.Request;
 using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Context;
@@ -81,8 +81,8 @@ namespace FU.OJ.Server.Service
 
             var problems = await _context.Problems.AsNoTracking()
                 .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
-                .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
-                .ToListAsync();
+                                                                                              .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
+                                                                                                        .ToListAsync();
 
             return (problems, totalPages);
         }
@@ -113,6 +113,10 @@ namespace FU.OJ.Server.Service
         public async Task<bool> DeleteAsync(string id)
         {
             var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (problem == null)
+                return false;
+
             _context.Problems.Remove(problem);
             await _context.SaveChangesAsync();
 

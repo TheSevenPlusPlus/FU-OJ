@@ -1,12 +1,4 @@
-﻿using FU.OJ.Server.DTOs;
-using FU.OJ.Server.DTOs.Blog.Request;
-using FU.OJ.Server.DTOs.Blog.Response;
-using FU.OJ.Server.Infra.Context;
-using FU.OJ.Server.Infra.Models;
-using Microsoft.EntityFrameworkCore;
-
-namespace FU.OJ.Server.Service
-{
+using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Server.DTOs.Blog.Response;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.EntityFrameworkCore;namespace FU.OJ.Server.Service{
     public interface IBlogService
     {
         Task<string> CreateAsync(CreateBlogRequest request);
@@ -76,8 +68,8 @@ namespace FU.OJ.Server.Service
                 UserName = blog.User.UserName
             })
             .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
-            .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
-            .ToListAsync();
+                                                                                          .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
+                                                                                                    .ToListAsync();
 
             return (blogs, totalPages);
         }
@@ -106,5 +98,4 @@ namespace FU.OJ.Server.Service
                 await _context.SaveChangesAsync();
             }
         }
-    }
-}
+    }}

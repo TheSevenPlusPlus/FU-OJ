@@ -20,14 +20,14 @@ export const registerUser = async (userData) => {
 
 // Function to log in an existing user
 export const loginUser = async (credentials) => {
-    try {
-        const response = await apiClient.post('/auth/login', {
-            username: credentials.username,
-            password: credentials.password,
-        });
-        return response.data; // Return the response data (which should include the user info and token)
-    } catch (error) {
-        console.error('Error during login:', error);
-        throw error; // Re-throw the error for handling in the calling code
-    }
+  try {
+    const response = await apiClient.post("/auth/login", {
+      username: credentials.username,
+      password: credentials.password,
+    });
+    return response.data; // Return the response data (which should include the user info and token)
+  } catch (error) {
+    console.error("Error during login:", error);
+    throw error; // Re-throw the error for handling in the calling code
+  }
 };

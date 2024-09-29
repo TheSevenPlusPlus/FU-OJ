@@ -1,4 +1,4 @@
-﻿'use client';
+﻿"use client";
 
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -70,9 +70,9 @@ export default function ProfileView() {
         fetchProfileData();
     }, [urlUserName, localUserName]);
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
     if (userNotFound) {
         return <NotFound />;
@@ -82,9 +82,9 @@ export default function ProfileView() {
         return <div>{error}</div>;
     }
 
-    if (!profile) {
-        return <div>No profile data available.</div>;
-    }
+  if (!profile) {
+    return <div>No profile data available.</div>;
+  }
 
     return (
         <div className="container mx-auto p-4">
@@ -93,10 +93,10 @@ export default function ProfileView() {
                     <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4">
                         <Avatar className="w-24 h-24">
                             <AvatarImage src={profile.avatarUrl || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"} alt={profile.fullname} />
-                            <AvatarFallback>{profile.fullname ? profile.fullname[0] : 'U'}</AvatarFallback>
+                            <AvatarFallback>{profile.fullName ? profile.fullName[0] : 'U'}</AvatarFallback>
                         </Avatar>
                         <div className="text-center md:text-left">
-                            <CardTitle className="text-2xl font-bold">{profile.fullname || 'Unknown User'}</CardTitle>
+                            <CardTitle className="text-2xl font-bold">{profile.fullName || 'Unknown User'}</CardTitle>
                             <p className="text-sm text-gray-500">@{profile.userName || 'unknown'}</p>
                             <Badge variant="secondary" className="mt-2">{profile.role || 'User'}</Badge>
                         </div>
@@ -132,47 +132,47 @@ export default function ProfileView() {
                             </div>
                         </div>
 
-                        <Separator />
+            <Separator />
 
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">About</h3>
-                            <p className="text-sm text-gray-700">
-                                {profile.description || "No description available"}
-                            </p>
-                        </div>
+            <div>
+              <h3 className="text-lg font-semibold mb-2">About</h3>
+              <p className="text-sm text-gray-700">
+                {profile.description || "No description available"}
+              </p>
+            </div>
 
-                        <Separator />
+            <Separator />
 
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">Social Links</h3>
-                            <div className="flex space-x-4">
-                                {profile.facebookLink && (
-                                    <a
-                                        href={profile.facebookLink}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center space-x-2 text-blue-600 hover:text-blue-800"
-                                    >
-                                        <Facebook className="w-5 h-5" />
-                                        <span>Facebook</span>
-                                    </a>
-                                )}
-                                {profile.githubLink && (
-                                    <a
-                                        href={profile.githubLink}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
-                                    >
-                                        <Github className="w-5 h-5" />
-                                        <span>GitHub</span>
-                                    </a>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-    );
+            <div>
+              <h3 className="text-lg font-semibold mb-2">Social Links</h3>
+              <div className="flex space-x-4">
+                {profile.facebookLink && (
+                  <a
+                    href={profile.facebookLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-800"
+                  >
+                    <Facebook className="w-5 h-5" />
+                    <span>Facebook</span>
+                  </a>
+                )}
+                {profile.githubLink && (
+                  <a
+                    href={profile.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+                  >
+                    <Github className="w-5 h-5" />
+                    <span>GitHub</span>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

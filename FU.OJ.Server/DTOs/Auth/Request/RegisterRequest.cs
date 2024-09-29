@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
+using System.ComponentModel.DataAnnotations;
 namespace FU.OJ.Server.DTOs.Auth.Request
 {
     public class RegisterRequest
@@ -20,4 +19,4 @@ namespace FU.OJ.Server.DTOs.Auth.Request
         //public string PhoneNumber { get; set; } = null!;
 
     }
-}
+}

@@ -1,12 +1,4 @@
-﻿using FU.OJ.Server.DTOs;
-using FU.OJ.Server.DTOs.Blog.Request;
-using FU.OJ.Server.Infra.Const.Route;
-using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-
-namespace FU.OJ.Server.Controllers
-{
+using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;namespace FU.OJ.Server.Controllers{
     [Route(BlogRoute.INDEX)]
     [ApiController]
     public class BlogController : BaseController
@@ -66,7 +58,7 @@ namespace FU.OJ.Server.Controllers
             try
             {
                 var (blogs, totalPages) = await _blogService.GetAllBlogsAsync(query);
-                return Ok(new {blogs, totalPages});
+                return Ok(new { blogs, totalPages });
             }
             catch (Exception ex)
             {
@@ -117,5 +109,4 @@ namespace FU.OJ.Server.Controllers
                 return StatusCode(500, "An error occurred while deleting the blog.");
             }
         }
-    }
-}
+    }}

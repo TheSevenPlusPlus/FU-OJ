@@ -1,7 +1,6 @@
-﻿using FU.OJ.Server.Infra.Models;
+using FU.OJ.Server.Infra.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-
 namespace FU.OJ.Server.Infra.Context
 {
     public class ApplicationDbContext : IdentityDbContext<User>
@@ -20,6 +19,7 @@ namespace FU.OJ.Server.Infra.Context
         public DbSet<Contest> Contests { get; set; }
         public DbSet<ContestParticipant> ContestParticipants { get; set; }
         public DbSet<Blog> Blogs { get; set; }
+        public DbSet<BlogComment> BlogComments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +31,7 @@ namespace FU.OJ.Server.Infra.Context
             modelBuilder.ApplyConfiguration(new ContestParticipantConfiguration());
             modelBuilder.ApplyConfiguration(new ProblemConfiguration());
             modelBuilder.ApplyConfiguration(new BlogConfiguration());
+            modelBuilder.ApplyConfiguration(new BlogCommentConfiguration());
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

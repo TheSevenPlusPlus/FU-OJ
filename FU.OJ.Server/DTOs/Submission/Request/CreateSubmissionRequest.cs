@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace FU.OJ.Server.DTOs.Submission.Request
-{
+using System.ComponentModel.DataAnnotations;namespace FU.OJ.Server.DTOs.Submission.Request{
     public class CreateSubmissionRequest
     {
         [Required]
@@ -16,5 +13,4 @@ namespace FU.OJ.Server.DTOs.Submission.Request
         public string ProblemId { get; set; } = null!;
         [Required]
         public string username { get; set; } = null!;
-    }
-}
+    }}

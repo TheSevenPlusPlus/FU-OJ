@@ -1,5 +1,4 @@
-﻿namespace FU.OJ.Server.DTOs.General.Response
-{
+namespace FU.OJ.Server.DTOs.General.Response{
     public class UserRankResponse
     {
         public int Rank { get; set; }
@@ -11,5 +10,4 @@
     {
         public int TotalItems { get; set; }
         public List<T> Items { get; set; } = new List<T>();
-    }
-}
+    }}

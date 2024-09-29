@@ -1,8 +1,7 @@
-﻿using FU.OJ.Server.DTOs.User.Respond;
+using FU.OJ.Server.DTOs.User.Respond;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Mvc;
-
 namespace FU.OJ.Server.Controllers
 {
     [Route("Profile")]

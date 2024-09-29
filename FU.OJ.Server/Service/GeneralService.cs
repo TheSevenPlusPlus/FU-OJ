@@ -1,4 +1,4 @@
-﻿using FU.OJ.Server.DTOs.General.Response;
+using FU.OJ.Server.DTOs.General.Response;
 using FU.OJ.Server.Infra.Context;
 using Microsoft.EntityFrameworkCore;
 

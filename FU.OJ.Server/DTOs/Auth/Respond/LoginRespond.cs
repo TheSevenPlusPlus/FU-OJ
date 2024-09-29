@@ -1,4 +1,4 @@
-﻿namespace FU.OJ.Server.DTOs.Auth.Respond
+namespace FU.OJ.Server.DTOs.Auth.Respond
 {
     public class LoginRespond
     {

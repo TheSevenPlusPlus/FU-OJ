@@ -1,10 +1,8 @@
-﻿using System;
-namespace TaxNet_Common.Exceptions
-{
-	public class ForbiddenException : Exception
+using System;namespace TaxNet_Common.Exceptions{
+    public class ForbiddenException : Exception
     {
-		public ForbiddenException()
-		{
+        public ForbiddenException()
+        {
         }
 
         public ForbiddenException(string message) : base(message)
@@ -14,6 +12,4 @@ namespace TaxNet_Common.Exceptions
         public ForbiddenException(string message, Exception innerException) : base(message, innerException)
         {
         }
-    }
-}
-
+    }}

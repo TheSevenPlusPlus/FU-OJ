@@ -1,12 +1,4 @@
-﻿using FU.OJ.Server.Controllers;
-using FU.OJ.Server.Infra.Const.Route;
-using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Mvc;
-
-[Route(GeneralRoute.INDEX)]
-[ApiController]
-public class GeneralController : BaseController
-{
+using FU.OJ.Server.Controllers;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Mvc;[Route(GeneralRoute.INDEX)][ApiController]public class GeneralController : BaseController{
     private readonly IGeneralService _generalService;
 
     public GeneralController(IGeneralService generalService, ILogger<GeneralController> logger) : base(logger)
@@ -24,5 +16,4 @@ public class GeneralController : BaseController
 
         var result = await _generalService.GetUserRankingsAsync(page, pageSize);
         return Ok(result);
-    }
-}
+    }}

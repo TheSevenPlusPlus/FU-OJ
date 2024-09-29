@@ -1,10 +1,9 @@
-﻿using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs;
 using FU.OJ.Server.DTOs.User.Request;
 using FU.OJ.Server.DTOs.User.Respond;
 using FU.OJ.Server.Infra.Const.Route;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Mvc;
-
 namespace FU.OJ.Server.Controllers
 {
     [Route(UserRoute.INDEX)]
@@ -52,10 +51,10 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                // Gọi dịch vụ để lấy danh sách users và tổng số trang
+                // G?i d?ch v? ?? l?y danh s�ch users v� t?ng s? trang
                 var (users, totalPages) = await _userService.GetAllUsersAsync(query);
 
-                // Trả về kết quả dưới dạng JSON
+                // Tr? v? k?t qu? d??i d?ng JSON
                 return Ok(new { users, totalPages });
             }
             catch (Exception ex)

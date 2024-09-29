@@ -4,7 +4,6 @@ using FU.OJ.Server.DTOs.User.Respond;
 using FU.OJ.Server.Infra.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
 namespace FU.OJ.Server.Service
 {
     public interface IUserService

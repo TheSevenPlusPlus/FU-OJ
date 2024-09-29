@@ -1,6 +1,5 @@
-﻿using FU.OJ.Server.Infra.Const;
+using FU.OJ.Server.Infra.Const;
 using System.ComponentModel.DataAnnotations;
-
 namespace FU.OJ.Server.DTOs.Problem.Request
 {
     public class CreateProblemRequest
