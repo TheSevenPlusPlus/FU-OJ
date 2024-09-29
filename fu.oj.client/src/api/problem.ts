@@ -1,11 +1,11 @@
-import apiClient from './client';
+import apiClient from "./client";
 
 export const getAllProblems = async (pageIndex: number, pageSize: number) => {
-    return await apiClient.get('/problem', {
-        params: { pageIndex, pageSize } // Thêm query params cho phân trang
-    });
+  return await apiClient.get("/problem", {
+    params: { pageIndex, pageSize }, // Thï¿½m query params cho phï¿½n trang
+  });
 };
 
 export const getProblemByCode = async (code: string) => {
-    return await apiClient.get(`/problem/${code}`);
+  return await apiClient.get(`/problem/${code}`);
 };
