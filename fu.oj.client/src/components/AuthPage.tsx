@@ -15,10 +15,10 @@ export default function AuthPage() {
     }
   }, [navigate]);
 
-    const additionalFields = [
-        { name: 'fullName', label: 'Full Name' },
-        //{ name: 'phoneNumber', label: 'Phone Number' },
-    ]
+  const additionalFields = [
+    { name: "fullName", label: "Full Name" },
+    //{ name: 'phoneNumber', label: 'Phone Number' },
+  ];
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">

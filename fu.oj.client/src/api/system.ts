@@ -9,4 +9,3 @@ export const getLanguages = async () => {
 export const getSystemInfo = async () => {
   return await apiClient.get("/system/system_info");
 };
-

@@ -131,7 +131,7 @@ export default function ProblemDetail() {
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
-           {/* Submit Solution Button */}
+          {/* Submit Solution Button */}
           <Link to={`/problem/${problemCode}/submit`}>
             <Button>Submit Solution</Button>
           </Link>
