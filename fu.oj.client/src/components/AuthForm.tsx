@@ -18,14 +18,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { registerUser, loginUser } from "../api/auth"; // Adjust the import based on your file structure
 
 interface RegisterProps {
-  additionalFields: { name: string; label: string }[];
+  additionalFields?: { name: string; label: string }[];
 }
 
 interface FormErrors {
   [key: string]: string;
 }
 
-export default function AuthFosrm({ additionalFields = [] }: RegisterProps) {
+export default function AuthForm({ additionalFields = [] }: RegisterProps) {
   const [activeTab, setActiveTab] = useState<string>("login");
   const [formData, setFormData] = useState({
     username: "",
@@ -58,14 +58,12 @@ export default function AuthFosrm({ additionalFields = [] }: RegisterProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    // Clear the error for this field when the user starts typing
     setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
-    // Password validation regex (same as before)
     const passwordRegex = {
       lowerCase: /[a-z]/,
       upperCase: /[A-Z]/,
@@ -99,12 +97,7 @@ export default function AuthFosrm({ additionalFields = [] }: RegisterProps) {
           "Password must include at least one special character";
       if (!formData.fullName.trim())
         newErrors.fullName = "Full Name is required";
-      if (!formData.phoneNumber.trim())
-        newErrors.phoneNumber = "Phone Number is required";
-      if (!/^\d{10}$/.test(formData.phoneNumber))
-        newErrors.phoneNumber = "Phone Number must be 10 digits";
 
-      // Confirm password check
       if (formData.password !== formData.confirmPassword) {
         newErrors.confirmPassword = "Passwords do not match";
       }
@@ -145,7 +138,6 @@ export default function AuthFosrm({ additionalFields = [] }: RegisterProps) {
           email: formData.email,
           password: formData.password,
           fullName: formData.fullName,
-          phoneNumber: formData.phoneNumber,
         });
         console.log("Registration successful:", data);
         localStorage.setItem("user", JSON.stringify(data));
@@ -282,25 +274,20 @@ export default function AuthFosrm({ additionalFields = [] }: RegisterProps) {
                   </p>
                 )}
               </div>
-              {additionalFields.map((field, index) => (
-                <div key={index} className="space-y-1">
-                  <Label htmlFor={`register-${field.name}`}>
-                    {field.label}
-                  </Label>
-                  <Input
-                    id={`register-${field.name}`}
-                    name={field.name}
-                    type="text"
-                    onChange={handleInputChange}
-                    className={errors[field.name] ? "border-red-500" : ""}
-                  />
-                  {errors[field.name] && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors[field.name]}
-                    </p>
-                  )}
-                </div>
-              ))}
+              <div className="space-y-1">
+                <Label htmlFor="register-full-name">Full Name</Label>
+                <Input
+                  id="register-full-name"
+                  name="fullName"
+                  type="text"
+                  required
+                  onChange={handleInputChange}
+                  className={errors.fullName ? "border-red-500" : ""}
+                />
+                {errors.fullName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>
+                )}
+              </div>
             </CardContent>
             <CardFooter>
               <Button type="submit">Register</Button>
@@ -308,11 +295,6 @@ export default function AuthFosrm({ additionalFields = [] }: RegisterProps) {
           </form>
         </Card>
       </TabsContent>
-      {submitError && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertDescription>{submitError}</AlertDescription>
-        </Alert>
-      )}
     </Tabs>
   );
 }

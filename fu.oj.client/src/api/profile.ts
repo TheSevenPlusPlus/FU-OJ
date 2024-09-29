@@ -1,17 +1,7 @@
+import { UpdateUserProfile } from "../models/UserProfileModel";
 import apiClient from "./client"; // assuming apiClient is in the same directory
-interface UserProfile {
-  userName: string;
-  email: string;
-  phoneNumber: string;
-  fullname: string;
-  city: string;
-  description: string;
-  facebookLink: string;
-  githubLink: string;
-  school: string;
-}
 
-const sanitizeProfileData = (profileData: UserProfile) => {
+const sanitizeProfileData = (profileData: UpdateUserProfile) => {
   const sanitizedData = { ...profileData };
 
   Object.keys(sanitizedData).forEach((key) => {
@@ -35,7 +25,7 @@ export const getProfile = async (userName: string) => {
 };
 
 // Function to update the profile
-export const updateProfile = async (profileData: UserProfile) => {
+export const updateProfile = async (profileData: UpdateUserProfile) => {
   try {
     // Sanitize data to avoid sending null values
     const sanitizedData = sanitizeProfileData(profileData);

@@ -1,16 +1,10 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace FU.OJ.Server.Infra.Models
-{
-    public class Result : ResultProperties
+using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;
+namespace FU.OJ.Server.Infra.Models{    public class Result : ResultProperties
     {
-        [ForeignKey("SubmissionId")]
         public Submission Submission { get; set; } = null!;
     }
-
-    public class ResultProperties
+    public class ResultProperties
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string SubmissionId { get; set; } = null!;
@@ -18,14 +12,14 @@ namespace FU.OJ.Server.Infra.Models
         public string? Time { set; get; }
         public double? Memory { set; get; }
     }
-
-    public class ResultConfiguration : IEntityTypeConfiguration<Result>
+    public class ResultConfiguration : IEntityTypeConfiguration<Result>
     {
         public void Configure(EntityTypeBuilder<Result> builder)
         {
-            //builder.HasKey(s => s.Id);
-
-            //builder.HasOne(e => e.Submission).WithMany().HasForeignKey(e => e.SubmissionId);
+            builder.HasOne(r => r.Submission)
+              .WithMany(s => s.Results)
+              .HasForeignKey(r => r.SubmissionId)
+              .OnDelete(DeleteBehavior.Cascade);
         }
     }
-}
+}

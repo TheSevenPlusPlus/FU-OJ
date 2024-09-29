@@ -34,6 +34,6 @@ export const getAllSubmissionsBelongsUser = async (
 };
 
 export const getSubmissionById = async (id: string) => {
-  console.log("id = ", id);
+  //console.log("id = ", id);
   return await apiClient.get(`/submissions/${id}`);
 };

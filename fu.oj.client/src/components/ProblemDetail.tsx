@@ -132,18 +132,18 @@ export default function ProblemDetail() {
         </CardContent>
         <CardFooter className="flex justify-between">
           {/* Submit Solution Button */}
-          <Link to={`/problem/${problem.code}/submit`}>
+          <Link to={`/problem/${problemCode}/submit`}>
             <Button>Submit Solution</Button>
           </Link>
 
           <div className="space-x-2">
             {/* View All Submissions Button */}
-            <Link to={`/problem/${problem.code}/submissions`}>
+            <Link to={`/problem/${problemCode}/submissions`}>
               <Button variant="secondary">View all submissions</Button>
             </Link>
 
             {/* View My Submissions Button */}
-            <Link to={`/problem/${problem.code}/my-submissions`}>
+            <Link to={`/problem/${problemCode}/my-submissions`}>
               <Button variant="secondary">View my submissions</Button>
             </Link>
           </div>

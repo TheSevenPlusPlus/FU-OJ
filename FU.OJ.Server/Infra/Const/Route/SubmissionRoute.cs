@@ -1,9 +1,6 @@
-namespace FU.OJ.Server.Infra.Const.Route
-{
-    public class SubmissionRoute
+namespace FU.OJ.Server.Infra.Const.Route{    public class SubmissionRoute
     {
         public const string INDEX = "submissions";
-
         public static class Action
         {
             public const string Create = "submit";
@@ -12,5 +9,4 @@ namespace FU.OJ.Server.Infra.Const.Route
             public const string GetAll = "all";
             public const string GetAllBelongUser = "all/{username}";
         }
-    }
-}
+    }}

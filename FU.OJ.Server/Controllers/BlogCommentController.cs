@@ -1,33 +1,17 @@
-using FU.OJ.Server.DTOs;
-using FU.OJ.Server.DTOs.BlogComment.Request;
-using FU.OJ.Server.Infra.Const.Route;
-using FU.OJ.Server.Infra.Models;
-using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Mvc;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Mvc;using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace FU.OJ.Server.Controllers
-{
-    [ApiController]
+namespace FU.OJ.Server.Controllers{    [ApiController]
     [Route(BlogCommentRoute.INDEX)]
     //[Authorize]
     public class BlogCommentController : BaseController
     {
         private readonly IBlogCommentService _service;
-
-        public BlogCommentController(
-            IBlogCommentService service,
-            ILogger<BlogCommentController> logger
-        )
-            : base(logger)
+        public BlogCommentController(IBlogCommentService service, ILogger<BlogCommentController> logger) : base(logger)
         {
             _service = service;
         }
-
-        [HttpPost(BlogCommentRoute.Action.Create)]
-        public async Task<IActionResult> CreateBlogCommentAsync(
-            [FromBody] CreateBlogCommentRequest request
-        )
+        [HttpPost(BlogCommentRoute.Action.Create)]
+        public async Task<IActionResult> CreateBlogCommentAsync([FromBody] CreateBlogCommentRequest request)
         {
             try
             {
@@ -39,8 +23,7 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
-
-        [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GetAllBlogCommentsAsync([FromQuery] Paging query)
         {
             try
@@ -53,61 +36,44 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBlogCommentAsync(
-            string id,
-            [FromBody] UpdateBlogCommentRequest request
-        )
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBlogCommentAsync(string id, [FromBody] UpdateBlogCommentRequest request)
         {
             try
             {
                 var updated = await _service.UpdateAsync(id, request);
-
-                if (!updated)
+                if (!updated)
                     return NotFound();
-
-                return NoContent();
+                return NoContent();
             }
             catch (Exception ex)
             {
                 return HandleException(ex);
             }
         }
-
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBlogCommentAsync(string id)
         {
             try
             {
                 var deleted = await _service.DeleteAsync(id);
-
-                if (!deleted)
+                if (!deleted)
                     return NotFound();
-
-                return NoContent();
+                return NoContent();
             }
             catch (Exception ex)
             {
                 return HandleException(ex);
             }
         }
-
-        [HttpGet(BlogCommentRoute.Action.GetByBlogId)]
-        public async Task<IActionResult> GetCommentsByBlogIdAsync(
-            [FromRoute] string blogId,
-            [FromQuery] Paging query
-        )
+        [HttpGet(BlogCommentRoute.Action.GetByBlogId)]
+        public async Task<IActionResult> GetCommentsByBlogIdAsync([FromRoute] string blogId, [FromQuery] Paging query)
         {
             var (comments, totalPages) = await _service.GetCommentsByBlogIdAsync(blogId, query);
             return Ok(new { comments, totalPages });
         }
-
-        [HttpGet(BlogCommentRoute.Action.GetLastTime)]
-        public async Task<IActionResult> getLastUserComment(
-            [FromRoute] string username,
-            [FromQuery] string blogId
-        )
+        [HttpGet(BlogCommentRoute.Action.GetLastTime)]
+        public async Task<IActionResult> getLastUserComment([FromRoute] string username, [FromQuery] string blogId)
         {
             try
             {
@@ -119,5 +85,4 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
-    }
-}
+    }}

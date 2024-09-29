@@ -1,9 +1,6 @@
-namespace FU.OJ.Server.Infra.Const.Route
-{
-    public class BlogRoute
+namespace FU.OJ.Server.Infra.Const.Route{    public class BlogRoute
     {
         public const string INDEX = "blogs";
-
         public static class Action
         {
             public const string Create = "create";
@@ -12,5 +9,4 @@ namespace FU.OJ.Server.Infra.Const.Route
             public const string Update = "update";
             public const string Delete = "Delete";
         }
-    }
-}
+    }}

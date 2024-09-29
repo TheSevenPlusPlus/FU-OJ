@@ -1,9 +1,6 @@
-namespace FU.OJ.Server.Infra.Const.Route
-{
-    public class JudgeRoute
+namespace FU.OJ.Server.Infra.Const.Route{    public class JudgeRoute
     {
         public const string INDEX = "system";
-
         public static class Action
         {
             public const string GetAll = "languages";
@@ -16,5 +13,4 @@ namespace FU.OJ.Server.Infra.Const.Route
             public const string Statistics = "statistics";
             public const string Workers = "workers";
         }
-    }
-}
+    }}

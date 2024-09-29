@@ -1,21 +1,8 @@
 using System.Text;
-using FU.OJ.Server.Infra.Context; // Đảm bảo lớp ApplicationDbContext nằm trong namespace này
-using FU.OJ.Server.Infra.DBInitializer;
-using FU.OJ.Server.Infra.Models;
-using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-
-namespace FU.OJ.Server
-{
-    public static class ServiceInjection
+using FU.OJ.Server.Infra.Context; // Đảm bảo lớp ApplicationDbContext nằm trong namespace nàyusing FU.OJ.Server.Infra.DBInitializer;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authentication.JwtBearer;using Microsoft.AspNetCore.Identity;using Microsoft.IdentityModel.Tokens;using Microsoft.OpenApi.Models;
+namespace FU.OJ.Server{    public static class ServiceInjection
     {
-        public static void AddServices(
-            this IServiceCollection services,
-            IConfiguration configuration
-        )
+        public static void AddServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProblemService, ProblemService>();
@@ -26,8 +13,7 @@ namespace FU.OJ.Server
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IBlogCommentService, BlogCommentService>();
             services.AddScoped<IDbInitializer, DbInitializer>();
-
-            // Đảm bảo sử dụng ApplicationDbContext đúng namespace
+            // Đảm bảo sử dụng ApplicationDbContext đúng namespace
             services
                 .AddIdentity<User, IdentityRole>(options =>
                 {
@@ -38,8 +24,7 @@ namespace FU.OJ.Server
                     options.Password.RequiredLength = 8;
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            var key = Encoding.UTF8.GetBytes(
+            var key = Encoding.UTF8.GetBytes(
                 "secretkey_992jeu9h33rnnc800x3n3003nx3033j3k45k6b6b6662sd"
             ); // Thay đổi khóa bí mật của bạn
             services
@@ -62,14 +47,12 @@ namespace FU.OJ.Server
                         ),
                     };
                 });
-
-            services.AddAuthorization(options =>
+            services.AddAuthorization(options =>
             {
                 options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
                 options.AddPolicy("ManagerPolicy", policy => policy.RequireRole("Manager"));
             });
-
-            services.AddSwaggerGen(option =>
+            services.AddSwaggerGen(option =>
             {
                 option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
                 option.AddSecurityDefinition(
@@ -97,10 +80,8 @@ namespace FU.OJ.Server
                                 },
                             },
                             new string[] { }
-                        },
-                    }
-                );
+                        },                    }                );
             });
         }
     }
-}
+}

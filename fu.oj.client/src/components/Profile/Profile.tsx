@@ -1,6 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Facebook,
   Github,
@@ -8,49 +9,82 @@ import {
   Mail,
   Phone,
   School,
-  User,
-  Briefcase,
   Calendar,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { getProfile } from "../../api/profile";
 import { UserProfile } from "../../models/UserProfileModel";
+import { getRole } from "../../api/general";
+
+function NotFound() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="container mx-auto p-4 text-center">
+      <h1 className="text-4xl font-bold mb-4">404 - User Not Found</h1>
+      <p className="text-xl mb-8">
+        Sorry, the user you're looking for doesn't exist.
+      </p>
+      <Button onClick={() => navigate("/")}>Go to Home</Button>
+    </div>
+  );
+}
 
 export default function ProfileView() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userNotFound, setUserNotFound] = useState(false);
 
+  const { userName: urlUserName } = useParams<{ userName?: string }>();
   const userData = JSON.parse(localStorage.getItem("user") || "{}");
-  const userName = userData?.userName;
+  const localUserName = userData?.userName;
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (userName) {
+      const targetUserName = urlUserName || localUserName;
+      if (targetUserName) {
         try {
-          //console.log(userData);
-          const fetchedProfile = await getProfile(userName);
-          setProfile(fetchedProfile);
+          const fetchedProfile = await getProfile(targetUserName);
+          if (!fetchedProfile) {
+            setUserNotFound(true);
+            setLoading(false);
+            return;
+          }
+          const userRole = await getRole(targetUserName);
+
+          // Merge userRole into profile
+          const updatedProfile = { ...fetchedProfile, role: userRole };
+          setProfile(updatedProfile);
         } catch (err) {
-          setError("Failed to load profile data.");
-          console.error(err);
+          if ((err as any).response && (err as any).response.status === 404) {
+            setUserNotFound(true);
+          } else {
+            setError("Failed to load profile data.");
+            console.error(err);
+          }
         } finally {
           setLoading(false);
         }
       } else {
-        setError("No username found in local storage.");
+        setError("No username found in URL or local storage.");
         setLoading(false);
       }
     };
 
     fetchProfileData();
-  }, [userName]);
+  }, [urlUserName, localUserName]);
 
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if (userNotFound) {
+    return <NotFound />;
   }
 
   if (error) {
@@ -68,21 +102,26 @@ export default function ProfileView() {
           <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4">
             <Avatar className="w-24 h-24">
               <AvatarImage
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
+                src={
+                  profile.avatarUrl ||
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
+                }
                 alt={profile.fullname}
               />
               <AvatarFallback>
-                {profile.fullname ? profile.fullname[0] : "U"}
+                {profile.fullName ? profile.fullName[0] : "U"}
               </AvatarFallback>
             </Avatar>
             <div className="text-center md:text-left">
               <CardTitle className="text-2xl font-bold">
-                {profile.fullname || "Unknown User"}
+                {profile.fullName || "Unknown User"}
               </CardTitle>
               <p className="text-sm text-gray-500">
                 @{profile.userName || "unknown"}
               </p>
-              {/*<Badge variant="secondary" className="mt-2">{profile.role || 'User'}</Badge>*/}
+              <Badge variant="secondary" className="mt-2">
+                {profile.role || "User"}
+              </Badge>
             </div>
           </div>
         </CardHeader>
@@ -117,10 +156,12 @@ export default function ProfileView() {
                     {profile.school || "School not provided"}
                   </span>
                 </div>
-                {/*<div className="flex items-center space-x-2">*/}
-                {/*    <Calendar className="w-5 h-5 text-gray-500" />*/}
-                {/*    <span className="text-sm">{profile.joinDate || "Join date not available"}</span>*/}
-                {/*</div>*/}
+                <div className="flex items-center space-x-2">
+                  <Calendar className="w-5 h-5 text-gray-500" />
+                  <span className="text-sm">
+                    {profile.createdAt || "Join date not available"}
+                  </span>
+                </div>
               </div>
             </div>
 
