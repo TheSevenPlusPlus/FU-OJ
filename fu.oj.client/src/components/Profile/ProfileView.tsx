@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Facebook,
   Github,
@@ -10,6 +10,8 @@ import {
   Phone,
   School,
   Calendar,
+  Edit,
+  Key,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,8 +41,10 @@ export default function ProfileView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [userNotFound, setUserNotFound] = useState(false);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   const { userName: urlUserName } = useParams<{ userName?: string }>();
+  const navigate = useNavigate();
   const userData = JSON.parse(localStorage.getItem("user") || "{}");
   const localUserName = userData?.userName;
 
@@ -69,6 +73,7 @@ export default function ProfileView() {
           // Merge userRole into profile
           const updatedProfile = { ...fetchedProfile, role: userRole };
           setProfile(updatedProfile);
+          setIsOwnProfile(targetUserName === localUserName);
         } catch (err) {
           if ((err as any).response && (err as any).response.status === 404) {
             setUserNotFound(true);
@@ -121,16 +126,40 @@ export default function ProfileView() {
                 {profile.fullName ? profile.fullName[0] : "U"}
               </AvatarFallback>
             </Avatar>
-            <div className="text-center md:text-left">
-              <CardTitle className="text-2xl font-bold">
-                {profile.fullName || "Unknown User"}
-              </CardTitle>
-              <p className="text-sm text-gray-500">
-                @{profile.userName || "unknown"}
-              </p>
-              <Badge variant="secondary" className="mt-2">
-                {profile.role || "User"}
-              </Badge>
+            <div className="text-center md:text-left flex-grow">
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="text-2xl font-bold">
+                    {profile.fullName || "Unknown User"}
+                  </CardTitle>
+                  <p className="text-sm text-gray-500">
+                    @{profile.userName || "unknown"}
+                  </p>
+                  <Badge variant="secondary" className="mt-2">
+                    {profile.role || "User"}
+                  </Badge>
+                </div>
+                {isOwnProfile && (
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate("/profile/edit")}
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit Profile
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate("/changepassword")}
+                    >
+                      <Key className="w-4 h-4 mr-2" />
+                      Change Password
+                    </Button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </CardHeader>

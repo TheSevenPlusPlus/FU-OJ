@@ -142,5 +142,24 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
             }
         }
 
+        [HttpPut(UserRoute.Action.ChangePassword)]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var result = await _userService.ChangePasswordAsync(changePasswordRequest);
+                if (!result)
+                    return StatusCode(500, "Failed to change password");
+
+                return Ok("Password changed successfully");
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
     }
 }

@@ -39,3 +39,9 @@ export interface UserView {
   avatarUrl: string;
   createdAt: Date;
 }
+
+export interface ChangePasswordRequest {
+  userName: string;
+  currentPassword: string;
+  newPassword: string;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Logo from "./Logo";
@@ -7,6 +7,7 @@ import UserMenu from "./UserMenu";
 import MobileNav from "./MobileNav";
 import { getProfile } from "../../api/profile";
 import { getRole } from "../../api/general";
+import { useNavigate } from "react-router-dom";
 
 interface User {
   userName: string;
@@ -19,6 +20,7 @@ interface User {
 const Navbar: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -55,6 +57,7 @@ const Navbar: React.FC = () => {
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
+    navigate("/");
   };
 
   const toggleMenu = () => setIsOpen(!isOpen);

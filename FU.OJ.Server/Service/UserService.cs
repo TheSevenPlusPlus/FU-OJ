@@ -10,6 +10,8 @@ namespace FU.OJ.Server.Service{    public interface IUserService
         Task<User> UpdateUserAsync(UpdateUserRequest user);
         Task<bool> DeleteUserAsync(string userName);
         Task<bool> EditUserRoleAsync(string userName, string role);
+        Task<bool> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest);
+
     }
     public class UserService : IUserService
     {
@@ -151,6 +153,24 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             }
 
             return true;
+        }
+
+        public async Task<bool> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest)
+        {
+            var user = await _userManager.FindByNameAsync(changePasswordRequest.UserName);
+            if (user == null)
+            {
+                throw new Exception("User not found");
+            }
+
+            var result = await _userManager.ChangePasswordAsync(user, changePasswordRequest.CurrentPassword, changePasswordRequest.NewPassword);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            throw new Exception($"Failed to change password: {errors}");
         }
     }
 }

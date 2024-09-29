@@ -10,6 +10,7 @@ namespace FU.OJ.Server.Infra.Const.Route{    public class UserRoute
             public const string Update = "update";
             public const string Delete = "delete/{userName}";
             public const string UpdateRole = "update/role/{userName}";
+            public const string ChangePassword = "changepassword";
         }
     }
 }
