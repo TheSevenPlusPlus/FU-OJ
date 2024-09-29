@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+﻿import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Logo from "./Logo";
 import DesktopNav from "./DesktopNav";
@@ -19,15 +19,32 @@ interface User {
 const Navbar: React.FC = () => {
     const [user, setUser] = useState<User | null>(null);
     const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            const parsedUser: User = JSON.parse(storedUser);
-            if (parsedUser.userName) {
-                fetchUserProfile(parsedUser.userName, parsedUser.token);
-            } else setUser(parsedUser);
-        }
+        const fetchUserData = async () => {
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+                const parsedUser: User = JSON.parse(storedUser);
+                if (parsedUser.userName) {
+                    try {
+                        await fetchUserProfile(
+                            parsedUser.userName,
+                            parsedUser.token,
+                        );
+                    } catch (error) {
+                        console.error("Error fetching user profile:", error);
+                        // Clear localStorage if we encounter an error
+                        localStorage.removeItem("user");
+                        setUser(null);
+                    }
+                } else {
+                    setUser(parsedUser);
+                }
+            }
+        };
+
+        fetchUserData();
     }, []);
 
     const fetchUserProfile = async (userName: string, token: string) => {
@@ -45,16 +62,20 @@ const Navbar: React.FC = () => {
                 setUser(updatedUser);
                 localStorage.setItem("user", JSON.stringify(updatedUser));
             } else {
-                console.error("Failed to fetch user profile");
+                throw new Error("Failed to fetch user profile");
             }
         } catch (error) {
-            console.error("Error fetching user profile:", error);
+            console.error("Error in fetchUserProfile:", error);
+            // Clear localStorage and throw the error to be handled in the effect
+            localStorage.removeItem("user");
+            throw error;
         }
     };
 
     const handleLogout = () => {
         localStorage.removeItem("user");
         setUser(null);
+        navigate("/");
     };
 
     const toggleMenu = () => setIsOpen(!isOpen);

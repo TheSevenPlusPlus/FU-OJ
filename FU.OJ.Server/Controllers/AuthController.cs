@@ -64,27 +64,16 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, false);
             if (!result.Succeeded) return Unauthorized("Invalid password");
             var token = await _tokenService.CreateToken(user); // Sử dụng await cho phương thức không đồng bộ
-            return Ok(
-                new LoginRespond
-                {
-                    UserName = user.UserName,
-                    Email = user.Email,
-                    Token = token,
-                    AvatarUrl = user.AvatarUrl
-                }
-            );
-        }
-        [HttpGet("CheckRole/{username}")]
-        public async Task<IActionResult> CheckUserRole(string username)
-        {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
-            if (user == null) return NotFound("User not found.");
-            var roles = await _userManager.GetRolesAsync(user); // Lấy danh sách role của user
-            return Ok(new
-            {
-                UserName = user.UserName,
-                Roles = roles
-            });
+
+            return Ok(
+               new LoginRespond
+               {
+                   UserName = user.UserName,
+                   Email = user.Email,
+                   Token = token,
+                   AvatarUrl = user.AvatarUrl
+               }
+           );
         }
     }
 }

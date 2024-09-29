@@ -4,6 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import {
     UserView,
     CreateUserRequest,
     UpdateUserRequest,
@@ -12,11 +19,20 @@ import { Eye, EyeOff } from "lucide-react";
 
 interface UserFormProps {
     user?: UserView | null;
-    onSubmit: (user: CreateUserRequest | UpdateUserRequest) => Promise<void>;
+    initialRole?: string;
+    onSubmit: (
+        user: CreateUserRequest | UpdateUserRequest,
+        role: string,
+    ) => Promise<void>;
     onCancel: () => void;
 }
 
-export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
+export function UserForm({
+    user,
+    initialRole,
+    onSubmit,
+    onCancel,
+}: UserFormProps) {
     const [formData, setFormData] = useState<
         CreateUserRequest | UpdateUserRequest
     >({
@@ -32,6 +48,7 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
         school: "",
         avatarUrl: "",
     });
+    const [role, setRole] = useState<string>(initialRole || "User");
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -104,7 +121,7 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
             alert("Please correct the errors before submitting");
             return;
         }
-        await onSubmit(formData);
+        await onSubmit(formData, role);
     };
 
     const togglePasswordVisibility = () => {
@@ -213,6 +230,19 @@ export function UserForm({ user, onSubmit, onCancel }: UserFormProps) {
                     </ul>
                 </div>
             )}
+            <div>
+                <Label htmlFor="role">Role</Label>
+                <Select onValueChange={setRole} defaultValue={role}>
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                        <SelectItem value="Manager">Manager</SelectItem>
+                        <SelectItem value="User">User</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
             <div>
                 <Label htmlFor="city">City</Label>
                 <Input

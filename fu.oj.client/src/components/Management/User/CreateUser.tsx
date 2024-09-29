@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { UserForm } from "./UserForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toast } from "./Toast";
-import { createUser } from "../../../api/user";
+import { createUser, updateRole } from "../../../api/user";
 import { CreateUserRequest } from "../../../models/UserDTO";
 
 export default function CreateUser() {
@@ -22,9 +22,11 @@ export default function CreateUser() {
 
     const handleCreateUser = async (
         userData: CreateUserRequest,
+        role: string,
     ): Promise<void> => {
         try {
-            await createUser(userData);
+            const response = await createUser(userData);
+            await updateRole(userData.userName, role);
             showToast("User created successfully.", "success");
             setTimeout(() => navigate("/manager/users"), 1000);
         } catch (err) {

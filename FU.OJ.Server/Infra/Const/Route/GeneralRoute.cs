@@ -4,5 +4,6 @@ namespace FU.OJ.Server.Infra.Const.Route{    public class GeneralRoute
         public static class Action
         {
             public const string Rank = "rank";
+            public const string GetRole = "getrole/{username}";
         }
     }}
