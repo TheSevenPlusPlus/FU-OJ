@@ -39,7 +39,7 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
         {
             try
             {
-                SubmissionView submission = await _submissionService.GetByIdWithoutResultAsync(id);
+                var submission = await _submissionService.GetByIdWithoutResultAsync(id);
                 return Ok(submission);
             }
             catch (Exception ex)
@@ -48,12 +48,12 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
             }
         }
         [HttpGet(SubmissionRoute.Action.GetAll)]
-        public async Task<IActionResult> GetAllSubmissions([FromQuery] Paging query)
+        public async Task<IActionResult> GetAllSubmissions([FromQuery] string? username, [FromQuery] Paging query, [FromQuery] string? problemCode)
         {
             try
             {
                 // Gọi dịch vụ để lấy danh sách submissions và tổng số trang
-                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsAsync(query);
+                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsAsync(query, username, problemCode);
                 // Trả về kết quả dưới dạng JSON
                 return Ok(new { submissions, totalPages });
             }
@@ -62,20 +62,4 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
                 return HandleException(ex);
             }
         }
-        [HttpGet(SubmissionRoute.Action.GetAllBelongUser)]
-        public async Task<IActionResult> GetAllSubmissionsBelongsUser([FromQuery] Paging query, [FromRoute] string username)
-        {
-            try
-            {
-                // Gọi dịch vụ để lấy danh sách submissions và tổng số trang
-                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsBelongsUserAsync(query, username);
-                // Trả về kết quả dưới dạng JSON
-                return Ok(new { submissions, totalPages });
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
-
     }}
