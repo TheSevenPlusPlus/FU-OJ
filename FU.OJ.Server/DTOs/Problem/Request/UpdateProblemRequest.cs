@@ -1,6 +1,4 @@
-namespace FU.OJ.Server.DTOs.Problem.Request
-{
-    public class UpdateProblemRequest
+namespace FU.OJ.Server.DTOs.Problem.Request{    public class UpdateProblemRequest
     {
         public string? Code { get; set; }
         public string? Title { get; set; }
@@ -12,4 +10,4 @@ namespace FU.OJ.Server.DTOs.Problem.Request
         public float? MemoryLimit { get; set; } = 256 * 1024;
         public string? Difficulty { get; set; }
     }
-}
+}

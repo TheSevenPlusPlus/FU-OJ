@@ -1,17 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;using System.ComponentModel.DataAnnotations;
 
-namespace FU.OJ.Server.Infra.Models
-{
-    public class Submission : SubmissionProperties
+namespace FU.OJ.Server.Infra.Models{    public class Submission : SubmissionProperties
     {
         public User User { get; set; } = null!;
         public Problem Problem { get; set; } = null!;
         public ICollection<Result> Results { get; set; } = null!;
     }
-
-    public class SubmissionProperties
+    public class SubmissionProperties
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -24,8 +21,7 @@ namespace FU.OJ.Server.Infra.Models
         public string? UserName { get; set; }
         public string? Status { get; set; }
     }
-
-    public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
+    public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
     {
         public void Configure(EntityTypeBuilder<Submission> builder)
         {
@@ -33,16 +29,14 @@ namespace FU.OJ.Server.Infra.Models
                .WithMany(u => u.Submissions)
                .HasForeignKey(s => s.UserId)
                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(s => s.Problem)
+            builder.HasOne(s => s.Problem)
                    .WithMany(p => p.Submissions)
                    .HasForeignKey(s => s.ProblemId)
                    .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(s => s.Results)
+            builder.HasMany(s => s.Results)
                    .WithOne(r => r.Submission)
                    .HasForeignKey(r => r.SubmissionId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
-}
+}

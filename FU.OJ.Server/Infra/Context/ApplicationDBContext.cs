@@ -1,18 +1,13 @@
-using FU.OJ.Server.Infra.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-namespace FU.OJ.Server.Infra.Context
-{
-    public class ApplicationDbContext : IdentityDbContext<User>
+using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Identity.EntityFrameworkCore;using Microsoft.EntityFrameworkCore;
+
+namespace FU.OJ.Server.Infra.Context{    public class ApplicationDbContext : IdentityDbContext<User>
     {
         private readonly IConfiguration _config;
-
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration config) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IConfiguration config) : base(options)
         {
             _config = config;
         }
-
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Problem> Problems { get; set; }
         public DbSet<Submission> Submissions { get; set; }
         public DbSet<Result> Results { get; set; }
@@ -20,8 +15,7 @@ namespace FU.OJ.Server.Infra.Context
         public DbSet<ContestParticipant> ContestParticipants { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new UserConfiguration());
@@ -33,10 +27,9 @@ namespace FU.OJ.Server.Infra.Context
             modelBuilder.ApplyConfiguration(new BlogConfiguration());
             modelBuilder.ApplyConfiguration(new BlogCommentConfiguration());
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
         }
     }
-}
+}

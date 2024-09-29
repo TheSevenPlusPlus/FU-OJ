@@ -1,27 +1,20 @@
-using FU.OJ.Server.DTOs.User.Respond;
-using FU.OJ.Server.Infra.Const.Route;
-using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Mvc;
-namespace FU.OJ.Server.Controllers
-{
-    [Route("Profile")]
+using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Mvc;
+
+namespace FU.OJ.Server.Controllers{    [Route("Profile")]
     [ApiController]
     public class ProfileController : BaseController
     {
         private readonly IUserService _userService;
-
-        public ProfileController(IUserService userService, ILogger<ProfileController> logger) : base(logger)
+        public ProfileController(IUserService userService, ILogger<ProfileController> logger) : base(logger)
         {
             _userService = userService;
         }
-
-        [HttpGet(UserRoute.Action.GetByUsername)]
+        [HttpGet(UserRoute.Action.GetByUsername)]
         public async Task<IActionResult> GetUserByUsername(string username)
         {
             var user = await _userService.GetUserByUsernameAsync(username);
             if (user == null) return NotFound("User not found");
-
-            var userResponse = new UserView
+            var userResponse = new UserView
             {
                 UserName = user.UserName,
                 Email = user.Email,
@@ -35,20 +28,16 @@ namespace FU.OJ.Server.Controllers
                 CreatedAt = user.CreatedAt,
                 AvatarUrl = user.AvatarUrl,
             };
-
-            return Ok(userResponse);
+            return Ok(userResponse);
         }
-
-        [HttpPut(UserRoute.Action.Update)]
+        [HttpPut(UserRoute.Action.Update)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            var updatedUser = await _userService.UpdateUserAsync(updateUserRequest);
+            var updatedUser = await _userService.UpdateUserAsync(updateUserRequest);
             if (updatedUser == null) return NotFound("User not found");
-
-            var userResponse = new UserView
+            var userResponse = new UserView
             {
                 UserName = updatedUser.UserName,
                 Email = updatedUser.Email,
@@ -61,8 +50,7 @@ namespace FU.OJ.Server.Controllers
                 School = updatedUser.School,
                 AvatarUrl = updatedUser.AvatarUrl,
             };
-
-            return Ok(userResponse);
+            return Ok(userResponse);
         }
     }
-}
+}

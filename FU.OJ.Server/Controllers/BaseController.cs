@@ -1,5 +1,7 @@
-using Microsoft.AspNetCore.Mvc;using System.Data.Common;using TaxNet_Common.Exceptions;namespace FU.OJ.Server.Controllers{
-    [ApiController]
+using System.Data.Common;using Microsoft.AspNetCore.Mvc;
+using TaxNet_Common.Exceptions;
+
+namespace FU.OJ.Server.Controllers{    [ApiController]
     public class BaseController : Controller
     {
         protected ILogger _logger;

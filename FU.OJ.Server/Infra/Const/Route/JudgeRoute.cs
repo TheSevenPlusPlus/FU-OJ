@@ -1,5 +1,4 @@
-namespace FU.OJ.Server.Infra.Const.Route{
-    public class JudgeRoute
+namespace FU.OJ.Server.Infra.Const.Route{    public class JudgeRoute
     {
         public const string INDEX = "system";
         public static class Action

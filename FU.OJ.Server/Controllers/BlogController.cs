@@ -1,16 +1,15 @@
-using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;namespace FU.OJ.Server.Controllers{
-    [Route(BlogRoute.INDEX)]
+using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
+
+namespace FU.OJ.Server.Controllers{    [Route(BlogRoute.INDEX)]
     [ApiController]
     public class BlogController : BaseController
     {
         private readonly IBlogService _blogService;
-
-        public BlogController(IBlogService blogService, ILogger<BlogController> logger) : base(logger)
+        public BlogController(IBlogService blogService, ILogger<BlogController> logger) : base(logger)
         {
             _blogService = blogService;
         }
-
-        [HttpPost(BlogRoute.Action.Create)]
+        [HttpPost(BlogRoute.Action.Create)]
         //[Authorize(Roles = RoleAuthorize.AdminManager)]
         public async Task<IActionResult> CreateBlogAsync([FromBody] CreateBlogRequest request)
         {
@@ -18,8 +17,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Serve
             {
                 return BadRequest(ModelState);
             }
-
-            try
+            try
             {
                 var blogId = await _blogService.CreateAsync(request);
                 return CreatedAtAction(nameof(GetBlogByIdAsync), new { id = blogId }, new { id = blogId });
@@ -30,8 +28,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Serve
                 return StatusCode(500, "An error occurred while creating the blog.");
             }
         }
-
-        [HttpGet(BlogRoute.Action.GetDetails)]
+        [HttpGet(BlogRoute.Action.GetDetails)]
         [AllowAnonymous]
         public async Task<IActionResult> GetBlogByIdAsync(string id)
         {
@@ -42,8 +39,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Serve
                 {
                     return NotFound("Blog not found.");
                 }
-
-                return Ok(blog);
+                return Ok(blog);
             }
             catch (Exception ex)
             {
@@ -51,8 +47,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Serve
                 return StatusCode(500, "An error occurred while retrieving the blog.");
             }
         }
-
-        [HttpGet(BlogRoute.Action.GetAll)]
+        [HttpGet(BlogRoute.Action.GetAll)]
         public async Task<IActionResult> GetAllBlogsAsync([FromQuery] Paging query)
         {
             try
@@ -66,8 +61,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Serve
                 return StatusCode(500, "An error occurred while retrieving the blogs.");
             }
         }
-
-        [HttpPut(BlogRoute.Action.Update)]
+        [HttpPut(BlogRoute.Action.Update)]
         //[Authorize(Roles = RoleAuthorize.AdminManager)]
         public async Task<IActionResult> UpdateBlogAsync(string id, [FromBody] UpdateBlogRequest request)
         {
@@ -75,8 +69,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Serve
             {
                 return BadRequest(ModelState);
             }
-
-            try
+            try
             {
                 await _blogService.UpdateAsync(id, request);
                 return NoContent();
@@ -87,8 +80,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Serve
                 return StatusCode(500, "An error occurred while updating the blog.");
             }
         }
-
-        [HttpDelete(BlogRoute.Action.Delete)]
+        [HttpDelete(BlogRoute.Action.Delete)]
         //[Authorize(Roles = RoleAuthorize.AdminManager)]
         public async Task<IActionResult> DeleteBlogAsync(string id)
         {
@@ -99,8 +91,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Serve
                 {
                     return NotFound("Blog not found.");
                 }
-
-                await _blogService.DeleteAsync(id);
+                await _blogService.DeleteAsync(id);
                 return NoContent();
             }
             catch (Exception ex)
@@ -109,4 +100,5 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Serve
                 return StatusCode(500, "An error occurred while deleting the blog.");
             }
         }
-    }}
+    }
+}

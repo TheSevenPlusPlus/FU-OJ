@@ -1,5 +1,6 @@
-using System.ComponentModel.DataAnnotations;namespace FU.OJ.Server.DTOs.Submission.Request{
-    public class CreateSubmissionRequest
+using System.ComponentModel.DataAnnotations;
+
+namespace FU.OJ.Server.DTOs.Submission.Request{    public class CreateSubmissionRequest
     {
         [Required]
         public string SourceCode { get; set; } = null!;

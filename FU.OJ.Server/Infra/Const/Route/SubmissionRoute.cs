@@ -1,5 +1,4 @@
-namespace FU.OJ.Server.Infra.Const.Route{
-    public class SubmissionRoute
+namespace FU.OJ.Server.Infra.Const.Route{    public class SubmissionRoute
     {
         public const string INDEX = "submissions";
         public static class Action

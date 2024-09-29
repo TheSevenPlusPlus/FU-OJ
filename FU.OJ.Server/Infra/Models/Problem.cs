@@ -1,16 +1,13 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;using System.ComponentModel.DataAnnotations;
 
-namespace FU.OJ.Server.Infra.Models
-{
-    public class Problem : ProblemProperties
+namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperties
     {
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
         public User User { get; set; } = null!;
     }
-
-    public class ProblemProperties
+    public class ProblemProperties
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -31,8 +28,7 @@ namespace FU.OJ.Server.Infra.Models
         public string? TestCasePath { get; set; } = null!; // folder ch?a test
 
     }
-
-    public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
+    public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
     {
         public void Configure(EntityTypeBuilder<Problem> builder)
         {
@@ -40,11 +36,10 @@ namespace FU.OJ.Server.Infra.Models
                .WithMany(u => u.Problems)
                .HasForeignKey(p => p.UserId)
                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(p => p.Submissions)
+            builder.HasMany(p => p.Submissions)
                    .WithOne(s => s.Problem)
                    .HasForeignKey(s => s.ProblemId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
-}
+}

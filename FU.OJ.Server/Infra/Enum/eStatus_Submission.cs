@@ -1,5 +1,6 @@
-using System.ComponentModel;namespace FU.OJ.Server.Infra.Enum{
-    public enum eStatus_Submission
+using System.ComponentModel;
+
+namespace FU.OJ.Server.Infra.Enum{    public enum eStatus_Submission
     {
         [Description("Accept")]
         ac = 0,

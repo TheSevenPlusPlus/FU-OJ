@@ -1,5 +1,6 @@
-using System.ComponentModel.DataAnnotations;namespace FU.OJ.Server.DTOs.Submission.Response{
-    public class ResultView
+using System.ComponentModel.DataAnnotations;
+
+namespace FU.OJ.Server.DTOs.Submission.Response{    public class ResultView
     {
         public string? StatusDescription { get; set; }
         public string? Time { set; get; }
@@ -17,6 +18,6 @@ using System.ComponentModel.DataAnnotations;namespace FU.OJ.Server.DTOs.Submiss
         public DateTime SubmittedAt { get; set; }
         public string? UserName { get; set; }
         public string? Status { get; set; }
-
-        public ICollection<ResultView> Results { get; set; } = new List<ResultView>();
-    }}
+        public ICollection<ResultView> Results { get; set; } = new List<ResultView>();
+    }
+}

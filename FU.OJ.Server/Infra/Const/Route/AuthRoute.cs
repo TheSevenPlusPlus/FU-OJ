@@ -1,5 +1,4 @@
-namespace FU.OJ.Server.Infra.Const.Route{
-    public class AuthRoute
+namespace FU.OJ.Server.Infra.Const.Route{    public class AuthRoute
     {
         public const string INDEX = "auth";
         public static class Action
