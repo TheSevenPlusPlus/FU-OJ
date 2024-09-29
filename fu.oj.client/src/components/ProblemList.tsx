@@ -129,25 +129,33 @@ const ProblemList: React.FC = () => {
                     <TableRow>
                         <TableHead className="w-[50px] border-r">Status</TableHead>
                         <TableHead className="w-[80px] border-r">Difficulty</TableHead>
-                        <TableHead className="border-r">Problem Name</TableHead>
-                        <TableHead className="w-[120px] border-r">Created At</TableHead>
+                        <TableHead className="w-[100px] border-r">Code</TableHead>
+                        <TableHead className="border-r">Title</TableHead>
+                        <TableHead className="w-[120px] border-r">Time Limit</TableHead>
+                        <TableHead className="w-[120px] border-r">Memory (MB)</TableHead>
+                        <TableHead className="w-[150px] border-r">Created at</TableHead>
+                        <TableHead className="w-[100px]">Has Solution</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {problems.map((problem) => (
-                        <TableRow key={problem.id}>
+                        <TableRow key={problem.code} className="hover:bg-gray-100 transition duration-200">
                             <TableCell className="border-r">
                                 {getStatusIcon(problem.acQuantity, problem.totalTests)}
                             </TableCell>
-                            <TableCell className={`border-r ${getDifficultyColor(problem.difficulty)}`}>
+                            <TableCell className={`font-medium ${getDifficultyColor(problem.difficulty)} border-r`}>
                                 {problem.difficulty}
                             </TableCell>
+                            <TableCell className="font-medium border-r">{problem.code}</TableCell>
                             <TableCell className="border-r">
-                                <Link to={`/problem/${problem.code}`} className="text-blue-500">
-                                    {problem.code}
+                                <Link to={`/problem/${problem.code}`} className="text-blue-600 hover:underline">
+                                    {problem.title}
                                 </Link>
                             </TableCell>
-                            <TableCell className="border-r">{formatDate(problem.createdAt)}</TableCell>
+                            <TableCell className="font-medium border-r">{problem.timeLimit === 0 ? 1 : problem.timeLimit}s</TableCell>
+                            <TableCell className="font-medium border-r">{problem.memoryLimit} MB</TableCell>
+                            <TableCell className="font-medium border-r">{formatDate(problem.createdAt)}</TableCell>
+                            <TableCell className="font-medium">{getSolutionIcon(problem.hasSolution)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
