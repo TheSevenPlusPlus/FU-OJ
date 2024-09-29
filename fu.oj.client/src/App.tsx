@@ -18,12 +18,13 @@ import NotFound from "./components/NotFound";
 import ComingSoon from "./components/ComingSoon";
 import CreateUser from "./components/Management/User/CreateUser";
 import UpdateUser from "./components/Management/User/UpdateUser";
-import BlogManagement from "./components/Management/BlogManagement";
 import CreateProblem from "./components/Management/Problem/CreateProblem";
 import UpdateProblem from "./components/Management/Problem/UpdateProblem";
 import ProblemManagement from "./components/Management/Problem/ProblemManagement";
 import UserManagement from "./components/Management/User/UserManagement";
 import ChangePassword from "./components/Profile/ChangePassword";
+import BlogManagement from "./components/Management/Blog/BlogManagement";
+import BlogForm from "./components/Management/Blog/BlogForm";
 
 const App: React.FC = () => {
     const mockProfile = {
@@ -124,9 +125,19 @@ const App: React.FC = () => {
                             path="/manager/users/update/:userName"
                             element={<UpdateUser />}
                         />
+
+                        {/* Blog Management Routes */}
                         <Route
                             path="/manager/blogs"
                             element={<BlogManagement />}
+                        />
+                        <Route
+                            path="/manager/blogs/create"
+                            element={<BlogForm />}
+                        />
+                        <Route
+                            path="/manager/blogs/update/:blogId"
+                            element={<BlogForm />}
                         />
 
                         {/* 404 Not Found */}
