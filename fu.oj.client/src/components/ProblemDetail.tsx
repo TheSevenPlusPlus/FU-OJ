@@ -19,6 +19,8 @@ export default function ProblemDetail() {
     const [problem, setProblem] = useState<Problem | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const userData = JSON.parse(localStorage.getItem("user") || "{}");
+    const userName = userData?.userName;
 
     useEffect(() => {
         const fetchProblem = async () => {
@@ -156,14 +158,14 @@ export default function ProblemDetail() {
 
                     <div className="space-x-2">
                         {/* View All Submissions Button */}
-                        <Link to={`/problem/${problemCode}/submissions`}>
+                        <Link to={`/submissions/all?problemCode=${problemCode}`}>
                             <Button variant="secondary">
                                 View all submissions
                             </Button>
                         </Link>
 
                         {/* View My Submissions Button */}
-                        <Link to={`/problem/${problemCode}/my-submissions`}>
+                        <Link to={`/submissions/all?userName=${userName}&problemCode=${problemCode}`}>
                             <Button variant="secondary">
                                 View my submissions
                             </Button>
