@@ -9,6 +9,6 @@ export const getRank = async (pageNumber: number, pageSize: number) => {
 };
 
 export const getRole = async (userName: string) => {
-  const respond = await apiClient.get(`/auth/checkrole/${userName}`);
-  return respond.data.roles[0];
+  const respond = await apiClient.get(`/general/getrole/${userName}`);
+  return respond.data.role;
 };

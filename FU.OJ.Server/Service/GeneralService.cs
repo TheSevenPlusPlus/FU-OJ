@@ -1,15 +1,19 @@
-﻿using FU.OJ.Server.DTOs.General.Response;using FU.OJ.Server.Infra.Context;using Microsoft.EntityFrameworkCore;
+﻿using FU.OJ.Server.DTOs.General.Response;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Identity;using Microsoft.EntityFrameworkCore;
 
 namespace FU.OJ.Server.Service{    public interface IGeneralService
     {
         Task<PaginatedResponse<UserRankResponse>> GetUserRankingsAsync(int page, int pageSize);
+        Task<(string UserName, string Role)> GetUserRoleAsync(string username);
+
     }
     public class GeneralService : IGeneralService
     {
         private readonly ApplicationDbContext _context;
-        public GeneralService(ApplicationDbContext context)
+        private readonly UserManager<User> _userManager;
+        public GeneralService(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
         // Get paginated user rankings
         public async Task<PaginatedResponse<UserRankResponse>> GetUserRankingsAsync(int page, int pageSize)
@@ -43,6 +47,20 @@ namespace FU.OJ.Server.Service{    public interface IGeneralService
                 TotalItems = totalUsers,
                 Items = usersWithAcProblems
             };
+        }
+
+        public async Task<(string UserName, string Role)> GetUserRoleAsync(string username)
+        {
+            // Tìm user dựa vào username
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            if (user == null) throw new Exception("User not found");
+
+            // Lấy vai trò duy nhất của user
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Count == 0) return (user.UserName, "No Role");
+            if (roles.Count > 1) throw new InvalidOperationException("User has multiple roles, but only one role is allowed.");
+
+            return (user.UserName, roles.FirstOrDefault());
         }
     }
 }

@@ -9,6 +9,7 @@ namespace FU.OJ.Server.Service{    public interface IUserService
         Task<User> GetUserByUsernameAsync(string userName); // Added Async suffix for consistency
         Task<User> UpdateUserAsync(UpdateUserRequest user);
         Task<bool> DeleteUserAsync(string userName);
+        Task<bool> EditUserRoleAsync(string userName, string role);
     }
     public class UserService : IUserService
     {
@@ -35,7 +36,8 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             };
             var result = await _userManager.CreateAsync(user, userRequest.Password);
             if (result.Succeeded) return user;
-            else throw new Exception("Create user unsuccessful"); // Consider throwing an exception or handling this differently.
+            var errors = string.Join("; ", result.Errors.Select(e => e.Description));
+            throw new InvalidOperationException($"User creation failed: {errors}");
         }
         public async Task<(List<UserView> users, int totalPages)> GetAllUsersAsync(Paging query)
         {
@@ -117,6 +119,38 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             }
             throw new Exception("User isn't exist");
 
+        }
+
+        public async Task<bool> EditUserRoleAsync(string userName, string role)
+        {
+            if (!(role == "Admin" || role == "User" || role == "Manager"))
+            {
+                throw new ArgumentException("Invalid role");
+            }
+
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                throw new Exception("User isn't exist");
+            }
+
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            // Xóa vai trò hiện tại của người dùng
+            var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            if (!removeRolesResult.Succeeded)
+            {
+                throw new InvalidOperationException("Failed to remove current role");
+            }
+
+            // Thêm vai trò mới
+            var addRoleResult = await _userManager.AddToRoleAsync(user, role);
+            if (!addRoleResult.Succeeded)
+            {
+                throw new InvalidOperationException("Failed to assign new role");
+            }
+
+            return true;
         }
     }
 }
