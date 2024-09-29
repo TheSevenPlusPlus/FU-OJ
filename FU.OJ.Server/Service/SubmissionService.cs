@@ -1,27 +1,7 @@
-using System.Text;
+using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Submission.Request;using FU.OJ.Server.DTOs.Submission.Response;using FU.OJ.Server.Infra.Const;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.EntityFrameworkCore;using System.Text;
 using System.Text.Json;
-using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Submission.Request;using FU.OJ.Server.DTOs.Submission.Response;using FU.OJ.Server.Infra.Const;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.EntityFrameworkCore;using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace FU.OJ.Server.Service{    public interface ISubmissionService
-    {
-        Task<string> CreateAsync(CreateSubmissionRequest request, bool base64Encoded, bool wait); //
-        Task<SubmissionView> GetByIdAsync(string id); //
-        Task<SubmissionView?> GetByIdWithoutResultAsync(string id); //
-        Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(
-            Paging query
-        ); //
-        Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsBelongsUserAsync(
-            Paging query,
-            string username
-        );
-        Task<string> GetByTokenAsync(
-            string token,
-            bool base64Encoded = false,
-            string fields = "stdout,time,memory,stderr,token,compile_output,message,status"
-        );
-        Task<Submission?> getByIdWithoutResult(string id); // Trả về Submission mà không kèm Result
-        Task<Submission?> getById(string id); // Trả về Submission kèm theo Result
-    }
+namespace FU.OJ.Server.Service{
     public interface ISubmissionService
     {
         Task<string> CreateAsync(CreateSubmissionRequest request, bool base64Encoded, bool wait); //
@@ -57,13 +37,7 @@ namespace FU.OJ.Server.Service{    public interface ISubmissionService
                 throw new Exception(ErrorMessage.NotFound);
             if (problem.TestCasePath == null)
                 throw new Exception(ErrorMessage.NotHaveTest);
-            var testcase = await _testcaseService.GetByIdAsync(problem.TestCaseId);
-            if (testcase == null)
-                throw new Exception(ErrorMessage.NotFound);
 
-            var user = await _userService.GetUserByUsernameAsync(request.username);
-            if (user == null)
-                throw new Exception(ErrorMessage.NotFound);
             var user = await _userService.GetUserByUsernameAsync(request.username);
             if (user == null)
                 throw new Exception(ErrorMessage.NotFound);
@@ -76,16 +50,6 @@ namespace FU.OJ.Server.Service{    public interface ISubmissionService
                 SubmittedAt = DateTime.UtcNow,
                 UserId = user.Id,
                 UserName = user.UserName,
-            };
-            var submission = new Submission
-            {
-                ProblemId = request.ProblemId,
-                ProblemCode = request.ProblemCode,
-                SourceCode = request.SourceCode,
-                LanguageName = request.LanguageName,
-                SubmittedAt = DateTime.UtcNow,
-                UserId = user.Id,
-                UserName = user.UserName
             };
             _context.Submissions.Add(submission);
             var tokenList = new List<string>();
@@ -279,8 +243,8 @@ namespace FU.OJ.Server.Service{    public interface ISubmissionService
                     Status = submission.Status
                 })
                 .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
-                                                                                              .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
-                                                                                                        .ToListAsync();
+                .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
+                .ToListAsync();
             return (submissions, submissions.Count);
         }
     }

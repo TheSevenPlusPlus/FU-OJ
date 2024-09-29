@@ -41,7 +41,7 @@ export default function ProfileEdit() {
           userName: profileData.userName,
           email: profileData.email,
           phoneNumber: profileData.phoneNumber,
-          fullName: profileData.fullname,
+          fullName: profileData.fullName,
           city: profileData.city,
           description: profileData.description,
           facebookLink: profileData.facebookLink,

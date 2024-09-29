@@ -44,6 +44,15 @@ export default function ProfileView() {
   const userData = JSON.parse(localStorage.getItem("user") || "{}");
   const localUserName = userData?.userName;
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
   useEffect(() => {
     const fetchProfileData = async () => {
       const targetUserName = urlUserName || localUserName;
@@ -106,7 +115,7 @@ export default function ProfileView() {
                   profile.avatarUrl ||
                   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
                 }
-                alt={profile.fullname}
+                alt={profile.fullName}
               />
               <AvatarFallback>
                 {profile.fullName ? profile.fullName[0] : "U"}
@@ -159,7 +168,7 @@ export default function ProfileView() {
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-5 h-5 text-gray-500" />
                   <span className="text-sm">
-                    {profile.createdAt || "Join date not available"}
+                    {formatDate(profile.createdAt) || "Join date not available"}
                   </span>
                 </div>
               </div>
