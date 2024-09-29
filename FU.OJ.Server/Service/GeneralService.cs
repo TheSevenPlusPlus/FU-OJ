@@ -1,4 +1,4 @@
-using FU.OJ.Server.DTOs.General.Response;using FU.OJ.Server.Infra.Context;using Microsoft.EntityFrameworkCore;
+﻿using FU.OJ.Server.DTOs.General.Response;using FU.OJ.Server.Infra.Context;using Microsoft.EntityFrameworkCore;
 
 namespace FU.OJ.Server.Service{    public interface IGeneralService
     {
@@ -15,17 +15,23 @@ namespace FU.OJ.Server.Service{    public interface IGeneralService
         public async Task<PaginatedResponse<UserRankResponse>> GetUserRankingsAsync(int page, int pageSize)
         {
             var totalUsers = await _context.Users.CountAsync();
-            // Get users along with the count of accepted submissions (AC)
+
+            // Get users along with the count of accepted submissions (AC)
             var usersWithAcProblems = await _context.Users
-                .Select(user => new UserRankResponse
-                {
-                    UserName = user.UserName,
-                    AcProblems = user.Submissions.Count(s => s.Status == "AC")
-                })
-                .OrderByDescending(u => u.AcProblems)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+               .Select(user => new UserRankResponse
+               {
+                   UserName = user.UserName,
+                   AcProblems = user.Submissions
+                       .Where(s => s.Status == "Accepted")
+                       .Select(s => s.ProblemId) // Giả sử có thuộc tính ProblemId trong Submission
+                       .Distinct() // Lấy các ProblemId duy nhất
+                       .Count() // Đếm số lượng bài toán duy nhất mà người dùng đã nộp thành công
+               })
+               .OrderByDescending(u => u.AcProblems)
+               .Skip((page - 1) * pageSize)
+               .Take(pageSize)
+               .ToListAsync();
+
             // Assign ranks to each user based on the number of accepted submissions
             for (int i = 0; i < usersWithAcProblems.Count; i++)
             {
