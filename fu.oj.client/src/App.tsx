@@ -9,7 +9,7 @@ import CodeSubmission from "./components/SubmitCode";
 import BlogList from "./components/BlogList";
 import BlogPost from "./components/BlogPost";
 import AuthPage from "./components/AuthPage";
-import ProfileView from "./components/Profile/Profile";
+import ProfileView from "./components/Profile/ProfileView";
 import ProfileEdit from "./components/Profile/ProfileEdit";
 import Rank from "./components/Rank";
 import SubmissionDetail from "./components/SubmissionDetail";
@@ -23,6 +23,7 @@ import CreateProblem from "./components/Management/Problem/CreateProblem";
 import UpdateProblem from "./components/Management/Problem/UpdateProblem";
 import ProblemManagement from "./components/Management/Problem/ProblemManagement";
 import UserManagement from "./components/Management/User/UserManagement";
+import ChangePassword from "./components/Profile/ChangePassword";
 
 const App: React.FC = () => {
     const mockProfile = {
@@ -49,6 +50,10 @@ const App: React.FC = () => {
                             element={<ProfileView />}
                         />
                         <Route path="/profile/edit" element={<ProfileEdit />} />
+                        <Route
+                            path="/changepassword"
+                            element={<ChangePassword />}
+                        />
 
                         {/* Problem */}
                         <Route path="/problems" element={<ProblemList />} />

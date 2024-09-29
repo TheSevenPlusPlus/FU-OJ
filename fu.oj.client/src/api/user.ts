@@ -2,6 +2,7 @@
     CreateUserRequest,
     UpdateUserRequest,
     UserView,
+    ChangePasswordRequest,
 } from "../models/UserDTO";
 import apiClient from "./client";
 
@@ -25,4 +26,12 @@ export const getUserByUserName = async (userName: string) => {
 
 export const deleteUser = async (userName: string) => {
     return await apiClient.delete(`/user/delete/${userName}`);
+};
+
+export const updateRole = async (userName: string, role: string) => {
+    return await apiClient.put(`/user/update/role/${userName}`, role);
+};
+
+export const changePassword = async (request: ChangePasswordRequest) => {
+    return await apiClient.put("/user/changepassword", request);
 };

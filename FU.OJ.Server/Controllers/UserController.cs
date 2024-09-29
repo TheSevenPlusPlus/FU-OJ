@@ -1,4 +1,4 @@
-using FU.OJ.Server.DTOs;
+﻿using FU.OJ.Server.DTOs;
 using FU.OJ.Server.DTOs.User.Request;using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
@@ -40,7 +40,7 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
         {
             try
             {
-                // G?i d?ch v? ?? l?y danh s�ch users v� t?ng s? trang
+                // G?i d?ch v? ?? l?y danh sách users và t?ng s? trang
                 var (users, totalPages) = await _userService.GetAllUsersAsync(query);
                 // Tr? v? k?t qu? d??i d?ng JSON
                 return Ok(new { users, totalPages });
@@ -124,6 +124,42 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
             var result = await _userService.DeleteUserAsync(userName);
             if (!result) return NotFound("User not found");
             return NoContent();
+        }
+
+        [HttpPut(UserRoute.Action.UpdateRole)]
+        public async Task<IActionResult> EditUserRole(string userName, [FromBody] string role)
+        {
+            try
+            {
+                var result = await _userService.EditUserRoleAsync(userName, role);
+                if (!result) return StatusCode(500, "Failed to edit user role");
+
+                return Ok("User role updated successfully");
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);  // Hàm này để xử lý lỗi
+            }
+        }
+
+        [HttpPut(UserRoute.Action.ChangePassword)]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                var result = await _userService.ChangePasswordAsync(changePasswordRequest);
+                if (!result)
+                    return StatusCode(500, "Failed to change password");
+
+                return Ok("Password changed successfully");
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
         }
     }
 }

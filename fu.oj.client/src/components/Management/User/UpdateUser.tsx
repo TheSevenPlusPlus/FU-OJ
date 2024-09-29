@@ -5,13 +5,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import { UserForm } from "./UserForm";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toast } from "./Toast";
-import { getUserByUserName, updateUser } from "../../../api/user";
+import { getUserByUserName, updateUser, updateRole } from "../../../api/user";
 import { UserView, UpdateUserRequest } from "../../../models/UserDTO";
+import { getRole } from "../../../api/general";
 
 export default function UpdateUser() {
     const { userName } = useParams<{ userName: string }>();
     const navigate = useNavigate();
     const [user, setUser] = useState<UserView | null>(null);
+    const [initialRole, setInitialRole] = useState<string>("");
     const [toast, setToast] = useState<{
         message: string;
         type: "success" | "error";
@@ -19,6 +21,7 @@ export default function UpdateUser() {
 
     useEffect(() => {
         fetchUser();
+        fetchRole();
     }, [userName]);
 
     const showToast = (message: string, type: "success" | "error"): void => {
@@ -38,11 +41,22 @@ export default function UpdateUser() {
         }
     };
 
+    const fetchRole = async (): Promise<void> => {
+        try {
+            const role = await getRole(userName);
+            setInitialRole(role);
+        } catch (err) {
+            showToast("Failed to fetch user role. Please try again.", "error");
+        }
+    };
+
     const handleUpdateUser = async (
         userData: UpdateUserRequest,
+        role: string,
     ): Promise<void> => {
         try {
             await updateUser(userData);
+            await updateRole(userData.userName, role);
             showToast("User updated successfully.", "success");
             setTimeout(() => navigate("/manager/users"), 1500);
         } catch (err) {
@@ -50,7 +64,7 @@ export default function UpdateUser() {
         }
     };
 
-    if (!user) {
+    if (!user || !initialRole) {
         return <p>Loading...</p>;
     }
 
@@ -64,6 +78,7 @@ export default function UpdateUser() {
             <CardContent>
                 <UserForm
                     user={user}
+                    initialRole={initialRole}
                     onSubmit={handleUpdateUser}
                     onCancel={() => navigate("/manager/users")}
                 />

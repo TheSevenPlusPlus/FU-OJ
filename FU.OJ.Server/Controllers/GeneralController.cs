@@ -15,4 +15,17 @@ using FU.OJ.Server.Controllers;using FU.OJ.Server.Infra.Const.Route;using FU.O
         var result = await _generalService.GetUserRankingsAsync(page, pageSize);
         return Ok(result);
     }
+    [HttpGet(GeneralRoute.Action.GetRole)]
+    public async Task<IActionResult> GetUserRoleAsync(string username)
+    {
+        try
+        {
+            var (userName, role) = await _generalService.GetUserRoleAsync(username);
+            return Ok(new { UserName = userName, Role = role });
+        }
+        catch (Exception ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
 }

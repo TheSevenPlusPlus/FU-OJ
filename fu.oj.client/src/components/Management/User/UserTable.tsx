@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
     Table,
@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { UserView } from "../../../models/UserDTO";
-import { Edit, Trash2, ExternalLink } from "lucide-react";
+import { Edit, Trash2, ExternalLink, Key } from "lucide-react";
+import { PasswordChangePopup } from "./PasswordChangePopup";
 
 interface UserTableProps {
     users: UserView[];
@@ -19,6 +20,14 @@ interface UserTableProps {
 }
 
 export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
+    const [isPasswordChangeOpen, setIsPasswordChangeOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<UserView | null>(null);
+
+    const handlePasswordChange = (user: UserView) => {
+        setSelectedUser(user);
+        setIsPasswordChangeOpen(true);
+    };
+
     return (
         <div className="rounded-md border">
             <Table>
@@ -70,6 +79,17 @@ export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
                                 <Button
                                     variant="ghost"
                                     size="sm"
+                                    onClick={() => handlePasswordChange(user)}
+                                    className="mr-2 text-gray-600 hover:text-yellow-600"
+                                >
+                                    <Key className="h-4 w-4" />
+                                    <span className="sr-only">
+                                        Change Password
+                                    </span>
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
                                     onClick={() => onDelete(user.userName)}
                                     className="text-gray-600 hover:text-red-600"
                                 >
@@ -81,6 +101,12 @@ export function UserTable({ users, onEdit, onDelete }: UserTableProps) {
                     ))}
                 </TableBody>
             </Table>
+            {isPasswordChangeOpen && selectedUser && (
+                <PasswordChangePopup
+                    user={selectedUser}
+                    onClose={() => setIsPasswordChangeOpen(false)}
+                />
+            )}
         </div>
     );
 }

@@ -55,6 +55,16 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
         }
     }, [location, navigate]);
 
+    useEffect(() => {
+        if (submitError) {
+            const timer = setTimeout(() => {
+                setSubmitError(null);
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        }
+    }, [submitError]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -177,6 +187,13 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                     </CardHeader>
                     <form onSubmit={handleSubmit}>
                         <CardContent className="space-y-2">
+                            {submitError && (
+                                <Alert variant="destructive">
+                                    <AlertDescription>
+                                        {submitError}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                             <div className="space-y-1">
                                 <Label htmlFor="login-username">Username</Label>
                                 <Input
@@ -230,6 +247,13 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
                     </CardHeader>
                     <form onSubmit={handleSubmit}>
                         <CardContent className="space-y-2">
+                            {submitError && (
+                                <Alert variant="destructive">
+                                    <AlertDescription>
+                                        {submitError}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
                             <div className="space-y-1">
                                 <Label htmlFor="register-username">
                                     Username
