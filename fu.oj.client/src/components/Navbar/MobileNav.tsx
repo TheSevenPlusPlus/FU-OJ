@@ -42,9 +42,9 @@ const MobileNav: React.FC<MobileNavProps> = ({ user, isOpen, onToggle, onLogout 
                             <Link to="/profile/edit" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={onToggle}>Edit Profile</Link>
                             {isManagerOrAdmin && (
                                 <>
-                                    <Link to="/manager/problem" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={onToggle}>Problem Management</Link>
-                                    <Link to="/manager/blog" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={onToggle}>Blog Management</Link>
-                                    <Link to="/manager/account" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={onToggle}>Account Management</Link>
+                                    <Link to="/manager/problems" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={onToggle}>Problem Management</Link>
+                                    <Link to="/manager/blogs" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={onToggle}>Blog Management</Link>
+                                    <Link to="/manager/users" className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800" onClick={onToggle}>User Management</Link>
                                 </>
                             )}
                             <Button variant="outline" className="text-black w-full" onClick={() => { onLogout(); onToggle(); }}>
