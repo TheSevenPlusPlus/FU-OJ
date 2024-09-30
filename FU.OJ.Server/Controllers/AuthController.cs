@@ -75,5 +75,42 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
                }
            );
         }
+
+        //[HttpPost(AuthRoute.Action.ForgotPassword)]
+        //public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
+        //{
+        //    var user = await _userManager.FindByEmailAsync(model.Email);
+        //    if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+        //    {
+        //        return BadRequest("Invalid email.");
+        //    }
+
+        //    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        //    var resetLink = Url.Action("ResetPassword", "Account", new { token, email = user.Email }, Request.Scheme);
+
+        //    // Gửi email reset mật khẩu
+        //    await _emailSender.SendEmailAsync(model.Email, "Reset Password", $"Click <a href='{resetLink}'>here</a> to reset your password.");
+
+        //    return Ok("Password reset link has been sent to your email.");
+        //}
+
+        //[HttpPost("reset-password")]
+        //public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
+        //{
+        //    var user = await _userManager.FindByEmailAsync(model.Email);
+        //    if (user == null)
+        //    {
+        //        return BadRequest("Invalid email.");
+        //    }
+
+        //    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+        //    if (result.Succeeded)
+        //    {
+        //        return Ok("Password has been reset successfully.");
+        //    }
+
+        //    return BadRequest(result.Errors);
+        //}
+
     }
 }
