@@ -10,6 +10,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getAllBlogs } from "../api/blog";
+import Pagination from './Pagination/Pagination'; // Adjust the path as needed
+import ItemsPerPageSelector from './Pagination/ItemsPerPageSelector'; // Import the new component
 
 interface Blog {
     id: number;
@@ -61,79 +63,10 @@ export default function BlogList() {
         }
     };
 
-    const renderPagination = () => {
-        const paginationItems = [];
-        const maxPagesToShow = 5;
-        const startPage = Math.max(
-            1,
-            pageIndex - Math.floor(maxPagesToShow / 2),
-        );
-        const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-
-        if (startPage > 1) {
-            paginationItems.push(
-                <Button
-                    key={1}
-                    onClick={() => handlePageChange(1)}
-                    variant="outline"
-                    size="sm"
-                >
-                    1
-                </Button>,
-            );
-            if (startPage > 2) {
-                paginationItems.push(
-                    <Button
-                        key="ellipsis-start"
-                        variant="outline"
-                        size="sm"
-                        disabled
-                    >
-                        ...
-                    </Button>,
-                );
-            }
-        }
-
-        for (let i = startPage; i <= endPage; i++) {
-            paginationItems.push(
-                <Button
-                    key={i}
-                    onClick={() => handlePageChange(i)}
-                    variant={i === pageIndex ? "default" : "outline"}
-                    size="sm"
-                >
-                    {i}
-                </Button>,
-            );
-        }
-
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                paginationItems.push(
-                    <Button
-                        key="ellipsis-end"
-                        variant="outline"
-                        size="sm"
-                        disabled
-                    >
-                        ...
-                    </Button>,
-                );
-            }
-            paginationItems.push(
-                <Button
-                    key={totalPages}
-                    onClick={() => handlePageChange(totalPages)}
-                    variant="outline"
-                    size="sm"
-                >
-                    {totalPages}
-                </Button>,
-            );
-        }
-
-        return paginationItems;
+    const handleItemsPerPageChange = (newSize: number) => {
+        setPageSize(newSize);
+        setPageIndex(1); // Reset to first page when changing items per page
+        navigate(`/blog?pageIndex=1&pageSize=${newSize}`); // Update URL for new page size
     };
 
     if (loading) {
@@ -154,32 +87,19 @@ export default function BlogList() {
             <h1 className="text-4xl font-bold mb-8 text-center text-black dark:text-white">
                 Latest Blog Posts
             </h1>
+            <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogs.map((blog) => (
                     <BlogCard key={blog.id} blog={blog} />
                 ))}
             </div>
 
-            {/* Pagination Controls */}
-            <div className="flex justify-center mt-4 space-x-2">
-                <Button
-                    onClick={() => handlePageChange(pageIndex - 1)}
-                    disabled={pageIndex === 1}
-                    variant="outline"
-                    size="sm"
-                >
-                    Previous
-                </Button>
-                {renderPagination()}
-                <Button
-                    onClick={() => handlePageChange(pageIndex + 1)}
-                    disabled={pageIndex === totalPages}
-                    variant="outline"
-                    size="sm"
-                >
-                    Next
-                </Button>
-            </div>
+            {/* Pagination Component */}
+            <Pagination
+                currentPage={pageIndex}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
         </div>
     );
 }

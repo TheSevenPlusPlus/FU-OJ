@@ -8,9 +8,11 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { getAllProblems } from "../api/problem";
 import { Problem } from "../models/ProblemModel";
+import "@fortawesome/fontawesome-free/css/all.min.css";
+import Pagination from './Pagination/Pagination'; // Adjust the path as needed
+import ItemsPerPageSelector from './Pagination/ItemsPerPageSelector'; // Import the new component
 
 const ProblemList: React.FC = () => {
     const navigate = useNavigate();
@@ -18,7 +20,7 @@ const ProblemList: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [pageIndex, setPageIndex] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(10); // Define page size
+    const [pageSize, setPageSize] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [searchParams] = useSearchParams();
 
@@ -37,9 +39,9 @@ const ProblemList: React.FC = () => {
                 const { problems, totalPages } = response.data;
                 setProblems(problems);
                 setTotalPages(totalPages);
-                setLoading(false);
             } catch (err) {
                 setError("Failed to fetch problems.");
+            } finally {
                 setLoading(false);
             }
         };
@@ -62,85 +64,43 @@ const ProblemList: React.FC = () => {
     const handlePageChange = (newPageIndex: number) => {
         if (newPageIndex > 0 && newPageIndex <= totalPages) {
             setPageIndex(newPageIndex);
-            navigate(
-                `/problems?pageIndex=${newPageIndex}&pageSize=${pageSize}`,
-            );
+            navigate(`/problems?pageIndex=${newPageIndex}&pageSize=${pageSize}`);
         }
     };
 
-    const renderPagination = () => {
-        const paginationItems = [];
-        const maxPagesToShow = 5;
-        const startPage = Math.max(
-            1,
-            pageIndex - Math.floor(maxPagesToShow / 2),
-        );
-        const endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    const handleItemsPerPageChange = (newSize: number) => {
+        setPageSize(newSize);
+        setPageIndex(1); // Reset to first page when changing items per page
+        navigate(`/problems?pageIndex=1&pageSize=${newSize}`); // Update URL for new page size
+    };
 
-        if (startPage > 1) {
-            paginationItems.push(
-                <Button
-                    key={1}
-                    onClick={() => handlePageChange(1)}
-                    variant="outline"
-                    size="sm"
-                >
-                    1
-                </Button>,
-            );
-            if (startPage > 2) {
-                paginationItems.push(
-                    <Button
-                        key="ellipsis-start"
-                        variant="outline"
-                        size="sm"
-                        disabled
-                    >
-                        ...
-                    </Button>,
-                );
-            }
+    const getStatusIcon = (acQuantity: number | null, totalTests: number | null) => {
+        if (acQuantity === null || totalTests === null) return null;
+
+        if (acQuantity === totalTests) {
+            return <i className="fa fa-check-circle text-green-500"></i>;
+        } else if (acQuantity < totalTests) {
+            return <i className="fas fa-frown text-yellow-500"></i>;
         }
 
-        for (let i = startPage; i <= endPage; i++) {
-            paginationItems.push(
-                <Button
-                    key={i}
-                    onClick={() => handlePageChange(i)}
-                    variant={i === pageIndex ? "default" : "outline"}
-                    size="sm"
-                >
-                    {i}
-                </Button>,
-            );
-        }
+        return null;
+    };
 
-        if (endPage < totalPages) {
-            if (endPage < totalPages - 1) {
-                paginationItems.push(
-                    <Button
-                        key="ellipsis-end"
-                        variant="outline"
-                        size="sm"
-                        disabled
-                    >
-                        ...
-                    </Button>,
-                );
-            }
-            paginationItems.push(
-                <Button
-                    key={totalPages}
-                    onClick={() => handlePageChange(totalPages)}
-                    variant="outline"
-                    size="sm"
-                >
-                    {totalPages}
-                </Button>,
-            );
+    const getDifficultyColor = (difficulty: string) => {
+        switch (difficulty) {
+            case "Easy":
+                return "text-green-500"; // Green for Easy
+            case "Medium":
+                return "text-yellow-500"; // Yellow for Medium
+            case "Hard":
+                return "text-red-500"; // Red for Hard
+            default:
+                return "text-gray-500"; // Default color
         }
+    };
 
-        return paginationItems;
+    const getSolutionIcon = (hasSolution: string) => {
+        return hasSolution ? <i className="fas fa-check-circle text-green-500"></i> : null;
     };
 
     if (loading) {
@@ -158,64 +118,55 @@ const ProblemList: React.FC = () => {
 
     return (
         <div className="container mx-auto py-8">
-            <h1 className="text-3xl font-bold mb-6">All Problems</h1>
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-3xl font-bold">All Problems</h1>
+                {/* Items per Page Selector */}
+                <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
+            </div>
+
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead className="w-[100px]">ID</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Time Limit</TableHead>
-                        <TableHead>Create At</TableHead>
+                        <TableHead className="w-[50px] border-r">Status</TableHead>
+                        <TableHead className="w-[80px] border-r">Difficulty</TableHead>
+                        <TableHead className="w-[100px] border-r">Code</TableHead>
+                        <TableHead className="border-r">Title</TableHead>
+                        <TableHead className="w-[120px] border-r">Time Limit</TableHead>
+                        <TableHead className="w-[120px] border-r">Memory (MB)</TableHead>
+                        <TableHead className="w-[150px] border-r">Created at</TableHead>
+                        <TableHead className="w-[100px]">Has Solution</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {problems.map((problem) => (
-                        <TableRow key={problem.code}>
-                            <TableCell className="font-medium">
-                                {problem.code}
+                        <TableRow key={problem.code} className="hover:bg-gray-100 transition duration-200">
+                            <TableCell className="border-r">
+                                {getStatusIcon(problem.acQuantity, problem.totalTests)}
                             </TableCell>
-                            <TableCell>
-                                <Link
-                                    to={`/problem/${problem.code}`}
-                                    className="text-blue-600 hover:underline"
-                                >
+                            <TableCell className={`font-medium ${getDifficultyColor(problem.difficulty)} border-r`}>
+                                {problem.difficulty}
+                            </TableCell>
+                            <TableCell className="font-medium border-r">{problem.code}</TableCell>
+                            <TableCell className="border-r">
+                                <Link to={`/problem/${problem.code}`} className="text-blue-600 hover:underline">
                                     {problem.title}
                                 </Link>
                             </TableCell>
-                            <TableCell className="font-medium">
-                                {problem.timeLimit === 0
-                                    ? 1
-                                    : problem.timeLimit}
-                                s
-                            </TableCell>
-                            <TableCell className="font-medium">
-                                {formatDate(problem.createdAt)}
-                            </TableCell>
+                            <TableCell className="font-medium border-r">{problem.timeLimit === 0 ? 1 : problem.timeLimit}s</TableCell>
+                            <TableCell className="font-medium border-r">{problem.memoryLimit} MB</TableCell>
+                            <TableCell className="font-medium border-r">{formatDate(problem.createdAt)}</TableCell>
+                            <TableCell className="font-medium">{getSolutionIcon(problem.hasSolution)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
 
-            {/* Pagination Controls */}
-            <div className="flex justify-center mt-4 space-x-2">
-                <Button
-                    onClick={() => handlePageChange(pageIndex - 1)}
-                    disabled={pageIndex === 1}
-                    variant="outline"
-                    size="sm"
-                >
-                    Previous
-                </Button>
-                {renderPagination()}
-                <Button
-                    onClick={() => handlePageChange(pageIndex + 1)}
-                    disabled={pageIndex === totalPages}
-                    variant="outline"
-                    size="sm"
-                >
-                    Next
-                </Button>
-            </div>
+            {/* Pagination Component */}
+            <Pagination
+                currentPage={pageIndex}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
         </div>
     );
 };

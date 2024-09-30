@@ -39,4 +39,5 @@ export interface Problem {
     difficulty: string;
     acQuantity: number | null;
     totalTests: number | null;
+    hasSolution: string | null;
 }

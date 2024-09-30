@@ -16,20 +16,11 @@ export const submitCode = async (data: {
 export const getAllSubmissions = async (
     pageIndex: number,
     pageSize: number,
+    username: string | null,
+    problemCode: string | null,
 ) => {
     return await apiClient.get(`/submissions/all`, {
-        params: { pageIndex, pageSize }, // Thêm query params cho phân trang
-    });
-};
-
-// Cập nhật hàm gọi API để hỗ trợ phân trang
-export const getAllSubmissionsBelongsUser = async (
-    pageIndex: number,
-    pageSize: number,
-    username: string,
-) => {
-    return await apiClient.get(`/submissions/all/${username}`, {
-        params: { pageIndex, pageSize }, // Thêm query params cho phân trang
+        params: { pageIndex, pageSize, username, problemCode },
     });
 };
 

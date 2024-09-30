@@ -13,7 +13,6 @@ import ProfileView from "./components/Profile/ProfileView";
 import ProfileEdit from "./components/Profile/ProfileEdit";
 import Rank from "./components/Rank";
 import SubmissionDetail from "./components/SubmissionDetail";
-import SubmissionListBelongsUser from "./components/SubmissionListBelongsUser";
 import NotFound from "./components/NotFound";
 import ComingSoon from "./components/ComingSoon";
 import CreateUser from "./components/Management/User/CreateUser";
@@ -71,10 +70,6 @@ const App: React.FC = () => {
                         <Route
                             path="/submissions/:id"
                             element={<SubmissionDetail />}
-                        />
-                        <Route
-                            path="/submissions/all/:username"
-                            element={<SubmissionListBelongsUser />}
                         />
                         <Route
                             path="/submissions/all"
