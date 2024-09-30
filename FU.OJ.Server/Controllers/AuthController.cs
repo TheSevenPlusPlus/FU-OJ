@@ -1,4 +1,4 @@
-using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
+using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;using System.Web;
 
 namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
     [ApiController]
@@ -8,13 +8,16 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
         private readonly SignInManager<User> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly IEmailSender _emailSender;
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
-            ITokenService tokenService, ILogger<AuthController> logger, IEmailSender emailSender) : base(logger)
+        private readonly string _clientUrl; // Khai báo _clientUrl
+
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
+            ITokenService tokenService, ILogger<AuthController> logger, IEmailSender emailSender, IConfiguration configuration) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
             _emailSender = emailSender;
+            _clientUrl = configuration["ClientUrl"];
         }
         [HttpPost(AuthRoute.Action.Register)]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
@@ -95,7 +98,7 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetLink = Url.Action("ResetPassword", "Auth", new { token, email = user.Email }, Request.Scheme);
+            var resetLink = $"{_clientUrl}/resetpassword?token={HttpUtility.UrlEncode(token)}&email={user.Email}"; // Sử dụng _clientUrl
 
             // Gửi email reset mật khẩu
             await _emailSender.SendEmailAsync(model.Email, "Reset Password", $"Click <a href='{resetLink}'>here</a> to reset your password.");
@@ -107,6 +110,11 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
         [HttpPost(AuthRoute.Action.ResetPassword)]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid request data.");
+            }
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
@@ -121,6 +129,7 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
 
             return BadRequest(result.Errors);
         }
+
 
     }
 }
