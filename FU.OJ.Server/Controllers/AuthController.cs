@@ -1,4 +1,4 @@
-using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
+using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Identity.UI.Services;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
 
 namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
     [ApiController]
@@ -7,12 +7,14 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly IEmailSender _emailSender;
         public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
-            ITokenService tokenService, ILogger<AuthController> logger) : base(logger)
+            ITokenService tokenService, ILogger<AuthController> logger, IEmailSender emailSender) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _emailSender = emailSender;
         }
         [HttpPost(AuthRoute.Action.Register)]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
@@ -75,5 +77,42 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
                }
            );
         }
+
+        //[HttpPost(AuthRoute.Action.ForgotPassword)]
+        //public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
+        //{
+        //    var user = await _userManager.FindByEmailAsync(model.Email);
+        //    if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+        //    {
+        //        return BadRequest("Invalid email.");
+        //    }
+
+        //    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        //    var resetLink = Url.Action("ResetPassword", "Account", new { token, email = user.Email }, Request.Scheme);
+
+        //    // Gửi email reset mật khẩu
+        //    await _emailSender.SendEmailAsync(model.Email, "Reset Password", $"Click <a href='{resetLink}'>here</a> to reset your password.");
+
+        //    return Ok("Password reset link has been sent to your email.");
+        //}
+
+        //[HttpPost("reset-password")]
+        //public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
+        //{
+        //    var user = await _userManager.FindByEmailAsync(model.Email);
+        //    if (user == null)
+        //    {
+        //        return BadRequest("Invalid email.");
+        //    }
+
+        //    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+        //    if (result.Succeeded)
+        //    {
+        //        return Ok("Password has been reset successfully.");
+        //    }
+
+        //    return BadRequest(result.Errors);
+        //}
+
     }
 }
