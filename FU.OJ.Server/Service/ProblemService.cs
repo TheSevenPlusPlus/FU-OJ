@@ -42,6 +42,8 @@ namespace FU.OJ.Server.Service{    public interface IProblemService
                 Title = request.Title,
                 Description = request.Description,
                 Constraints = request.Constraints,
+                Input = request.Input,
+                Output = request.Output,
                 ExampleInput = request.ExampleInput,
                 ExampleOutput = request.ExampleOutput,
                 TimeLimit = request.TimeLimit,
@@ -61,6 +63,7 @@ namespace FU.OJ.Server.Service{    public interface IProblemService
             // Tính toán tổng số trang
             int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
             var problems = await _context.Problems.AsNoTracking()
+                .OrderByDescending(c => c.CreatedAt)
                 .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
                                                                                               .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
                                                                                                         .ToListAsync();
@@ -75,6 +78,8 @@ namespace FU.OJ.Server.Service{    public interface IProblemService
             problem.Title = request.Title;
             problem.Description = request.Description;
             problem.Constraints = request.Constraints;
+            problem.Input = request.Input;
+            problem.Output = request.Output;
             problem.ExampleInput = request.ExampleInput;
             problem.ExampleOutput = request.ExampleOutput;
             problem.TimeLimit = request.TimeLimit;

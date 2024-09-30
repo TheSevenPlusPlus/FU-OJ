@@ -10,11 +10,12 @@ import {
 } from "@/components/ui/table";
 import { getAllProblems } from "../api/problem";
 import { Problem } from "../models/ProblemModel";
+import { Badge } from "@/components/ui/badge";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import Pagination from './Pagination/Pagination'; // Adjust the path as needed
-import ItemsPerPageSelector from './Pagination/ItemsPerPageSelector'; // Import the new component
+import Pagination from './Pagination/Pagination';
+import ItemsPerPageSelector from './Pagination/ItemsPerPageSelector';
 
-const ProblemList: React.FC = () => {
+export default function ProblemList() {
     const navigate = useNavigate();
     const [problems, setProblems] = useState<Problem[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -70,8 +71,8 @@ const ProblemList: React.FC = () => {
 
     const handleItemsPerPageChange = (newSize: number) => {
         setPageSize(newSize);
-        setPageIndex(1); // Reset to first page when changing items per page
-        navigate(`/problems?pageIndex=1&pageSize=${newSize}`); // Update URL for new page size
+        setPageIndex(1);
+        navigate(`/problems?pageIndex=1&pageSize=${newSize}`);
     };
 
     const getStatusIcon = (acQuantity: number | null, totalTests: number | null) => {
@@ -87,15 +88,15 @@ const ProblemList: React.FC = () => {
     };
 
     const getDifficultyColor = (difficulty: string) => {
-        switch (difficulty) {
-            case "Easy":
-                return "text-green-500"; // Green for Easy
-            case "Medium":
-                return "text-yellow-500"; // Yellow for Medium
-            case "Hard":
-                return "text-red-500"; // Red for Hard
+        switch (difficulty.toLowerCase()) {
+            case "easy":
+                return "bg-green-500";
+            case "hard":
+                return "bg-red-500";
+            case "medium":
+                return "bg-yellow-500";
             default:
-                return "text-gray-500"; // Default color
+                return "bg-gray-500";
         }
     };
 
@@ -120,48 +121,68 @@ const ProblemList: React.FC = () => {
         <div className="container mx-auto py-8">
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-3xl font-bold">All Problems</h1>
-                {/* Items per Page Selector */}
                 <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
             </div>
 
-            <Table>
+            <Table className="border border-gray-300">
                 <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-[50px] border-r">Status</TableHead>
-                        <TableHead className="w-[80px] border-r">Difficulty</TableHead>
-                        <TableHead className="w-[100px] border-r">Code</TableHead>
-                        <TableHead className="border-r">Title</TableHead>
-                        <TableHead className="w-[120px] border-r">Time Limit</TableHead>
-                        <TableHead className="w-[120px] border-r">Memory (MB)</TableHead>
-                        <TableHead className="w-[150px] border-r">Created at</TableHead>
-                        <TableHead className="w-[100px]">Has Solution</TableHead>
+                    <TableRow className="border-b border-gray-300 bg-black">
+                        <TableHead className="w-[50px] border border-gray-300 text-white font-bold">Status</TableHead>
+                        <TableHead className="w-[80px] border border-gray-300 text-white font-bold">Difficulty</TableHead>
+                        <TableHead className="w-[100px] border border-gray-300 text-white font-bold">Code</TableHead>
+                        <TableHead className="border border-gray-300 text-white font-bold">Title</TableHead>
+                        <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Time Limit</TableHead>
+                        <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Memory (MB)</TableHead>
+                        <TableHead className="w-[150px] border border-gray-300 text-white font-bold">Created at</TableHead>
+                        <TableHead className="w-[100px] border border-gray-300 text-white font-bold">Has Solution</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {problems.map((problem) => (
-                        <TableRow key={problem.code} className="hover:bg-gray-100 transition duration-200">
-                            <TableCell className="border-r">
+                        <TableRow
+                            key={problem.code}
+                            className="border-b border-gray-300 hover:bg-gray-100 transition duration-200"
+                        >
+                            <TableCell className="flex items-center justify-center">
                                 {getStatusIcon(problem.acQuantity, problem.totalTests)}
                             </TableCell>
-                            <TableCell className={`font-medium ${getDifficultyColor(problem.difficulty)} border-r`}>
-                                {problem.difficulty}
+
+                            <TableCell className="border border-gray-300">
+                                <Badge
+                                    className={`font-medium text-white ${getDifficultyColor(problem.difficulty)}`}
+                                    variant={
+                                        problem.difficulty === "Easy"
+                                            ? "default"
+                                            : problem.difficulty === "Medium"
+                                                ? "secondary"
+                                                : "destructive"
+                                    }
+                                >
+                                    {problem.difficulty || "Unknown"}
+                                </Badge>
                             </TableCell>
-                            <TableCell className="font-medium border-r">{problem.code}</TableCell>
-                            <TableCell className="border-r">
+
+                            <TableCell className="font-medium border border-gray-300">{problem.code}</TableCell>
+                            <TableCell className="border border-gray-300">
                                 <Link to={`/problem/${problem.code}`} className="text-blue-600 hover:underline">
                                     {problem.title}
                                 </Link>
                             </TableCell>
-                            <TableCell className="font-medium border-r">{problem.timeLimit === 0 ? 1 : problem.timeLimit}s</TableCell>
-                            <TableCell className="font-medium border-r">{problem.memoryLimit} MB</TableCell>
-                            <TableCell className="font-medium border-r">{formatDate(problem.createdAt)}</TableCell>
-                            <TableCell className="font-medium">{getSolutionIcon(problem.hasSolution)}</TableCell>
+                            <TableCell className="font-medium border border-gray-300">
+                                {problem.timeLimit === 0 ? 1 : problem.timeLimit}s
+                            </TableCell>
+                            <TableCell className="font-medium border border-gray-300">{Math.floor(problem.memoryLimit / 1024)} MB</TableCell>
+                            <TableCell className="font-medium border border-gray-300">
+                                {formatDate(problem.createdAt)}
+                            </TableCell>
+                            <TableCell className="flex items-center justify-center">
+                                {getSolutionIcon(problem.hasSolution)}
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
 
-            {/* Pagination Component */}
             <Pagination
                 currentPage={pageIndex}
                 totalPages={totalPages}
@@ -169,6 +190,4 @@ const ProblemList: React.FC = () => {
             />
         </div>
     );
-};
-
-export default ProblemList;
+}

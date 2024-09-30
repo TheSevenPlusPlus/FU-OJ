@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     Plus,
     Pencil,
@@ -24,13 +24,6 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-} from "@/components/ui/pagination";
-import {
     Select,
     SelectContent,
     SelectItem,
@@ -38,13 +31,17 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { getAllProblems, deleteProblem } from "../../../api/problem";
-
+import Pagination from '../../Pagination/Pagination';
+import ItemsPerPageSelector from '../../Pagination/ItemsPerPageSelector';
+import { Badge } from "@/components/ui/badge";
 interface Problem {
     id: string;
     code: string;
     title: string;
     description: string;
     constraints: string;
+    input: string;
+    output: string;
     exampleInput: string;
     exampleOutput: string;
     timeLimit: number;
@@ -54,21 +51,22 @@ interface Problem {
 }
 
 const ProblemManagement: React.FC = () => {
+    const navigate = useNavigate();
     const [problems, setProblems] = useState<Problem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [pageIndex, setPageIndex] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
     const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         loadProblems();
-    }, [currentPage, itemsPerPage]);
+    }, [pageIndex, pageSize]);
 
     const loadProblems = async () => {
         try {
             setLoading(true);
-            const response = await getAllProblems(currentPage, itemsPerPage);
+            const response = await getAllProblems(pageIndex, pageSize);
             setProblems(response.data.problems);
             setTotalPages(response.data.totalPages);
         } catch (err) {
@@ -91,85 +89,31 @@ const ProblemManagement: React.FC = () => {
 
     const handlePageChange = (page: number) => {
         if (page >= 1 && page <= totalPages) {
-            setCurrentPage(page);
+            setPageIndex(page);
         }
     };
 
-    const handleItemsPerPageChange = (value: string) => {
-        setItemsPerPage(Number(value));
-        setCurrentPage(1); // Reset to first page when changing items per page
+    const handleItemsPerPageChange = (newSize: number) => {
+        setPageSize(newSize);
+        setPageIndex(1);
+        navigate(`/manager/problems?pageIndex=1&pageSize=${newSize}`);
     };
 
-    const renderPageNumbers = () => {
-        const pageNumbers = [];
-        const maxVisiblePages = 5;
-
-        if (totalPages <= maxVisiblePages) {
-            for (let i = 1; i <= totalPages; i++) {
-                pageNumbers.push(
-                    <PaginationItem key={i}>
-                        <PaginationLink
-                            onClick={() => handlePageChange(i)}
-                            isActive={currentPage === i}
-                        >
-                            {i}
-                        </PaginationLink>
-                    </PaginationItem>,
-                );
-            }
-        } else {
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-            if (endPage - startPage < maxVisiblePages - 1) {
-                startPage = Math.max(1, endPage - maxVisiblePages + 1);
-            }
-
-            if (startPage > 1) {
-                pageNumbers.push(
-                    <PaginationItem key={1}>
-                        <PaginationLink onClick={() => handlePageChange(1)}>
-                            1
-                        </PaginationLink>
-                    </PaginationItem>,
-                );
-                if (startPage > 2) {
-                    pageNumbers.push(
-                        <PaginationEllipsis key="ellipsis-start" />,
-                    );
-                }
-            }
-
-            for (let i = startPage; i <= endPage; i++) {
-                pageNumbers.push(
-                    <PaginationItem key={i}>
-                        <PaginationLink
-                            onClick={() => handlePageChange(i)}
-                            isActive={currentPage === i}
-                        >
-                            {i}
-                        </PaginationLink>
-                    </PaginationItem>,
-                );
-            }
-
-            if (endPage < totalPages) {
-                if (endPage < totalPages - 1) {
-                    pageNumbers.push(<PaginationEllipsis key="ellipsis-end" />);
-                }
-                pageNumbers.push(
-                    <PaginationItem key={totalPages}>
-                        <PaginationLink
-                            onClick={() => handlePageChange(totalPages)}
-                        >
-                            {totalPages}
-                        </PaginationLink>
-                    </PaginationItem>,
-                );
-            }
+    const getDifficultyColor = (difficulty: string) => {
+        switch (difficulty.toLowerCase()) {
+            case "easy":
+                return "bg-green-500";
+            case "hard":
+                return "bg-red-500";
+            case "medium":
+                return "bg-yellow-500";
+            default:
+                return "bg-gray-500";
         }
+    };
 
-        return pageNumbers;
+    const getSolutionIcon = (hasSolution: string) => {
+        return hasSolution ? <i className="fas fa-check-circle text-green-500"></i> : null;
     };
 
     if (loading) return <div>Loading...</div>;
@@ -185,41 +129,39 @@ const ProblemManagement: React.FC = () => {
                     </Button>
                 </Link>
                 <div className="flex items-center">
-                    <span className="mr-2">Items per page:</span>
-                    <Select
-                        value={itemsPerPage.toString()}
-                        onValueChange={handleItemsPerPageChange}
-                    >
-                        <SelectTrigger className="w-[70px]">
-                            <SelectValue
-                                placeholder={itemsPerPage.toString()}
-                            />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="5">5</SelectItem>
-                            <SelectItem value="10">10</SelectItem>
-                            <SelectItem value="20">20</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
                 </div>
             </div>
-            <Table>
+            <Table className="border border-gray-300">
                 <TableHeader>
-                    <TableRow>
-                        <TableHead>Code</TableHead>
-                        <TableHead>Title</TableHead>
-                        <TableHead>Difficulty</TableHead>
-                        <TableHead>Has Solution</TableHead>
-                        <TableHead>Actions</TableHead>
+                    <TableRow className="border-b border-gray-300 bg-black">
+                        <TableHead className="border border-gray-300 text-white font-bold">Code</TableHead>
+                        <TableHead className="border border-gray-300 text-white font-bold">Title</TableHead>
+                        <TableHead className="border border-gray-300 text-white font-bold">Difficulty</TableHead>
+                        <TableHead className="border border-gray-300 text-white font-bold">Has Solution</TableHead>
+                        <TableHead className="border border-gray-300 text-white font-bold">Actions</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {problems.map((problem) => (
-                        <TableRow key={problem.id}>
-                            <TableCell>{problem.code}</TableCell>
-                            <TableCell>{problem.title}</TableCell>
-                            <TableCell>{problem.difficulty}</TableCell>
-                            <TableCell>{problem.hasSolution}</TableCell>
+                        <TableRow key={problem.id} className="border-b border-gray-300 hover:bg-gray-100 transition duration-200">
+                            <TableCell className="border border-gray-300">{problem.code}</TableCell>
+                            <TableCell className="border border-gray-300">{problem.title}</TableCell>
+                            <TableCell className="border border-gray-300">
+                                <Badge
+                                    className={`font-medium text-white ${getDifficultyColor(problem.difficulty)}`}
+                                    variant={
+                                        problem.difficulty === "Easy"
+                                            ? "default"
+                                            : problem.difficulty === "Medium"
+                                                ? "secondary"
+                                                : "destructive"
+                                    }
+                                >
+                                    {problem.difficulty || "Unknown"}
+                                </Badge>
+                            </TableCell>
+                            <TableCell className="border border-gray-300">{problem.hasSolution}</TableCell>
                             <TableCell>
                                 <TooltipProvider>
                                     <Tooltip>
@@ -280,33 +222,12 @@ const ProblemManagement: React.FC = () => {
                     ))}
                 </TableBody>
             </Table>
-            <Pagination className="mt-4">
-                <PaginationContent>
-                    <PaginationItem>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                        >
-                            <ChevronLeft className="h-4 w-4" />
-                            <span className="sr-only">Go to previous page</span>
-                        </Button>
-                    </PaginationItem>
-                    {renderPageNumbers()}
-                    <PaginationItem>
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                        >
-                            <ChevronRight className="h-4 w-4" />
-                            <span className="sr-only">Go to next page</span>
-                        </Button>
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+
+            <Pagination
+                currentPage={pageIndex}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
         </div>
     );
 };

@@ -21,14 +21,13 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
             var user = await _userService.GetUserByUsernameAsync(request.Username!);
             if (user == null)
                 throw new Exception(ErrorMessage.NotFound);
-            var newComment = new BlogComment
+            var newComment = new BlogComment()
             {
                 Content = request.Content,
                 UserId = user.Id,
                 BlogId = request.BlogId,
                 CreatedAt = DateTime.UtcNow
-            };
-            _context.BlogComments.Add(newComment);
+            };            _context.BlogComments.Add(newComment);
             await _context.SaveChangesAsync();
             return newComment.Id;
         }
@@ -40,6 +39,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
                 .AsNoTracking()
                 .Include(c => c.User) // Optional: Include user details
                 .Include(c => c.Blog) // Optional: Include blog details
+                .OrderByDescending(c => c.CreatedAt)
                 .Skip((query.pageIndex - 1) * query.pageSize)
                 .Take(query.pageSize)
                 .ToListAsync();
@@ -60,6 +60,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
                     CreatedAt = c.CreatedAt,
                     UserName = c.User.UserName
                 })
+                .OrderByDescending(c => c.CreatedAt)
                 .Skip((query.pageIndex - 1) * query.pageSize)
                 .Take(query.pageSize)
                 .ToListAsync();

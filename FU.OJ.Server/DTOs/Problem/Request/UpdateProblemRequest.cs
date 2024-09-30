@@ -4,6 +4,8 @@ namespace FU.OJ.Server.DTOs.Problem.Request{    public class UpdateProblemRequ
         public string? Title { get; set; }
         public string? Description { get; set; }
         public string? Constraints { get; set; }
+        public string? Input { get; set; }
+        public string? Output { get; set; }
         public string? ExampleInput { get; set; }
         public string? ExampleOutput { get; set; }
         public double? TimeLimit { get; set; } = 1;

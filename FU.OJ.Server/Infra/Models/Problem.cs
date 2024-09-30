@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperties
     {
@@ -15,6 +15,8 @@ namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperti
         public string? Title { get; set; }
         public string? Description { get; set; }
         public string? Constraints { get; set; }
+        public string? Input { get; set; }
+        public string? Output { get; set; }
         public string? ExampleInput { get; set; }
         public string? ExampleOutput { get; set; }
         public double? TimeLimit { get; set; }

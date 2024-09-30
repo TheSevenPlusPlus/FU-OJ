@@ -17,7 +17,7 @@ const badgeVariants = cva(
                 // Trạng thái với màu cụ thể
                 accepted: "bg-green-500 text-white", // Màu xanh lá cho 'Accepted'
                 wrongAnswer: "bg-red-500 text-white", // Màu đỏ cho 'Wrong Answer'
-                timeLimitExceeded: "bg-gray-500 text-white", // Màu xám cho 'Time Limit Exceeded'
+                timeLimitExceeded: "bg-yellow-500 text-white", // Màu xám cho 'Time Limit Exceeded'
                 runtimeError: "bg-gray-500 text-white", // Màu xám cho 'Runtime Error'
                 memoryLimitExceeded: "bg-gray-500 text-white", // Màu xám cho 'Memory Limit Exceeded'
                 compilerError: "bg-gray-500 text-white", // Màu xám cho 'Compiler Error'

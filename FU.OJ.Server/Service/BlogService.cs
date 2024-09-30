@@ -59,6 +59,7 @@ namespace FU.OJ.Server.Service{    public interface IBlogService
                 UserId = blog.UserId,
                 UserName = blog.User.UserName
             })
+            .OrderByDescending(c => c.CreatedAt)
             .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
                                                                                           .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
                                                                                                     .ToListAsync();
