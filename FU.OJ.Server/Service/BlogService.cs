@@ -67,7 +67,8 @@ public class BlogService : IBlogService
             throw new ArgumentException("Page index must be greater than 0.");
         if (query.pageSize < 1 || query.pageSize > 100)
             throw new ArgumentException("Page size must be between 1 and 100.");
-            int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
+
+        var totalItems = await _context.Blogs.CountAsync();            int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
             var blogs = await _context.Blogs.Select(blog => new BlogView
             {
                 Id = blog.Id,
