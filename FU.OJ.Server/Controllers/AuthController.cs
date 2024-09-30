@@ -1,4 +1,4 @@
-using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Identity.UI.Services;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
+using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
 
 namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
     [ApiController]
@@ -7,14 +7,12 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ITokenService _tokenService;
-        private readonly IEmailSender _emailSender;
         public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
-            ITokenService tokenService, ILogger<AuthController> logger, IEmailSender emailSender) : base(logger)
+            ITokenService tokenService, ILogger<AuthController> logger) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
-            _emailSender = emailSender;
         }
         [HttpPost(AuthRoute.Action.Register)]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
