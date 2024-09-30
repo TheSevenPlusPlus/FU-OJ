@@ -3,6 +3,8 @@ export interface CreateProblemModel {
     title: string;
     description: string;
     constraints: string;
+    input: string;
+    output: string;
     exampleInput: string;
     exampleOutput: string;
     timeLimit: string;
@@ -15,6 +17,8 @@ export interface UpdateProblemModel {
     title: string;
     description: string;
     constraints: string;
+    input: string;
+    output: string;
     exampleInput: string;
     exampleOutput: string;
     timeLimit: string;
@@ -29,6 +33,8 @@ export interface Problem {
     title: string;
     description: string;
     constraints: string;
+    input: string;
+    output: string;
     exampleInput: string;
     exampleOutput: string;
     timeLimit: number;

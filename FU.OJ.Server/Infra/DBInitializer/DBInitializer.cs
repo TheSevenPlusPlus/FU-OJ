@@ -53,17 +53,60 @@ namespace FU.OJ.Server.Infra.DBInitializer{    public interface IDbInitializer
             if (!_db.Problems.Any())
             {
                 var problems = new List<Problem>
-                {                    new Problem                    {                        Code = "P001",                        Title = "Sum of Two Numbers",                        Description =
-                            "Write a program that takes two integers and returns their sum.",
-                        Constraints = "Both integers should be between -10^9 and 10^9.",                        ExampleInput = "3 5",                        ExampleOutput = "8",                        TimeLimit = 1.0,                        MemoryLimit = 128.0,                        CreatedAt = DateTime.UtcNow,                        UserId = adminGuid,                        Difficulty = "Easy",                        HasSolution = "Yes",
-                    },                    new Problem                    {                        Code = "P002",                        Title = "Prime Numbers",                        Description = "Write a program that checks if a number is prime.",                        Constraints = "The number should be a positive integer less than 10^6.",                        ExampleInput = "7",                        ExampleOutput = "Yes",                        TimeLimit = 1.0,                        MemoryLimit = 128.0,                        CreatedAt = DateTime.UtcNow,                        UserId = adminGuid,                        Difficulty = "Medium",                        HasSolution = "Yes",
-                    },                    new Problem                    {                        Code = "P003",                        Title = "Factorial",                        Description =
-                            "Write a program to calculate the factorial of a given number.",
-                        Constraints =
-                            "The number should be a non-negative integer less than or equal to 20.",
-                        ExampleInput = "5",                        ExampleOutput = "120",                        TimeLimit = 1.0,                        MemoryLimit = 128.0,                        CreatedAt = DateTime.UtcNow,                        UserId = adminGuid,                        Difficulty = "Easy",                        HasSolution = "Yes",
+                {
+                    new Problem
+                    {
+                        Code = "P001",
+                        Title = "Sum of Two Numbers",
+                        Description = "Write a program that takes two integers and returns their sum.",
+                        Constraints = "Both integers should be between -10^9 and 10^9.",
+                        Input = "Two integers separated by a space.",
+                        Output = "A single integer which is the sum of the two input integers.",
+                        ExampleInput = "3 5",
+                        ExampleOutput = "8",
+                        TimeLimit = 1.0,
+                        MemoryLimit = 128.0,
+                        CreatedAt = DateTime.UtcNow,
+                        UserId = adminGuid,
+                        Difficulty = "Easy",
+                        HasSolution = "Yes",
                     },
-                };                _db.Problems.AddRange(problems);
+                    new Problem
+                    {
+                        Code = "P002",
+                        Title = "Prime Numbers",
+                        Description = "Write a program that checks if a number is prime.",
+                        Constraints = "The number should be a positive integer less than 10^6.",
+                        Input = "A single integer representing the number to check.",
+                        Output = "Yes if the number is prime, otherwise No.",
+                        ExampleInput = "7",
+                        ExampleOutput = "Yes",
+                        TimeLimit = 1.0,
+                        MemoryLimit = 128.0,
+                        CreatedAt = DateTime.UtcNow,
+                        UserId = adminGuid,
+                        Difficulty = "Medium",
+                        HasSolution = "Yes",
+                    },
+                    new Problem
+                    {
+                        Code = "P003",
+                        Title = "Factorial",
+                        Description = "Write a program to calculate the factorial of a given number.",
+                        Constraints = "The number should be a non-negative integer less than or equal to 20.",
+                        Input = "A single integer representing the number.",
+                        Output = "The factorial of the given number.",
+                        ExampleInput = "5",
+                        ExampleOutput = "120",
+                        TimeLimit = 1.0,
+                        MemoryLimit = 128.0,
+                        CreatedAt = DateTime.UtcNow,
+                        UserId = adminGuid,
+                        Difficulty = "Easy",
+                        HasSolution = "Yes",
+                    },
+                };
+                _db.Problems.AddRange(problems);
                 _db.SaveChanges();
             }
             // Add additional users

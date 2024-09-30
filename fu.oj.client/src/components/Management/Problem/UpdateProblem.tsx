@@ -26,6 +26,8 @@ const UpdateProblem: React.FC = () => {
         title: "",
         description: "",
         constraints: "",
+        input: "",
+        output: "",
         exampleInput: "",
         exampleOutput: "",
         timeLimit: "",
@@ -48,6 +50,8 @@ const UpdateProblem: React.FC = () => {
                         title: problem.title,
                         description: problem.description,
                         constraints: problem.constraints,
+                        input: problem.input,
+                        output: problem.output,
                         exampleInput: problem.exampleInput,
                         exampleOutput: problem.exampleOutput,
                         timeLimit: problem.timeLimit.toString(),
@@ -174,6 +178,30 @@ const UpdateProblem: React.FC = () => {
                         onChange={handleInputChange}
                         placeholder="Enter problem constraints"
                         rows={3}
+                        required
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="input">Input</Label>
+                    <Textarea
+                        id="input"
+                        name="input"
+                        value={formState.input}
+                        onChange={handleInputChange}
+                        placeholder="Enter input"
+                        rows={2}
+                        required
+                    />
+                </div>
+                <div>
+                    <Label htmlFor="output">Output</Label>
+                    <Textarea
+                        id="output"
+                        name="output"
+                        value={formState.output}
+                        onChange={handleInputChange}
+                        placeholder="Enter output"
+                        rows={2}
                         required
                     />
                 </div>

@@ -67,6 +67,7 @@ namespace FU.OJ.Server.Service{    public interface IUserService
                     AvatarUrl = u.AvatarUrl,
                     CreatedAt = u.CreatedAt,
                 })
+                .OrderByDescending(u => u.CreatedAt)
                 .ToListAsync();
 
             // Trả về cả danh sách users và tổng số trang
