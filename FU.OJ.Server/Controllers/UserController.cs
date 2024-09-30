@@ -16,10 +16,24 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var newUser = await _userService.CreateUserAsync(createUserRequest);
+
+            var existingUserByEmail = await _userService.GetUserByEmailAsync(createUserRequest.Email);
+            if (existingUserByEmail != null)
+            {
+                return BadRequest("Email is already in use.");
+            }
+
+            var existingUserByPhone = await _userService.GetUserByPhoneAsync(createUserRequest.PhoneNumber);
+            if (existingUserByPhone != null)
+            {
+                return BadRequest("Phone number is already in use.");
+            }
+
+            var newUser = await _userService.CreateUserAsync(createUserRequest);
             if (newUser == null)
                 return StatusCode(500, "User creation failed");
-            var userResponse = new UserView
+
+            var userResponse = new UserView
             {
                 UserName = newUser.UserName,
                 Email = newUser.Email,
@@ -33,17 +47,17 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
                 AvatarUrl = newUser.AvatarUrl,
                 CreatedAt = newUser.CreatedAt,
             };
-            return Ok(userResponse);
+
+            return Ok(userResponse);
         }
+
         [HttpGet(UserRoute.Action.GetAll)]
         public async Task<IActionResult> GetAllUsers([FromQuery] Paging query)
         {
             try
             {
-                // G?i d?ch v? ?? l?y danh sách users và t?ng s? trang
                 var (users, totalPages) = await _userService.GetAllUsersAsync(query);
-                // Tr? v? k?t qu? d??i d?ng JSON
-                return Ok(new { users, totalPages });
+                return Ok(new { users, totalPages });
             }
             catch (Exception ex)
             {
@@ -100,9 +114,23 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var user = await _userService.UpdateUserAsync(updateUserRequest);
+
+            var existingUserByEmail = await _userService.GetUserByEmailAsync(updateUserRequest.Email);
+            if (existingUserByEmail != null && existingUserByEmail.UserName != updateUserRequest.UserName)
+            {
+                return BadRequest("Email is already in use.");
+            }
+
+            var existingUserByPhone = await _userService.GetUserByPhoneAsync(updateUserRequest.PhoneNumber);
+            if (existingUserByPhone != null && existingUserByPhone.UserName != updateUserRequest.UserName)
+            {
+                return BadRequest("Phone number is already in use.");
+            }
+
+            var user = await _userService.UpdateUserAsync(updateUserRequest);
             if (user == null) return NotFound("User not found");
-            var userResponse = new UserView
+
+            var userResponse = new UserView
             {
                 UserName = user.UserName,
                 Email = user.Email,
@@ -116,8 +144,10 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
                 AvatarUrl = user.AvatarUrl,
                 CreatedAt = user.CreatedAt,
             };
-            return Ok(userResponse);
+
+            return Ok(userResponse);
         }
+
         [HttpDelete(UserRoute.Action.Delete)]
         public async Task<IActionResult> DeleteUser(string userName)
         {
@@ -138,7 +168,7 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
             }
             catch (Exception ex)
             {
-                return HandleException(ex);  // Hàm này để xử lý lỗi
+                return HandleException(ex);
             }
         }
 

@@ -1,9 +1,13 @@
-using System.Text;
-using FU.OJ.Server.Infra.Context; // Đảm bảo lớp ApplicationDbContext nằm trong namespace nàyusing FU.OJ.Server.Infra.DBInitializer;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authentication.JwtBearer;using Microsoft.AspNetCore.Identity;using Microsoft.IdentityModel.Tokens;using Microsoft.OpenApi.Models;
+using FU.OJ.Server.Infra.Context; // Đảm bảo lớp ApplicationDbContext nằm trong namespace này
+using FU.OJ.Server.Infra.DBInitializer;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authentication.JwtBearer;using Microsoft.AspNetCore.Identity;using Microsoft.IdentityModel.Tokens;using Microsoft.OpenApi.Models;using System.Text;
+
 namespace FU.OJ.Server{    public static class ServiceInjection
     {
         public static void AddServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IProblemService, ProblemService>();
             services.AddScoped<ITestcaseService, TestcaseService>();
@@ -13,6 +17,8 @@ namespace FU.OJ.Server{    public static class ServiceInjection
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IBlogCommentService, BlogCommentService>();
             services.AddScoped<IDbInitializer, DbInitializer>();
+            services.AddScoped<IEmailSender, EmailSender>();
+
             // Đảm bảo sử dụng ApplicationDbContext đúng namespace
             services
                 .AddIdentity<User, IdentityRole>(options =>
@@ -22,11 +28,13 @@ namespace FU.OJ.Server{    public static class ServiceInjection
                     options.Password.RequireUppercase = true;
                     options.Password.RequireNonAlphanumeric = true;
                     options.Password.RequiredLength = 8;
+                    options.User.RequireUniqueEmail = true; // Yêu cầu email phải duy nhất
+                    options.SignIn.RequireConfirmedAccount = false;
                 })
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            var key = Encoding.UTF8.GetBytes(
-                "secretkey_992jeu9h33rnnc800x3n3003nx3033j3k45k6b6b6662sd"
-            ); // Thay đổi khóa bí mật của bạn
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
+            //Authen & Author
             services
                 .AddAuthentication(options =>
                 {
@@ -38,7 +46,7 @@ namespace FU.OJ.Server{    public static class ServiceInjection
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = configuration["JWT:Issuer"], // Sử dụng configuration thay vì configuration.Configuration
+                        ValidIssuer = configuration["JWT:Issuer"], // Sử dụng configuration 
                         ValidateAudience = true,
                         ValidAudience = configuration["JWT:Audience"], // Sử dụng configuration
                         ValidateIssuerSigningKey = true,
