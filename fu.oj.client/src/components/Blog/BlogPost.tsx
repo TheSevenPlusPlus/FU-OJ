@@ -28,8 +28,8 @@ import {
     getLastUserComment,
     deleteBlogComment,
     updateBlogComment,
-} from "../api/blogComment";
-import { getBlogById } from "../api/blog";
+} from "../../api/blogComment";
+import { getBlogById } from "../../api/blog";
 
 interface BlogPost {
     id: string;
@@ -170,7 +170,7 @@ export default function BlogPost() {
         updatedContent: string,
     ) => {
         try {
-            await updateBlogComment(commentId, { content: updatedContent });
+            await updateBlogComment({ content: updatedContent, username: userName, commentId });
             // Update the state to reflect the updated comment
             setComments((prevComments) =>
                 prevComments.map((comment) =>

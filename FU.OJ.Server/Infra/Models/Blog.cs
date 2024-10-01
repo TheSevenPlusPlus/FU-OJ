@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FU.OJ.Server.Infra.Models{    public class Blog : BlogProperties
     {
@@ -11,10 +11,14 @@ namespace FU.OJ.Server.Infra.Models{    public class Blog : BlogProperties
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string? Title { get; set; }
-        public string? Content { get; set; }
+        [Comment("Tiêu đề")]
+        public string Title { get; set; } = null!;
+        [Comment("Nội dung")]
+        public string Content { get; set; } = null!;
+        [Comment("Ngày tạo")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public string? UserId { get; set; }
+        [Comment("Người tạo")]
+        public string UserId { get; set; } = null!;
     }
     public class BlogConfiguration : IEntityTypeConfiguration<Blog>
     {

@@ -1,10 +1,10 @@
 ﻿import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { submitCode } from "../api/submission";
-import Textarea_manual from "./ui/textarea-manual";
+import { submitCode } from "../../api/submission";
+import Textarea_manual from "../ui/textarea-manual";
 import { useParams, useNavigate } from "react-router-dom";
-import { Problem } from "../models/ProblemModel";
-import { getProblemByCode } from "../api/problem";
+import { Problem } from "../../models/ProblemModel";
+import { getProblemByCode } from "../../api/problem";
 
 // Define model for language
 interface Language {

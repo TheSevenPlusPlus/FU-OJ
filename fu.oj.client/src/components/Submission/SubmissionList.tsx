@@ -13,10 +13,10 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { getAllSubmissions } from "../api/submission";
-import { Submission } from "../models/SubmissionModel";
-import Pagination from './Pagination/Pagination';
-import ItemsPerPageSelector from './Pagination/ItemsPerPageSelector';
+import { getAllSubmissions } from "../../api/submission";
+import { Submission } from "../../models/SubmissionModel";
+import Pagination from '../Pagination/Pagination';
+import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { Badge } from "@/components/ui/badge"; // Import Badge for status colors
 
 const SubmissionList = () => {

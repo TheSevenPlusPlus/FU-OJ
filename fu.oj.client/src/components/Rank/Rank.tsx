@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Award } from "lucide-react";
-import { getRank } from "../api/general"; // Assuming the api file is in the same directory
+import { getRank } from "../../api/general"; // Assuming the api file is in the same directory
 
 type Participant = {
     rank: number;
