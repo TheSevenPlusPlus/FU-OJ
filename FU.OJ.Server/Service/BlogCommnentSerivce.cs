@@ -71,7 +71,8 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
             if (comment == null)
                 return false;
             comment.Content = request.Content; // Assume only content can be updated
-            _context.BlogComments.Update(comment);
+
+            _context.BlogComments.Update(comment);
             await _context.SaveChangesAsync();
             return true;
         }

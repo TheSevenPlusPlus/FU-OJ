@@ -1,7 +1,6 @@
 using FU.OJ.Server;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.DBInitializer;
-using FU.OJ.Server.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,7 +50,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<RoleMiddleware>();
 
 app.MapControllers();
 

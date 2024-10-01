@@ -27,8 +27,9 @@ namespace FU.OJ.Server.Service{    public interface ITokenService
 
             // Tạo danh sách claims
             var claims = new List<Claim> {
-                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), // UserId
+                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName), // UserName
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),       // Email
             };
 
             // Thêm các role của người dùng vào claims

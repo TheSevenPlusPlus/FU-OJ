@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
     [ApiController]
     [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
-    public class UserController : BaseController
+    public class UserController : AuthorizeController
     {
         private readonly IUserService _userService;
         public UserController(IUserService userService, ILogger<UserController> logger) : base(logger)

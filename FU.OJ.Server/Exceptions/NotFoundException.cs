@@ -1,5 +1,4 @@
-using System;
-namespace TaxNet_Common.Exceptions{    public class NotFoundException : Exception
+namespace Exceptions{    public class NotFoundException : Exception
     {
         public NotFoundException()
         {

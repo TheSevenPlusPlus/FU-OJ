@@ -1,5 +1,4 @@
-using System;
-namespace TaxNet_Common.Exceptions{    public class BadException : Exception
+namespace Exceptions{    public class BadException : Exception
     {
         public BadException()
         {

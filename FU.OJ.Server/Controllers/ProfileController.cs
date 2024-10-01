@@ -1,15 +1,15 @@
-using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Mvc;
+using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers{    [Route("Profile")]
     [ApiController]
-    public class ProfileController : BaseController
+    public class ProfileController : AuthorizeController
     {
         private readonly IUserService _userService;
         public ProfileController(IUserService userService, ILogger<ProfileController> logger) : base(logger)
         {
             _userService = userService;
         }
-        [HttpGet(UserRoute.Action.GetByUsername)]
+        [AllowAnonymous]        [HttpGet(UserRoute.Action.GetByUsername)]
         public async Task<IActionResult> GetUserByUsername(string username)
         {
             var user = await _userService.GetUserByUsernameAsync(username);
@@ -30,7 +30,7 @@ namespace FU.OJ.Server.Controllers{    [Route("Profile")]
             };
             return Ok(userResponse);
         }
-        [HttpPut(UserRoute.Action.Update)]
+        [Authorize]        [HttpPut(UserRoute.Action.Update)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
         {
             if (!ModelState.IsValid)

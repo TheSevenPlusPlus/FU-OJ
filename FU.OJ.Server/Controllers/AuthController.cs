@@ -3,7 +3,7 @@ using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;usin
 namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
     [ApiController]
     [AllowAnonymous]
-    public class AuthController : BaseController
+    public class AuthController : AuthorizeController
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;

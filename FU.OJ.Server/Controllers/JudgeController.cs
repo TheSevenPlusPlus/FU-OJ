@@ -1,9 +1,9 @@
-using FU.OJ.Server.Infra.Const.Route;using Microsoft.AspNetCore.Mvc;
+using FU.OJ.Server.Infra.Const.Route;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers{    [Route(JudgeRoute.INDEX)]
     [ApiController]
-    //[Authorize]
-    public class JudgeController : BaseController
+    [Authorize]
+    public class JudgeController : AuthorizeController
     {
         private readonly string _judgeServerUrl;
         private readonly HttpClient _httpClient;
