@@ -66,6 +66,7 @@ namespace FU.OJ.Server.Service{    public interface IUserService
                     AvatarUrl = u.AvatarUrl,
                     CreatedAt = u.CreatedAt,
                 })
+                .OrderByDescending(u => u.CreatedAt)
                 .ToListAsync();
 
             return (users, totalPages);
@@ -86,7 +87,8 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)
             {
-                throw new Exception("User with this email doesn't exist");
+                //throw new Exception("User with this email doesn't exist");
+                return null;
             }
             return user;
         }
@@ -96,7 +98,8 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
             if (user == null)
             {
-                throw new Exception("User with this phone number doesn't exist");
+                //throw new Exception("User with this phone number doesn't exist");
+                return null;
             }
             return user;
         }

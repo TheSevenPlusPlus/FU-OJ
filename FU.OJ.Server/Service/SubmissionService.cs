@@ -219,6 +219,7 @@ namespace FU.OJ.Server.Service{
                     UserName = submission.UserName,
                     Status = submission.Status
                 })
+                .OrderByDescending(c => c.SubmittedAt)
                 .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
                 .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
                 .ToListAsync();

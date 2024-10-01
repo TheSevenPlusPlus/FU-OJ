@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { getProblemByCode } from "../api/problem"; // Ensure this function is correctly imported
-import { Problem } from "../models/ProblemModel";
+import { getProblemByCode } from "../../api/problem"; // Ensure this function is correctly imported
+import { Problem } from "../../models/ProblemModel";
+import TextWithNewLines from "../TextWithNewLines/TextWithNewLines";
 
 export default function ProblemDetail() {
     const { problemCode } = useParams<{ problemCode: string }>();
@@ -54,49 +55,71 @@ export default function ProblemDetail() {
         return <div className="container mx-auto py-8">Problem not found</div>;
     }
 
+    const getDifficultyColor = (difficulty: string) => {
+        switch (difficulty) {
+            case "Easy":
+                return "text-green-500";
+            case "Medium":
+                return "text-yellow-500";
+            case "Hard":
+                return "text-red-500";
+            default:
+                return "text-gray-500";
+        }
+    };
+
     return (
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-3xl">{problem.title}</CardTitle>
-                    <CardDescription>
+                    <CardDescription className={getDifficultyColor(problem.difficulty)}>
                         <Badge
                             variant={
                                 problem.difficulty === "Easy"
-                                    ? "default"
+                                    ? "accepted"
                                     : problem.difficulty === "Medium"
-                                      ? "secondary"
-                                      : "destructive"
+                                        ? "timeLimitExceeded"
+                                        : "destructive"
                             }
                         >
                             {problem.difficulty || "Unknown"}
                         </Badge>
                     </CardDescription>
+
+                    <Progress
+                        value={
+                            ((problem.acQuantity ?? 0) / (problem.totalTests ?? 1)) * 100
+                        }
+                    />
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
                         {/* Description */}
                         <div>
-                            <h2 className="text-xl font-semibold mb-2">
-                                Description
-                            </h2>
-                            <p>{problem.description}</p>
+                            <TextWithNewLines text={problem.description} />
+                        </div>
+
+                        <div>
+                            <h2 className="text-xl font-semibold mb-2">Input</h2>
+                            <hr className="my-4" />
+                            <TextWithNewLines text={problem.input} />
+                        </div>
+
+                        <div>
+                            <h2 className="text-xl font-semibold mb-2">Output</h2>
+                            <hr className="my-4" />
+                            <TextWithNewLines text={problem.output} />
                         </div>
 
                         {/* Example Input/Output */}
                         <div>
-                            <h2 className="text-xl font-semibold mb-2">
-                                Example
-                            </h2>
+                            <h2 className="text-xl font-semibold mb-2">Example</h2>
                             <table className="min-w-full table-auto">
                                 <thead>
                                     <tr>
-                                        <th className="px-4 py-2 border">
-                                            Input
-                                        </th>
-                                        <th className="px-4 py-2 border">
-                                            Output
-                                        </th>
+                                        <th className="px-4 py-2 border border-b border-gray-300 bg-black text-white font-bold">Input</th>
+                                        <th className="px-4 py-2 border border-b border-gray-300 bg-black text-white font-bold">Output</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -114,39 +137,19 @@ export default function ProblemDetail() {
 
                         {/* Constraints */}
                         <div>
-                            <h2 className="text-xl font-semibold mb-2">
-                                Constraints
-                            </h2>
-                            <p>{problem.constraints}</p>
+                            <h2 className="text-xl font-semibold mb-2">Constraints</h2>
+                            <hr className="my-4" />
+                            <TextWithNewLines text={problem.constraints} />
                         </div>
 
                         {/* Time and Memory Limits */}
                         <div>
-                            <h2 className="text-xl font-semibold mb-2">
-                                Limits
-                            </h2>
+                            <h2 className="text-xl font-semibold mb-2">Limits</h2>
+                            <hr className="my-4" />
                             <ul className="list-disc list-inside">
                                 <li>Time Limit: {problem.timeLimit} seconds</li>
-                                <li>Memory Limit: {problem.memoryLimit} KB</li>
+                                <li>Memory Limit: {Math.floor(problem.memoryLimit / 1024)} MB</li>
                             </ul>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2">
-                                Progress
-                            </h2>
-                            <p>
-                                Tests passed: {problem.acQuantity ?? 0}/
-                                {problem.totalTests ?? 0}
-                            </p>
-                            <Progress
-                                value={
-                                    ((problem.acQuantity ?? 0) /
-                                        (problem.totalTests ?? 1)) *
-                                    100
-                                }
-                            />
                         </div>
                     </div>
                 </CardContent>
@@ -159,16 +162,12 @@ export default function ProblemDetail() {
                     <div className="space-x-2">
                         {/* View All Submissions Button */}
                         <Link to={`/submissions/all?problemCode=${problemCode}`}>
-                            <Button variant="secondary">
-                                View all submissions
-                            </Button>
+                            <Button variant="secondary">View all submissions</Button>
                         </Link>
 
                         {/* View My Submissions Button */}
                         <Link to={`/submissions/all?userName=${userName}&problemCode=${problemCode}`}>
-                            <Button variant="secondary">
-                                View my submissions
-                            </Button>
+                            <Button variant="secondary">View my submissions</Button>
                         </Link>
                     </div>
                 </CardFooter>

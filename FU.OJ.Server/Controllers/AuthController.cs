@@ -1,4 +1,5 @@
-using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;using System.Web;
+using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
+using System.Web;
 
 namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
     [ApiController]
@@ -10,8 +11,7 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
         private readonly ITokenService _tokenService;
         private readonly IEmailSender _emailSender;
         private readonly string _clientUrl; // Khai báo _clientUrl
-
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
             ITokenService tokenService, ILogger<AuthController> logger, IEmailSender emailSender, IConfiguration configuration) : base(logger)
         {
             _userManager = userManager;
@@ -67,8 +67,7 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
                 return StatusCode(500, "Internal server error");
             }
         }
-
-        [HttpPost(AuthRoute.Action.Login)]
+        [HttpPost(AuthRoute.Action.Login)]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -11,8 +11,21 @@ interface RegisterProps {
     additionalFields?: { name: string; label: string }[];
 }
 
+interface FormErrors {
+    [key: string]: string;
+}
+
 export default function AuthForm({ additionalFields = [] }: RegisterProps) {
     const [activeTab, setActiveTab] = useState<string>("login");
+    const [formData, setFormData] = useState({
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        fullName: "",
+        phoneNumber: "",
+    });
+    const [errors, setErrors] = useState<FormErrors>({});
     const [submitError, setSubmitError] = useState<string | null>(null);
 
     const navigate = useNavigate();
@@ -49,7 +62,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
             localStorage.setItem("user", JSON.stringify(data));
             navigate("/problems");
             navigate(0); // Reload
-        } catch (error) {
+        } catch (error: any) { // Thêm kiểu any cho error để tránh lỗi
             console.error("Login failed:", error.response?.data || error.message);
             setSubmitError("Login failed. Please check your credentials and try again.");
         }
@@ -67,7 +80,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
             localStorage.setItem("user", JSON.stringify(data));
             navigate("/profile");
             navigate(0); // Reload
-        } catch (error) {
+        } catch (error: any) { // Thêm kiểu any cho error để tránh lỗi
             console.error("Registration failed:", error.response?.data || error.message);
             setSubmitError("Registration failed. Please try again later.");
         }

@@ -21,16 +21,15 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-
-        [Authorize(Roles = RoleAuthorize.AnyRole)]        [HttpPut(BlogCommentRoute.Action.Update)]
-        public async Task<IActionResult> UpdateBlogCommentAsync(string id, [FromBody] UpdateBlogCommentRequest request)
+        [Authorize(Roles = RoleAuthorize.AnyRole)]        [HttpPut(BlogCommentRoute.Action.Update)]
+        public async Task<IActionResult> UpdateBlogCommentAsync([FromBody] UpdateBlogCommentRequest request)
         {
             try
             {
-                var updated = await _service.UpdateAsync(id, request);
-                if (!updated)
+                var updated = await _service.UpdateAsync(request);
+                if (!updated)
                     return NotFound();
-                return NoContent();
+                return NoContent();
             }
             catch (Exception ex)
             {

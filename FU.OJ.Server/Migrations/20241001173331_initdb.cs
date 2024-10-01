@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FU.OJ.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class initDb : Migration
+    public partial class initdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -170,10 +170,10 @@ namespace FU.OJ.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: true),
-                    Content = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true)
+                    Title = table.Column<string>(type: "text", nullable: false, comment: "Tiêu đề"),
+                    Content = table.Column<string>(type: "text", nullable: false, comment: "Nội dung"),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Ngày tạo"),
+                    UserId = table.Column<string>(type: "text", nullable: false, comment: "Người tạo")
                 },
                 constraints: table =>
                 {
@@ -191,11 +191,13 @@ namespace FU.OJ.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true)
+                    Name = table.Column<string>(type: "text", nullable: true, comment: "Tên contest"),
+                    Description = table.Column<string>(type: "text", nullable: true, comment: "Chú thích"),
+                    StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Thời gian bắt đầu"),
+                    EndTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, comment: "Thời gian kết thúc"),
+                    Duration = table.Column<int>(type: "integer", nullable: false, comment: "Diễn ra trong bao lâu: phút"),
+                    UserId = table.Column<string>(type: "text", nullable: true, comment: "Người tổ chức contest"),
+                    Rules = table.Column<string>(type: "text", nullable: true, comment: "Luật lệ")
                 },
                 constraints: table =>
                 {
@@ -217,6 +219,8 @@ namespace FU.OJ.Server.Migrations
                     Title = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Constraints = table.Column<string>(type: "text", nullable: true),
+                    Input = table.Column<string>(type: "text", nullable: true),
+                    Output = table.Column<string>(type: "text", nullable: true),
                     ExampleInput = table.Column<string>(type: "text", nullable: true),
                     ExampleOutput = table.Column<string>(type: "text", nullable: true),
                     TimeLimit = table.Column<double>(type: "double precision", nullable: true),
@@ -272,8 +276,9 @@ namespace FU.OJ.Server.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
-                    ContestId = table.Column<string>(type: "text", nullable: true)
+                    UserId = table.Column<string>(type: "text", nullable: true, comment: "Id người tham gia"),
+                    ContestId = table.Column<string>(type: "text", nullable: true, comment: "Id contest"),
+                    Score = table.Column<double>(type: "double precision", nullable: false, comment: "Điểm của người tham gia")
                 },
                 constraints: table =>
                 {
@@ -288,6 +293,34 @@ namespace FU.OJ.Server.Migrations
                         name: "FK_ContestParticipants_Contests_ContestId",
                         column: x => x.ContestId,
                         principalTable: "Contests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContestProblem",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    ContestId = table.Column<string>(type: "text", nullable: true, comment: "Id người tham gia"),
+                    ProblemId = table.Column<string>(type: "text", nullable: true, comment: "Id contest"),
+                    Order = table.Column<int>(type: "integer", nullable: false, comment: "Điểm của người tham gia"),
+                    MaximumSubmission = table.Column<int>(type: "integer", nullable: false, comment: "Số lần nộp tối đa"),
+                    Point = table.Column<double>(type: "double precision", nullable: false, comment: "Điểm của bài")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContestProblem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ContestProblem_Contests_ContestId",
+                        column: x => x.ContestId,
+                        principalTable: "Contests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ContestProblem_Problems_ProblemId",
+                        column: x => x.ProblemId,
+                        principalTable: "Problems",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -319,6 +352,32 @@ namespace FU.OJ.Server.Migrations
                         name: "FK_Submissions_Problems_ProblemId",
                         column: x => x.ProblemId,
                         principalTable: "Problems",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ContestParticipantProblem",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    ContestParticipantId = table.Column<string>(type: "text", nullable: true, comment: "Id của người tham gia contest"),
+                    ContestProblemId = table.Column<string>(type: "text", nullable: true, comment: "Id của bài trong contest"),
+                    SubmissionCount = table.Column<int>(type: "integer", nullable: false, comment: "Số lần nộp một bài của một người tham gia contest")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContestParticipantProblem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ContestParticipantProblem_ContestParticipants_ContestPartic~",
+                        column: x => x.ContestParticipantId,
+                        principalTable: "ContestParticipants",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ContestParticipantProblem_ContestProblem_ContestProblemId",
+                        column: x => x.ContestProblemId,
+                        principalTable: "ContestProblem",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -397,6 +456,16 @@ namespace FU.OJ.Server.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ContestParticipantProblem_ContestParticipantId",
+                table: "ContestParticipantProblem",
+                column: "ContestParticipantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContestParticipantProblem_ContestProblemId",
+                table: "ContestParticipantProblem",
+                column: "ContestProblemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ContestParticipants_ContestId",
                 table: "ContestParticipants",
                 column: "ContestId");
@@ -405,6 +474,16 @@ namespace FU.OJ.Server.Migrations
                 name: "IX_ContestParticipants_UserId",
                 table: "ContestParticipants",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContestProblem_ContestId",
+                table: "ContestProblem",
+                column: "ContestId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ContestProblem_ProblemId",
+                table: "ContestProblem",
+                column: "ProblemId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Contests_UserId",
@@ -454,7 +533,7 @@ namespace FU.OJ.Server.Migrations
                 name: "BlogComments");
 
             migrationBuilder.DropTable(
-                name: "ContestParticipants");
+                name: "ContestParticipantProblem");
 
             migrationBuilder.DropTable(
                 name: "Results");
@@ -466,10 +545,16 @@ namespace FU.OJ.Server.Migrations
                 name: "Blogs");
 
             migrationBuilder.DropTable(
-                name: "Contests");
+                name: "ContestParticipants");
+
+            migrationBuilder.DropTable(
+                name: "ContestProblem");
 
             migrationBuilder.DropTable(
                 name: "Submissions");
+
+            migrationBuilder.DropTable(
+                name: "Contests");
 
             migrationBuilder.DropTable(
                 name: "Problems");

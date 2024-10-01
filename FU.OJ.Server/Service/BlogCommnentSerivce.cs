@@ -3,7 +3,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
         Task<string> CreateAsync(CreateBlogCommentRequest request);
         Task<(List<BlogComment> comments, int totalPages)> GetAllAsync(Paging query);
         Task<(List<BlogCommentResponse> comments, int totalPages)> GetCommentsByBlogIdAsync(string blogId, Paging query); // New method for paginated comments by blog ID
-        Task<bool> UpdateAsync(string id, UpdateBlogCommentRequest request);
+        Task<bool> UpdateAsync(UpdateBlogCommentRequest request);
         Task<bool> DeleteAsync(string id);
         Task<BlogComment?> GetLastCommentByUserAsync(string username, string blogId);
     }
@@ -40,6 +40,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
                 .AsNoTracking()
                 .Include(c => c.User) // Optional: Include user details
                 .Include(c => c.Blog) // Optional: Include blog details
+                .OrderByDescending(c => c.CreatedAt)
                 .Skip((query.pageIndex - 1) * query.pageSize)
                 .Take(query.pageSize)
                 .ToListAsync();
@@ -60,19 +61,23 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
                     CreatedAt = c.CreatedAt,
                     UserName = c.User.UserName
                 })
+                .OrderByDescending(c => c.CreatedAt)
                 .Skip((query.pageIndex - 1) * query.pageSize)
                 .Take(query.pageSize)
                 .ToListAsync();
             return (comments, totalPages);
         }
-        public async Task<bool> UpdateAsync(string id, UpdateBlogCommentRequest request)
+        public async Task<bool> UpdateAsync(UpdateBlogCommentRequest request)
         {
-            var comment = await _context.BlogComments.FirstOrDefaultAsync(c => c.Id == id);
-            if (comment == null)
-                return false;
-            comment.Content = request.Content; // Assume only content can be updated
+            var user = await _userService.GetUserByUsernameAsync(request.Username);
+            if (user == null) 
+                throw new Exception(ErrorMessage.NotFound);
 
-            _context.BlogComments.Update(comment);
+            var comment = await _context.BlogComments.FirstOrDefaultAsync(c => c.Id == request.CommentId && c.UserId == user.Id);
+            if (comment == null)
+                throw new Exception(ErrorMessage.NotFound);
+            comment.Content = request.Content; // Assume only content can be updated
+            _context.BlogComments.Update(comment);
             await _context.SaveChangesAsync();
             return true;
         }

@@ -9,9 +9,9 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { getAllBlogs } from "../api/blog";
-import Pagination from './Pagination/Pagination'; // Adjust the path as needed
-import ItemsPerPageSelector from './Pagination/ItemsPerPageSelector'; // Import the new component
+import { getAllBlogs } from "../../api/blog";
+import Pagination from '../Pagination/Pagination'; // Adjust the path as needed
+import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector'; // Import the new component
 
 interface Blog {
     id: number;

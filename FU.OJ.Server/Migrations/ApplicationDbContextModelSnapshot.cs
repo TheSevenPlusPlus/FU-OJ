@@ -28,16 +28,23 @@ namespace FU.OJ.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Content")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasComment("Nội dung");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Ngày tạo");
 
                     b.Property<string>("Title")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasComment("Tiêu đề");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasComment("Người tạo");
 
                     b.HasKey("Id");
 
@@ -78,19 +85,32 @@ namespace FU.OJ.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasComment("Chú thích");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("integer")
+                        .HasComment("Diễn ra trong bao lâu: phút");
 
                     b.Property<DateTime>("EndTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Thời gian kết thúc");
 
                     b.Property<string>("Name")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasComment("Tên contest");
+
+                    b.Property<string>("Rules")
+                        .HasColumnType("text")
+                        .HasComment("Luật lệ");
 
                     b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp with time zone")
+                        .HasComment("Thời gian bắt đầu");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasComment("Người tổ chức contest");
 
                     b.HasKey("Id");
 
@@ -105,10 +125,16 @@ namespace FU.OJ.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ContestId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasComment("Id contest");
+
+                    b.Property<double>("Score")
+                        .HasColumnType("double precision")
+                        .HasComment("Điểm của người tham gia");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasComment("Id người tham gia");
 
                     b.HasKey("Id");
 
@@ -117,6 +143,66 @@ namespace FU.OJ.Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("ContestParticipants");
+                });
+
+            modelBuilder.Entity("FU.OJ.Server.Infra.Models.ContestParticipantProblem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContestParticipantId")
+                        .HasColumnType("text")
+                        .HasComment("Id của người tham gia contest");
+
+                    b.Property<string>("ContestProblemId")
+                        .HasColumnType("text")
+                        .HasComment("Id của bài trong contest");
+
+                    b.Property<int>("SubmissionCount")
+                        .HasColumnType("integer")
+                        .HasComment("Số lần nộp một bài của một người tham gia contest");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContestParticipantId");
+
+                    b.HasIndex("ContestProblemId");
+
+                    b.ToTable("ContestParticipantProblem");
+                });
+
+            modelBuilder.Entity("FU.OJ.Server.Infra.Models.ContestProblem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ContestId")
+                        .HasColumnType("text")
+                        .HasComment("Id người tham gia");
+
+                    b.Property<int>("MaximumSubmission")
+                        .HasColumnType("integer")
+                        .HasComment("Số lần nộp tối đa");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer")
+                        .HasComment("Điểm của người tham gia");
+
+                    b.Property<double>("Point")
+                        .HasColumnType("double precision")
+                        .HasComment("Điểm của bài");
+
+                    b.Property<string>("ProblemId")
+                        .HasColumnType("text")
+                        .HasComment("Id contest");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContestId");
+
+                    b.HasIndex("ProblemId");
+
+                    b.ToTable("ContestProblem");
                 });
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Problem", b =>
@@ -152,8 +238,14 @@ namespace FU.OJ.Server.Migrations
                     b.Property<string>("HasSolution")
                         .HasColumnType("text");
 
+                    b.Property<string>("Input")
+                        .HasColumnType("text");
+
                     b.Property<double?>("MemoryLimit")
                         .HasColumnType("double precision");
+
+                    b.Property<string>("Output")
+                        .HasColumnType("text");
 
                     b.Property<string>("TestCasePath")
                         .HasColumnType("text");
@@ -465,7 +557,8 @@ namespace FU.OJ.Server.Migrations
                     b.HasOne("FU.OJ.Server.Infra.Models.User", "User")
                         .WithMany("Blogs")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -512,6 +605,40 @@ namespace FU.OJ.Server.Migrations
                     b.Navigation("Contest");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("FU.OJ.Server.Infra.Models.ContestParticipantProblem", b =>
+                {
+                    b.HasOne("FU.OJ.Server.Infra.Models.ContestParticipant", "ContestParticipant")
+                        .WithMany()
+                        .HasForeignKey("ContestParticipantId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("FU.OJ.Server.Infra.Models.ContestProblem", "ContestProblem")
+                        .WithMany()
+                        .HasForeignKey("ContestProblemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("ContestParticipant");
+
+                    b.Navigation("ContestProblem");
+                });
+
+            modelBuilder.Entity("FU.OJ.Server.Infra.Models.ContestProblem", b =>
+                {
+                    b.HasOne("FU.OJ.Server.Infra.Models.Contest", "Contest")
+                        .WithMany()
+                        .HasForeignKey("ContestId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("FU.OJ.Server.Infra.Models.Problem", "Problem")
+                        .WithMany()
+                        .HasForeignKey("ProblemId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Contest");
+
+                    b.Navigation("Problem");
                 });
 
             modelBuilder.Entity("FU.OJ.Server.Infra.Models.Problem", b =>

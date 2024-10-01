@@ -1,6 +1,6 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FU.OJ.Server.Infra.Models{    public class ContestParticipant : ContestParticipantProperties
     {
@@ -11,8 +11,12 @@ namespace FU.OJ.Server.Infra.Models{    public class ContestParticipant : Cont
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
+        [Comment("Id người tham gia")]
         public string? UserId { get; set; }
+        [Comment("Id contest")]
         public string? ContestId { get; set; }
+        [Comment("Điểm của người tham gia")]
+        public double Score { get; set; }
     }
     public class ContestParticipantConfiguration : IEntityTypeConfiguration<ContestParticipant>
     {

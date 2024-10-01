@@ -28,8 +28,8 @@ import {
     getLastUserComment,
     deleteBlogComment,
     updateBlogComment,
-} from "../api/blogComment";
-import { getBlogById } from "../api/blog";
+} from "../../api/blogComment";
+import { getBlogById } from "../../api/blog";
 
 interface BlogPost {
     id: string;
@@ -100,17 +100,12 @@ export default function BlogPost() {
 
     const handleCommentSubmit = async () => {
         try {
-            const lastCommentResponse = await getLastUserComment(
-                blog_id,
-                userName,
-            );
+            const lastCommentResponse = await getLastUserComment(blog_id, userName);
             const oneMinute = 60 * 1000;
             const currentTime = new Date().getTime();
 
             if (lastCommentResponse && lastCommentResponse.data.createdAt) {
-                const lastCommentTime = new Date(
-                    lastCommentResponse.data.createdAt,
-                ).getTime();
+                const lastCommentTime = new Date(lastCommentResponse.data.createdAt).getTime();
 
                 if (currentTime - lastCommentTime < oneMinute) {
                     setShowAlert(true);
@@ -119,22 +114,20 @@ export default function BlogPost() {
             }
 
             if (newComment.trim()) {
+                const createResponse = await createBlogComment({
+                    content: newComment,
+                    username: userName,
+                    blogId: blog_id,
+                });
+
                 const newCommentData: Comment = {
-                    id: (comments.length + 1).toString(),
+                    id: createResponse.data, // Use the ID from the response
                     content: newComment,
                     userName: userName || "CurrentUser",
                     createdAt: new Date().toISOString(),
                 };
 
-                await createBlogComment({
-                    content: newComment,
-                    username: userName,
-                    blogId: blog_id,
-                });
-                setComments((prevComments) => [
-                    ...prevComments,
-                    newCommentData,
-                ]);
+                setComments((prevComments) => [...prevComments, newCommentData]);
                 setNewComment("");
                 toast({
                     title: "Success",
@@ -154,9 +147,8 @@ export default function BlogPost() {
     const handleDeleteComment = async (commentId: string) => {
         try {
             await deleteBlogComment(commentId);
-            // Update the state to remove the deleted comment
             setComments((prevComments) =>
-                prevComments.filter((comment) => comment.id !== commentId),
+                prevComments.filter((comment) => comment.id !== commentId)
             );
             toast({
                 title: "Success",
@@ -172,12 +164,13 @@ export default function BlogPost() {
         }
     };
 
+
     const handleUpdateComment = async (
         commentId: string,
         updatedContent: string,
     ) => {
         try {
-            await updateBlogComment(commentId, { content: updatedContent });
+            await updateBlogComment({ content: updatedContent, username: userName, commentId });
             // Update the state to reflect the updated comment
             setComments((prevComments) =>
                 prevComments.map((comment) =>
@@ -401,6 +394,17 @@ export default function BlogPost() {
                     </Button>
                 </div>
 
+                {showAlert && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>
+                            To prevent spam, you can only comment once per
+                            minute. Please try again later.
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                 <Card className="mt-8">
                     <CardHeader>
                         <h3 className="text-xl font-semibold">Add a Comment</h3>
@@ -422,17 +426,6 @@ export default function BlogPost() {
                         </Button>
                     </CardFooter>
                 </Card>
-
-                {showAlert && (
-                    <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Error</AlertTitle>
-                        <AlertDescription>
-                            To prevent spam, you can only comment once per
-                            minute. Please try again later.
-                        </AlertDescription>
-                    </Alert>
-                )}
             </div>
         </div>
     );

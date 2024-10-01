@@ -1,10 +1,10 @@
 ﻿import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { submitCode } from "../api/submission";
-import Textarea_manual from "./ui/textarea-manual";
+import { submitCode } from "../../api/submission";
+import Textarea_manual from "../ui/textarea-manual";
 import { useParams, useNavigate } from "react-router-dom";
-import { Problem } from "../models/ProblemModel";
-import { getProblemByCode } from "../api/problem";
+import { Problem } from "../../models/ProblemModel";
+import { getProblemByCode } from "../../api/problem";
 
 // Define model for language
 interface Language {
@@ -17,7 +17,12 @@ const languages: Language[] = [
     { languageId: 53, languageName: "C++ (GCC 8.3.0)" },
     { languageId: 71, languageName: "Python (3.8.1)" },
     { languageId: 62, languageName: "Java (OpenJDK 13.0.1)" },
+    { languageId: 63, languageName: "JavaScript (Node.js 12.14.0)" },
     { languageId: 74, languageName: "TypeScript (3.7.4)" },
+    { languageId: 51, languageName: "C# (Mono 6.6.0.161)" },
+    { languageId: 60, languageName: "Go (1.13.5)" },
+    { languageId: 46, languageName: "Bash (5.0.0)" },
+    { languageId: 67, languageName: "Pascal (FPC 3.0.4)" },
 ];
 
 const CodeSubmission: React.FC = () => {
