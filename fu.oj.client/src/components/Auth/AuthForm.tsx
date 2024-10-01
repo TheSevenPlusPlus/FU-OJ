@@ -47,7 +47,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
             const data = await loginUser({ username, password });
             console.log("Login successful:", data);
             localStorage.setItem("user", JSON.stringify(data));
-            navigate("/");
+            navigate("/problems");
             navigate(0); // Reload
         } catch (error) {
             console.error("Login failed:", error.response?.data || error.message);
@@ -65,7 +65,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
             const data = await registerUser(userData);
             console.log("Registration successful:", data);
             localStorage.setItem("user", JSON.stringify(data));
-            navigate("/");
+            navigate("/profile");
             navigate(0); // Reload
         } catch (error) {
             console.error("Registration failed:", error.response?.data || error.message);
