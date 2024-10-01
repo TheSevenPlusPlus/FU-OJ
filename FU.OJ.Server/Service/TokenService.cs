@@ -1,7 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;using System.Security.Claims;using System.Text;
 using FU.OJ.Server.Infra.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;using System.Security.Claims;using System.Text;
 
 namespace FU.OJ.Server.Service{    public interface ITokenService
     {
@@ -20,14 +20,31 @@ namespace FU.OJ.Server.Service{    public interface ITokenService
             );
             _userManager = userManager;
         }
-        public async Task<string> CreateToken(User user) // Thêm async và đổi kiểu trả về
+        public async Task<string> CreateToken(User user)
         {
-            // Lấy danh sách roles của người dùng từ UserManager (phải dùng await)
+            // Lấy danh sách roles của người dùng
             var roles = await _userManager.GetRolesAsync(user);
-            var claims = new List<Claim> {                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName),                new Claim(JwtRegisteredClaimNames.Email, user.Email),            };            // Thêm roles vào token claims
-            claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
-            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
-            var tokenDescriptor = new SecurityTokenDescriptor
+
+            // Tạo danh sách claims
+            var claims = new List<Claim> {
+                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            };
+
+            // Thêm các role của người dùng vào claims
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            // Thêm claim "CanAccessApi" cho người dùng
+            claims.Add(new Claim("CanAccessApi", "true"));
+
+            // Tạo signing credentials
+            var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
+
+            // Định nghĩa token descriptor
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddDays(1),
@@ -35,9 +52,14 @@ namespace FU.OJ.Server.Service{    public interface ITokenService
                 Issuer = _configuration["JWT:Issuer"],
                 Audience = _configuration["JWT:Audience"]
             };
-            var tokenHandler = new JwtSecurityTokenHandler();
+
+            // Tạo token
+            var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
+
+            // Trả về token dưới dạng chuỗi
+            return tokenHandler.WriteToken(token);
         }
+
     }
 }

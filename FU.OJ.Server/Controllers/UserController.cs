@@ -1,9 +1,11 @@
 ﻿using FU.OJ.Server.DTOs;
-using FU.OJ.Server.DTOs.User.Request;using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Mvc;
+using FU.OJ.Server.DTOs.User.Request;using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const.Authorize;
+using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
     [ApiController]
-    //[Authorize(Roles = RoleAuthorize.OnlyAdmin)]
+    [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
