@@ -1,9 +1,8 @@
-using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Problem.Request;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Mvc;
+using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Problem.Request;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers{    [ApiController]
     [Route(ProblemRoute.INDEX)]
-    //[Authorize]
-    public class ProblemController : BaseController
+    public class ProblemController : AuthorizeController
     {
         private readonly IProblemService _service;
         private readonly ITestcaseService _testcaseService;
@@ -14,7 +13,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
             _testcaseService = testcaseService;
 
         }
-        [HttpPost(ProblemRoute.Action.Create)]
+        [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpPost(ProblemRoute.Action.Create)]
         public async Task<IActionResult> CreateProblemAsync([FromBody] CreateProblemRequest request)
         {
             try
@@ -27,7 +26,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [HttpGet("{code}")]
+        [AllowAnonymous]        [HttpGet(ProblemRoute.Action.GetProblemByCodeAsync)]
         public async Task<IActionResult> GetProblemByCodeAsync(string code)
         {
             try
@@ -42,7 +41,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [HttpGet]
+        [AllowAnonymous]        [HttpGet(ProblemRoute.Action.GetAllProblemsAsync)]
         public async Task<IActionResult> GetAllProblemsAsync([FromQuery] Paging query)
         {
             try
@@ -55,7 +54,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [HttpPut("update")]
+        [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpPut(ProblemRoute.Action.Update)]
         public async Task<IActionResult> UpdateProblemAsync([FromBody] UpdateProblemRequest request)
         {
             try
@@ -70,7 +69,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [HttpDelete("{id}")]
+        [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpDelete(ProblemRoute.Action.Delete)]
         public async Task<IActionResult> DeleteProblemAsync(string id)
         {
             try

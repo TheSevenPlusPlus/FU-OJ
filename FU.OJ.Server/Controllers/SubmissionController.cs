@@ -1,24 +1,15 @@
-using FU.OJ.Server.DTOs;
-using FU.OJ.Server.DTOs.Submission.Request;
-using FU.OJ.Server.DTOs.Submission.Response;
-using FU.OJ.Server.Infra.Const.Route;
-using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Mvc;
+using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Submission.Request;using FU.OJ.Server.DTOs.Submission.Response;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
 
-namespace FU.OJ.Server.Controllers
-{
-    [Route(SubmissionRoute.INDEX)]
+namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
     [ApiController]
-    public class SubmissionController : BaseController
+    public class SubmissionController : AuthorizeController
     {
         private readonly ISubmissionService _submissionService;
-
-        public SubmissionController(ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
+        public SubmissionController(ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
         {
             _submissionService = submissionService;
         }
-
-        [HttpPost(SubmissionRoute.Action.Create)]
+        [Authorize]        [HttpPost(SubmissionRoute.Action.Create)]
         public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request, [FromQuery] bool base64Encoded = false, [FromQuery] bool wait = true)
         {
             try
@@ -30,8 +21,7 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
-
-        [HttpGet(SubmissionRoute.Action.Get)]
+        [AllowAnonymous]        [HttpGet(SubmissionRoute.Action.Get)]
         public async Task<IActionResult> GetSubmissionDetails([FromRoute] string id)
         {
             try
@@ -44,8 +34,7 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
-
-        [HttpGet(SubmissionRoute.Action.GetWithoutResult)]
+        [AllowAnonymous]        [HttpGet(SubmissionRoute.Action.GetWithoutResult)]
         public async Task<IActionResult> GetSubmissionWithoutResultDetails([FromRoute] string id)
         {
             try
@@ -58,16 +47,14 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
-
-        [HttpGet(SubmissionRoute.Action.GetAll)]
+        [AllowAnonymous]        [HttpGet(SubmissionRoute.Action.GetAll)]
         public async Task<IActionResult> GetAllSubmissions([FromQuery] string? username, [FromQuery] Paging query, [FromQuery] string? problemCode)
         {
             try
             {
                 // Gọi dịch vụ để lấy danh sách submissions và tổng số trang
                 var (submissions, totalPages) = await _submissionService.GetAllSubmissionsAsync(query, username, problemCode);
-
-                // Trả về kết quả dưới dạng JSON
+                // Trả về kết quả dưới dạng JSON
                 return Ok(new { submissions, totalPages });
             }
             catch (Exception ex)
@@ -75,5 +62,4 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
-    }
-}
+    }}

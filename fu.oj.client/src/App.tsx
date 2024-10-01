@@ -24,6 +24,8 @@ import UserManagement from "./components/Management/User/UserManagement";
 import ChangePassword from "./components/Profile/ChangePassword";
 import BlogManagement from "./components/Management/Blog/BlogManagement";
 import BlogForm from "./components/Management/Blog/BlogForm";
+import ForgotPassword from "./components/Auth/ForgotPassword";
+import ResetPassword from "./components/Auth/ResetPassword";
 
 const App: React.FC = () => {
     const mockProfile = {
@@ -42,6 +44,8 @@ const App: React.FC = () => {
                         {/* Auth */}
                         <Route path="/login" element={<AuthPage />} />
                         <Route path="/register" element={<AuthPage />} />
+                        <Route path="/forgotpassword" element={<ForgotPassword />} />
+                        <Route path="/resetpassword" element={<ResetPassword />} />
 
                         {/* Profile */}
                         <Route path="/profile" element={<ProfileView />} />

@@ -6,13 +6,15 @@ namespace FU.OJ.Server.Service{    public interface IUserService
         Task<User> CreateUserAsync(CreateUserRequest userRequest);
         Task<(List<UserView> users, int totalPages)> GetAllUsersAsync(Paging query);
         Task<User> GetUserByIdAsync(string userId);
-        Task<User> GetUserByUsernameAsync(string userName); // Added Async suffix for consistency
+        Task<User> GetUserByEmailAsync(string email);
+        Task<User> GetUserByPhoneAsync(string phoneNumber);
+        Task<User> GetUserByUsernameAsync(string userName);
         Task<User> UpdateUserAsync(UpdateUserRequest user);
         Task<bool> DeleteUserAsync(string userName);
         Task<bool> EditUserRoleAsync(string userName, string role);
         Task<bool> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest);
-
     }
+
     public class UserService : IUserService
     {
         private readonly UserManager<User> _userManager;
@@ -43,16 +45,13 @@ namespace FU.OJ.Server.Service{    public interface IUserService
         }
         public async Task<(List<UserView> users, int totalPages)> GetAllUsersAsync(Paging query)
         {
-            // Đếm tổng số users
             int totalItems = await _userManager.Users.CountAsync();
 
-            // Tính toán tổng số trang
             int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
 
-            // Lấy danh sách users đã phân trang
             var users = await _userManager.Users
-                .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
-                .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
+                .Skip((query.pageIndex - 1) * query.pageSize)
+                .Take(query.pageSize)
                 .Select(u => new UserView
                 {
                     UserName = u.UserName,
@@ -70,7 +69,6 @@ namespace FU.OJ.Server.Service{    public interface IUserService
                 .OrderByDescending(u => u.CreatedAt)
                 .ToListAsync();
 
-            // Trả về cả danh sách users và tổng số trang
             return (users, totalPages);
         }
 
@@ -80,6 +78,28 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             if (user == null)
             {
                 throw new Exception("User isn't exist");
+            }
+            return user;
+        }
+
+        public async Task<User> GetUserByEmailAsync(string email)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null)
+            {
+                //throw new Exception("User with this email doesn't exist");
+                return null;
+            }
+            return user;
+        }
+
+        public async Task<User> GetUserByPhoneAsync(string phoneNumber)
+        {
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
+            if (user == null)
+            {
+                //throw new Exception("User with this phone number doesn't exist");
+                return null;
             }
             return user;
         }
@@ -139,14 +159,12 @@ namespace FU.OJ.Server.Service{    public interface IUserService
 
             var currentRoles = await _userManager.GetRolesAsync(user);
 
-            // Xóa vai trò hiện tại của người dùng
             var removeRolesResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
             if (!removeRolesResult.Succeeded)
             {
                 throw new InvalidOperationException("Failed to remove current role");
             }
 
-            // Thêm vai trò mới
             var addRoleResult = await _userManager.AddToRoleAsync(user, role);
             if (!addRoleResult.Succeeded)
             {
