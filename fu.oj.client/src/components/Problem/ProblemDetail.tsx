@@ -11,9 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { getProblemByCode } from "../api/problem"; // Ensure this function is correctly imported
-import { Problem } from "../models/ProblemModel";
-import TextWithNewLines from "./TextWithNewLines/TextWithNewLines";
+import { getProblemByCode } from "../../api/problem"; // Ensure this function is correctly imported
+import { Problem } from "../../models/ProblemModel";
+import TextWithNewLines from "../TextWithNewLines/TextWithNewLines";
 
 export default function ProblemDetail() {
     const { problemCode } = useParams<{ problemCode: string }>();

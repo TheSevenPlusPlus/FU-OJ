@@ -36,12 +36,12 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBlogCommentAsync(string id, [FromBody] UpdateBlogCommentRequest request)
+        [HttpPut]
+        public async Task<IActionResult> UpdateBlogCommentAsync([FromBody] UpdateBlogCommentRequest request)
         {
             try
             {
-                var updated = await _service.UpdateAsync(id, request);
+                var updated = await _service.UpdateAsync(request);
                 if (!updated)
                     return NotFound();
                 return NoContent();

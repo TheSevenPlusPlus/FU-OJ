@@ -26,6 +26,9 @@ namespace FU.OJ.Server.Infra.Context{    public class ApplicationDbContext : I
             modelBuilder.ApplyConfiguration(new ProblemConfiguration());
             modelBuilder.ApplyConfiguration(new BlogConfiguration());
             modelBuilder.ApplyConfiguration(new BlogCommentConfiguration());
+            modelBuilder.ApplyConfiguration(new ContestParticipantConfiguration());
+            modelBuilder.ApplyConfiguration(new ContestParticipantProblemConfiguration());
+            modelBuilder.ApplyConfiguration(new ContestProblemConfiguration());
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

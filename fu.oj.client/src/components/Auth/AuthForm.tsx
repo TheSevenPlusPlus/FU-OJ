@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { registerUser, loginUser } from "../api/auth"; // Adjust the import based on your file structure
+import { registerUser, loginUser } from "../../api/auth"; // Adjust the import based on your file structure
 
 interface RegisterProps {
     additionalFields?: { name: string; label: string }[];
