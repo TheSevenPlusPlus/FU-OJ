@@ -11,11 +11,11 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Code, Clock, User } from "lucide-react";
-import { getSubmissionById } from "../api/submission";
+import { getSubmissionById } from "../../api/submission";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vs } from "react-syntax-highlighter/dist/esm/styles/prism"; // Sử dụng theme "vs" của Visual Studio Code
-import { Result } from "../models/ResultModel";
-import { Submission } from "../models/SubmissionModel";
+import { Result } from "../../models/ResultModel";
+import { Submission } from "../../models/SubmissionModel";
 
 const SubmissionDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();

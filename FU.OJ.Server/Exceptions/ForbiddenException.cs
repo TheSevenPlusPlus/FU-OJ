@@ -1,5 +1,4 @@
-using System;
-namespace TaxNet_Common.Exceptions{    public class ForbiddenException : Exception
+namespace Exceptions{    public class ForbiddenException : Exception
     {
         public ForbiddenException()
         {

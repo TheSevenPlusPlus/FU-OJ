@@ -8,12 +8,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { getAllProblems } from "../api/problem";
-import { Problem } from "../models/ProblemModel";
+import { getAllProblems } from "../../api/problem";
+import { Problem } from "../../models/ProblemModel";
 import { Badge } from "@/components/ui/badge";
 import "@fortawesome/fontawesome-free/css/all.min.css";
-import Pagination from './Pagination/Pagination';
-import ItemsPerPageSelector from './Pagination/ItemsPerPageSelector';
+import Pagination from '../Pagination/Pagination';
+import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 
 export default function ProblemList() {
     const navigate = useNavigate();

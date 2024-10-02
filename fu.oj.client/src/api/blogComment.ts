@@ -28,10 +28,9 @@ export const createBlogComment = async (data: {
 };
 
 export const updateBlogComment = async (
-    id: string,
-    data: { content: string },
+    data: { content: string, username: string, commentId: string },
 ) => {
-    return await apiClient.put(`/blog-comment/${id}`, data);
+    return await apiClient.put(`/blog-comment`, data);
 };
 
 export const deleteBlogComment = async (id: string) => {

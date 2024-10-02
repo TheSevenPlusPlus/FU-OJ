@@ -1,18 +1,18 @@
 ﻿import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
-import HomePage from "./components/HomePage";
-import ProblemList from "./components/ProblemList";
-import SubmissionList from "./components/SubmissionList";
-import ProblemDetail from "./components/ProblemDetail";
-import CodeSubmission from "./components/SubmitCode";
-import BlogList from "./components/BlogList";
-import BlogPost from "./components/BlogPost";
-import AuthPage from "./components/AuthPage";
+import HomePage from "./components/HomePage/HomePage";
+import ProblemList from "./components/Problem/ProblemList";
+import SubmissionList from "./components/Submission/SubmissionList";
+import ProblemDetail from "./components/Problem/ProblemDetail";
+import CodeSubmission from "./components/Submission/SubmitCode";
+import BlogList from "./components/Blog/BlogList";
+import BlogPost from "./components/Blog/BlogPost";
+import AuthPage from "./components/Auth/AuthPage";
 import ProfileView from "./components/Profile/ProfileView";
 import ProfileEdit from "./components/Profile/ProfileEdit";
-import Rank from "./components/Rank";
-import SubmissionDetail from "./components/SubmissionDetail";
+import Rank from "./components/Rank/Rank";
+import SubmissionDetail from "./components/Submission/SubmissionDetail";
 import NotFound from "./components/NotFound";
 import ComingSoon from "./components/ComingSoon";
 import CreateUser from "./components/Management/User/CreateUser";
@@ -24,6 +24,8 @@ import UserManagement from "./components/Management/User/UserManagement";
 import ChangePassword from "./components/Profile/ChangePassword";
 import BlogManagement from "./components/Management/Blog/BlogManagement";
 import BlogForm from "./components/Management/Blog/BlogForm";
+import ForgotPassword from "./components/Auth/ForgotPassword";
+import ResetPassword from "./components/Auth/ResetPassword";
 
 const App: React.FC = () => {
     const mockProfile = {
@@ -42,6 +44,8 @@ const App: React.FC = () => {
                         {/* Auth */}
                         <Route path="/login" element={<AuthPage />} />
                         <Route path="/register" element={<AuthPage />} />
+                        <Route path="/forgotpassword" element={<ForgotPassword />} />
+                        <Route path="/resetpassword" element={<ResetPassword />} />
 
                         {/* Profile */}
                         <Route path="/profile" element={<ProfileView />} />

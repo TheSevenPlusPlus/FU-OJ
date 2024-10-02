@@ -22,5 +22,5 @@ export const getProblemByCode = async (code: string) => {
 };
 // Xóa problem
 export const deleteProblem = async (id: string) => {
-    return await apiClient.delete(`/problem/${id}`);
+    return await apiClient.delete(`/problem/delete/${id}`);
 };

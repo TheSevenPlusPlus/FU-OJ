@@ -1,18 +1,24 @@
-using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
+using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
+using System.Web;
 
 namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
     [ApiController]
-    public class AuthController : BaseController
+    [AllowAnonymous]
+    public class AuthController : AuthorizeController
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ITokenService _tokenService;
+        private readonly IEmailSender _emailSender;
+        private readonly string _clientUrl; // Khai báo _clientUrl
         public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
-            ITokenService tokenService, ILogger<AuthController> logger) : base(logger)
+            ITokenService tokenService, ILogger<AuthController> logger, IEmailSender emailSender, IConfiguration configuration) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _tokenService = tokenService;
+            _emailSender = emailSender;
+            _clientUrl = configuration["ClientUrl"];
         }
         [HttpPost(AuthRoute.Action.Register)]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
@@ -20,30 +26,36 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
             try
             {
                 if (!ModelState.IsValid) return BadRequest(ModelState);
+
+                // Kiểm tra xem email đã tồn tại chưa
+                var existingUser = await _userManager.FindByEmailAsync(registerRequest.Email);
+                if (existingUser != null)
+                {
+                    return BadRequest("Email is already in use.");
+                }
+
                 var user = new User()
                 {
                     UserName = registerRequest.UserName,
                     Email = registerRequest.Email,
                     FullName = registerRequest.FullName,
-                    //PhoneNumber = registerRequest.PhoneNumber,
                     CreatedAt = DateTime.UtcNow,
                 };
+
                 var createUser = await _userManager.CreateAsync(user, registerRequest.Password);
                 if (createUser.Succeeded)
                 {
                     var roleResult = await _userManager.AddToRoleAsync(user, RoleStatic.RoleUser);
                     if (roleResult.Succeeded)
                     {
-                        var token = await _tokenService.CreateToken(user); // Sử dụng await cho phương thức không đồng bộ
-                        return Ok(
-                            new RegisterRespond
-                            {
-                                UserName = user.UserName,
-                                Email = user.Email,
-                                Token = token,
-                                AvatarUrl = user.AvatarUrl
-                            }
-                        );
+                        var token = await _tokenService.CreateToken(user);
+                        return Ok(new RegisterRespond
+                        {
+                            UserName = user.UserName,
+                            Email = user.Email,
+                            Token = token,
+                            AvatarUrl = user.AvatarUrl
+                        });
                     }
                     else return StatusCode(500, roleResult.Errors);
                 }
@@ -51,11 +63,11 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Error during registration"); // Ghi log lỗi
+                _logger.LogError(exception, "Error during registration");
                 return StatusCode(500, "Internal server error");
             }
         }
-        [HttpPost(AuthRoute.Action.Login)]
+        [HttpPost(AuthRoute.Action.Login)]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -76,41 +88,48 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
            );
         }
 
-        //[HttpPost(AuthRoute.Action.ForgotPassword)]
-        //public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
-        //{
-        //    var user = await _userManager.FindByEmailAsync(model.Email);
-        //    if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-        //    {
-        //        return BadRequest("Invalid email.");
-        //    }
+        [HttpPost(AuthRoute.Action.ForgotPassword)]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return BadRequest("Invalid email.");
+            }
 
-        //    var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        //    var resetLink = Url.Action("ResetPassword", "Account", new { token, email = user.Email }, Request.Scheme);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"{_clientUrl}/resetpassword?token={HttpUtility.UrlEncode(token)}&email={user.Email}"; // Sử dụng _clientUrl
 
-        //    // Gửi email reset mật khẩu
-        //    await _emailSender.SendEmailAsync(model.Email, "Reset Password", $"Click <a href='{resetLink}'>here</a> to reset your password.");
+            // Gửi email reset mật khẩu
+            await _emailSender.SendEmailAsync(model.Email, "Reset Password", $"Click <a href='{resetLink}'>here</a> to reset your password.");
 
-        //    return Ok("Password reset link has been sent to your email.");
-        //}
+            return Ok("Password reset link has been sent to your email.");
+        }
 
-        //[HttpPost("reset-password")]
-        //public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
-        //{
-        //    var user = await _userManager.FindByEmailAsync(model.Email);
-        //    if (user == null)
-        //    {
-        //        return BadRequest("Invalid email.");
-        //    }
 
-        //    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
-        //    if (result.Succeeded)
-        //    {
-        //        return Ok("Password has been reset successfully.");
-        //    }
+        [HttpPost(AuthRoute.Action.ResetPassword)]
+        public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest("Invalid request data.");
+            }
 
-        //    return BadRequest(result.Errors);
-        //}
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return BadRequest("Invalid email.");
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+            if (result.Succeeded)
+            {
+                return Ok("Password has been reset successfully.");
+            }
+
+            return BadRequest(result.Errors);
+        }
+
 
     }
 }

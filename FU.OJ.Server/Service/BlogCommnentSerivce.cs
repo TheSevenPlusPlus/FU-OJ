@@ -3,7 +3,7 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
         Task<string> CreateAsync(CreateBlogCommentRequest request);
         Task<(List<BlogComment> comments, int totalPages)> GetAllAsync(Paging query);
         Task<(List<BlogCommentResponse> comments, int totalPages)> GetCommentsByBlogIdAsync(string blogId, Paging query); // New method for paginated comments by blog ID
-        Task<bool> UpdateAsync(string id, UpdateBlogCommentRequest request);
+        Task<bool> UpdateAsync(UpdateBlogCommentRequest request);
         Task<bool> DeleteAsync(string id);
         Task<BlogComment?> GetLastCommentByUserAsync(string username, string blogId);
     }
@@ -21,13 +21,14 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
             var user = await _userService.GetUserByUsernameAsync(request.Username!);
             if (user == null)
                 throw new Exception(ErrorMessage.NotFound);
-            var newComment = new BlogComment()
+            var newComment = new BlogComment
             {
                 Content = request.Content,
                 UserId = user.Id,
                 BlogId = request.BlogId,
                 CreatedAt = DateTime.UtcNow
-            };            _context.BlogComments.Add(newComment);
+            };
+            _context.BlogComments.Add(newComment);
             await _context.SaveChangesAsync();
             return newComment.Id;
         }
@@ -66,11 +67,15 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
                 .ToListAsync();
             return (comments, totalPages);
         }
-        public async Task<bool> UpdateAsync(string id, UpdateBlogCommentRequest request)
+        public async Task<bool> UpdateAsync(UpdateBlogCommentRequest request)
         {
-            var comment = await _context.BlogComments.FirstOrDefaultAsync(c => c.Id == id);
+            var user = await _userService.GetUserByUsernameAsync(request.Username);
+            if (user == null) 
+                throw new Exception(ErrorMessage.NotFound);
+
+            var comment = await _context.BlogComments.FirstOrDefaultAsync(c => c.Id == request.CommentId && c.UserId == user.Id);
             if (comment == null)
-                return false;
+                throw new Exception(ErrorMessage.NotFound);
             comment.Content = request.Content; // Assume only content can be updated
             _context.BlogComments.Update(comment);
             await _context.SaveChangesAsync();

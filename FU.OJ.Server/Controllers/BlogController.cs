@@ -1,12 +1,14 @@
 using FU.OJ.Server.Controllers;
 using FU.OJ.Server.DTOs;
 using FU.OJ.Server.DTOs.Blog.Request;
+using FU.OJ.Server.Infra.Const.Authorize;
 using FU.OJ.Server.Infra.Const.Route;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route(BlogRoute.INDEX)]
 [ApiController]
-public class BlogController : BaseController
+public class BlogController : AuthorizeController
 {
     private readonly IBlogService _blogService;
 
@@ -14,7 +16,7 @@ public class BlogController : BaseController
     {
         _blogService = blogService;
     }
-
+    [Authorize(Roles = RoleAuthorize.AdminManager)]
     [HttpPost(BlogRoute.Action.Create)]
     public async Task<IActionResult> CreateBlogAsync([FromBody] CreateBlogRequest request)
     {
@@ -34,7 +36,7 @@ public class BlogController : BaseController
             return StatusCode(500, "An error occurred while creating the blog.");
         }
     }
-
+    [AllowAnonymous]
     [HttpGet(BlogRoute.Action.GetDetails)]
     public async Task<IActionResult> GetBlogByIdAsync(string id)
     {
@@ -54,7 +56,7 @@ public class BlogController : BaseController
             return StatusCode(500, "An error occurred while retrieving the blog.");
         }
     }
-
+    [AllowAnonymous]
     [HttpGet(BlogRoute.Action.GetAll)]
     public async Task<IActionResult> GetAllBlogsAsync([FromQuery] Paging query)
     {
@@ -69,7 +71,7 @@ public class BlogController : BaseController
             return StatusCode(500, "An error occurred while retrieving the blogs.");
         }
     }
-
+    [AllowAnonymous]
     [HttpPut(BlogRoute.Action.Update)]
     public async Task<IActionResult> UpdateBlogAsync([FromBody] UpdateBlogRequest request)
     {
