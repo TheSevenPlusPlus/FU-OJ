@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { getAllBlogs } from "../../api/blog";
 import Pagination from '../Pagination/Pagination'; // Adjust the path as needed
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector'; // Import the new component
+import { UserView } from "../../models/UserDTO";
+import { getProfile } from "../../api/profile";
 
 interface Blog {
     id: number;
@@ -23,6 +25,7 @@ interface Blog {
 
 export default function BlogList() {
     const navigate = useNavigate();
+    const [user, setUser] = useState<UserView | null>(null);
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -30,6 +33,8 @@ export default function BlogList() {
     const [pageIndex, setPageIndex] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10); // Define page size
     const [searchParams] = useSearchParams();
+    const userData = JSON.parse(localStorage.getItem("user") || "{}");
+    const userName = userData?.userName;
 
     useEffect(() => {
         const index = searchParams.get("pageIndex");
@@ -37,6 +42,28 @@ export default function BlogList() {
         if (index) setPageIndex(Number(index));
         if (size) setPageSize(Number(size));
     }, [searchParams]);
+
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            try {
+                const fetchedProfile = await getProfile(userName);
+                if (!fetchedProfile) {
+                    setLoading(false);
+                    return;
+                }
+
+                setUser(fetchedProfile);
+                console.log(user);
+            } catch (err) {
+                setError("Failed to load profile data.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfileData();
+    }, []);
 
     // Fetch blogs with pagination
     useEffect(() => {
@@ -90,7 +117,7 @@ export default function BlogList() {
             <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogs.map((blog) => (
-                    <BlogCard key={blog.id} blog={blog} />
+                    <BlogCard key={blog.id} blog={blog} user={user} />
                 ))}
             </div>
 
@@ -104,7 +131,7 @@ export default function BlogList() {
     );
 }
 
-function BlogCard({ blog }: { blog: Blog }) {
+function BlogCard({ blog, user }: { blog: Blog, user: UserView }) {
     const navigate = useNavigate();
 
     const handleClick = () => {
@@ -127,7 +154,11 @@ function BlogCard({ blog }: { blog: Blog }) {
                 <div className="flex items-center space-x-2">
                     <Avatar className="border-2 border-gray-300 dark:border-gray-700">
                         <AvatarImage
-                            src={`https://api.dicebear.com/6.x/initials/svg?seed=${blog.userName}&backgroundColor=b6b6b6`}
+                            src={
+                                user.avatarUrl ||
+                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
+                            }
+                            alt={user.fullName}
                         />
                         <AvatarFallback>
                             {blog.userName.charAt(0)}
