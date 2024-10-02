@@ -1,5 +1,4 @@
-using System;
-namespace TaxNet_Common.Exceptions{    public class UnexpectedException : Exception
+namespace Exceptions{    public class UnexpectedException : Exception
     {
         public UnexpectedException()
         {

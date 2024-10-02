@@ -1,15 +1,15 @@
-using FU.OJ.Server.DTOs.Testcase.Request;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Mvc;
+using FU.OJ.Server.DTOs.Testcase.Request;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
 
 namespace FU.OJ.Server.Controllers{    [ApiController]
     [Route(TestcaseRoute.INDEX)]
-    public class TestCaseController : BaseController
+    public class TestCaseController : AuthorizeController
     {
         private readonly ITestcaseService _service;
         public TestCaseController(ITestcaseService service, ILogger<TestCaseController> logger) : base(logger)
         {
             _service = service;
         }
-        [HttpPost(TestcaseRoute.Action.Create)]
+        [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpPost(TestcaseRoute.Action.Create)]
         public async Task<IActionResult> CreateTestcaseAsync([FromForm] CreateTestcaseRequest request)
         {
             try
@@ -27,7 +27,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [HttpDelete("{problemCode}")]
+        [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpDelete("{problemCode}")]
         public async Task<IActionResult> DeleteTestCase(string problemId)
         {
             try
@@ -41,7 +41,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpPut(TestcaseRoute.Action.Update)]
+        [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpPut(TestcaseRoute.Action.Update)]
         public async Task<IActionResult> UpdateTestCase([FromForm] CreateTestcaseRequest request)
         {
             try

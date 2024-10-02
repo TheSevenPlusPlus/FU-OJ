@@ -4,6 +4,7 @@ public static class BlogCommentRoute{    public const string INDEX = "blog-com
         public const string Create = "create";
         public const string GetByBlogId = "{blogId}";
         public const string GetLastTime = "time/{username}";
-        // Thêm các hằng số cho các hành động khác nếu cần
+        public const string Update = "";
+        public const string Delete = "{id}";
     }
 }
