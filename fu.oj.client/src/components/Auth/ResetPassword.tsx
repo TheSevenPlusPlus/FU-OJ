@@ -63,7 +63,7 @@ const ResetPassword: React.FC = () => {
             const response = await resetPassword({ email, token, newPassword });
             toast({
                 title: "Success",
-                description: response.message || "Your password has been reset successfully.",
+                description: response?.data?.message || "Your password has been reset successfully.",
             });
             navigate('/login');
         } catch (error) {

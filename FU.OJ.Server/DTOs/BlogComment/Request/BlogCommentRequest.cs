@@ -1,9 +1,7 @@
 using System.ComponentModel.DataAnnotations;namespace FU.OJ.Server.DTOs.BlogComment.Request{    public class CreateBlogCommentRequest
     {
-        [Required]
+        [Required, MinLength(3)]
         public string Content { get; set; } = null!;
-        [Required]
-        public string Username { get; set; } = null!;
         [Required]
         public string BlogId { get; set; } = null!;
     }
@@ -11,8 +9,6 @@ using System.ComponentModel.DataAnnotations;namespace FU.OJ.Server.DTOs.BlogCo
     {
         [Required]
         public string Content { get; set; } = null!;
-        [Required]
-        public string Username { get; set; } = null!;
         [Required]
         public string CommentId { get; set; } = null!;
     }

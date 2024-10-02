@@ -15,6 +15,9 @@ namespace FU.OJ.Server.Infra.Context{    public class ApplicationDbContext : I
         public DbSet<ContestParticipant> ContestParticipants { get; set; }
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }
+        public DbSet<ProblemUser> ProblemUsers { get; set; }
+        public DbSet<ContestParticipantProblem> ContestParticipantProblems { get; set; }
+        public DbSet<ContestProblem> ContestProblems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,9 +29,9 @@ namespace FU.OJ.Server.Infra.Context{    public class ApplicationDbContext : I
             modelBuilder.ApplyConfiguration(new ProblemConfiguration());
             modelBuilder.ApplyConfiguration(new BlogConfiguration());
             modelBuilder.ApplyConfiguration(new BlogCommentConfiguration());
-            modelBuilder.ApplyConfiguration(new ContestParticipantConfiguration());
             modelBuilder.ApplyConfiguration(new ContestParticipantProblemConfiguration());
             modelBuilder.ApplyConfiguration(new ContestProblemConfiguration());
+            modelBuilder.ApplyConfiguration(new ProblemUserConfiguration());
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -27,8 +27,7 @@ const SubmissionDetail: React.FC = () => {
         const fetchSubmission = async () => {
             try {
                 const response = await getSubmissionById(id);
-                //console.log(response);
-                //console.log(response.data);
+                
                 setSubmission(response.data);
             } catch (err) {
                 setError("Failed to fetch problem details");

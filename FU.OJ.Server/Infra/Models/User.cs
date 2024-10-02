@@ -13,6 +13,7 @@ namespace FU.OJ.Server.Infra.Models{    public class User : IdentityUser
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
         public ICollection<Problem> Problems { get; set; } = new List<Problem>();
         public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
+        public ICollection<ProblemUser> ProblemsUsers { get; set; } = new List<ProblemUser>();
     }
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {

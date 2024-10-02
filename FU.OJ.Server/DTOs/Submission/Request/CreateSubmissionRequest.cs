@@ -12,6 +12,4 @@ namespace FU.OJ.Server.DTOs.Submission.Request{    public class CreateSubmissi
         public string ProblemCode { get; set; } = null!;
         [Required]
         public string ProblemId { get; set; } = null!;
-        [Required]
-        public string username { get; set; } = null!;
     }}

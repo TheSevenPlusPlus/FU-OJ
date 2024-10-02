@@ -28,14 +28,18 @@ const SubmissionList = () => {
     const [pageSize, setPageSize] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [searchParams] = useSearchParams();
-    const username = searchParams.get("username") || null;
     const problemCode = searchParams.get("problemCode") || null;
+    const [isMine, setIsMine] = useState<boolean>(false);
 
     useEffect(() => {
         const index = searchParams.get("pageIndex");
         const size = searchParams.get("pageSize");
+        const isMine = searchParams.get("isMine");
+
         if (index) setPageIndex(Number(index));
         if (size) setPageSize(Number(size));
+        // Chuyển đổi giá trị chuỗi sang boolean
+        if (isMine != null) setIsMine(isMine === "true");
     }, [searchParams]);
 
     useEffect(() => {
@@ -45,8 +49,8 @@ const SubmissionList = () => {
                 const response = await getAllSubmissions(
                     pageIndex,
                     pageSize,
-                    username,
                     problemCode,
+                    isMine
                 );
                 const { submissions, totalPages } = response.data;
                 setSubmissions(submissions);
@@ -59,7 +63,7 @@ const SubmissionList = () => {
         };
 
         fetchSubmissions();
-    }, [pageIndex, pageSize, username, problemCode]);
+    }, [pageIndex, pageSize, problemCode, isMine]);
 
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
@@ -90,7 +94,7 @@ const SubmissionList = () => {
         if (newPageIndex > 0 && newPageIndex <= totalPages) {
             setPageIndex(newPageIndex);
             navigate(
-                `/submissions/all?pageIndex=${newPageIndex}&pageSize=${pageSize}`,
+                `/submissions/all?pageIndex=${newPageIndex}&pageSize=${pageSize}&isMine=${isMine}`,
             );
         }
     };
@@ -98,7 +102,7 @@ const SubmissionList = () => {
     const handleItemsPerPageChange = (newSize: number) => {
         setPageSize(newSize);
         setPageIndex(1);
-        navigate(`/submissions/all?pageIndex=1&pageSize=${newSize}`);
+        navigate(`/submissions/all?pageIndex=1&pageSize=${newSize}&isMine=${isMine}`);
     };
 
     if (loading) {

@@ -55,7 +55,6 @@ const CodeSubmission: React.FC = () => {
         setError(null);
         try {
             const response = await submitCode({
-                username: userName,
                 problemCode: problemCode,
                 sourceCode: code,
                 languageId: language?.languageId,

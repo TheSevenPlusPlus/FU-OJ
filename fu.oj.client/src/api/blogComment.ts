@@ -21,7 +21,6 @@ export const getBlogCommentById = async (
 
 export const createBlogComment = async (data: {
     content: string;
-    username: string;
     blogId: string;
 }) => {
     return await apiClient.post("/blog-comment/create", data);
@@ -37,8 +36,6 @@ export const deleteBlogComment = async (id: string) => {
     return await apiClient.delete(`/blog-comment/${id}`);
 };
 
-export const getLastUserComment = async (blogId: string, username: string) => {
-    return await apiClient.get(`/blog-comment/time/${username}`, {
-        params: { blogId },
-    });
+export const getLastUserComment = async (blogId: string) => {
+    return await apiClient.get(`/blog-comment/last-time/${blogId}`);
 };

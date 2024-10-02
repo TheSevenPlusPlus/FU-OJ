@@ -9,7 +9,6 @@ export interface CreateProblemModel {
     exampleOutput: string;
     timeLimit: string;
     memoryLimit: string;
-    userName: string;
     difficulty: string;
 }
 export interface UpdateProblemModel {

@@ -5,7 +5,7 @@ namespace FU.OJ.Server.Service{    public interface ITestcaseService
         Task<string> CreateAsync(CreateTestcaseRequest request);
         Task<string?> GetByIdAsync(string problemId);
         Task<string?> UpdateAsync(CreateTestcaseRequest request);
-        Task<bool> DeleteAsync(string problemId);
+        Task<bool> DeleteAsync(string userId, string problemId);
     }
     public class TestcaseService : ITestcaseService
     {
@@ -165,9 +165,9 @@ namespace FU.OJ.Server.Service{    public interface ITestcaseService
                 Directory.Delete(path);
             }
         }
-        public async Task<bool> DeleteAsync(string problemId)
+        public async Task<bool> DeleteAsync(string userId, string problemId)
         {
-            var problem = await _context.Problems.AsNoTracking().FirstOrDefaultAsync(u => u.Id == problemId);
+            var problem = await _context.Problems.AsNoTracking().FirstOrDefaultAsync(u => u.Id == problemId && u.UserId == userId);
             if (problem == null)
                 return false;
             if (Directory.Exists(problem.TestCasePath))

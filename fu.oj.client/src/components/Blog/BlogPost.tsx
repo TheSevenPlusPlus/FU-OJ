@@ -172,7 +172,7 @@ export default function BlogPost() {
 
     const handleCommentSubmit = async () => {
         try {
-            const lastCommentResponse = await getLastUserComment(blog_id, userName);
+            const lastCommentResponse = await getLastUserComment(blog_id);
             const oneMinute = 60 * 1000;
             const currentTime = new Date().getTime();
 
@@ -194,7 +194,6 @@ export default function BlogPost() {
             // Ensure that only the required properties are passed to createBlogComment
             const createResponse = await createBlogComment({
                 content: validComment.content,
-                username: validComment.username,
                 blogId: validComment.blogId,
             });
 

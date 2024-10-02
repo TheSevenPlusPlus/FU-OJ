@@ -1,11 +1,11 @@
 using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.OJ.Server.DTOs.BlogComment.Response;using FU.OJ.Server.Infra.Const;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.EntityFrameworkCore;namespace FU.OJ.Server.Service{    public interface IBlogCommentService
     {
-        Task<string> CreateAsync(CreateBlogCommentRequest request);
+        Task<string> CreateAsync(string userId, CreateBlogCommentRequest request);
         Task<(List<BlogComment> comments, int totalPages)> GetAllAsync(Paging query);
         Task<(List<BlogCommentResponse> comments, int totalPages)> GetCommentsByBlogIdAsync(string blogId, Paging query); // New method for paginated comments by blog ID
-        Task<bool> UpdateAsync(UpdateBlogCommentRequest request);
-        Task<bool> DeleteAsync(string id);
-        Task<BlogComment?> GetLastCommentByUserAsync(string username, string blogId);
+        Task<bool> UpdateAsync(string userId, UpdateBlogCommentRequest request);
+        Task<bool> DeleteAsync(string userId, string id);
+        Task<BlogComment?> GetLastCommentByUserAsync(string userId, string blogId);
     }
     public class BlogCommentService : IBlogCommentService
     {
@@ -16,15 +16,11 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
             _context = context;
             _userService = userService;
         }
-        public async Task<string> CreateAsync(CreateBlogCommentRequest request)
-        {
-            var user = await _userService.GetUserByUsernameAsync(request.Username!);
-            if (user == null)
-                throw new Exception(ErrorMessage.NotFound);
-            var newComment = new BlogComment
+        public async Task<string> CreateAsync(string userId, CreateBlogCommentRequest request)
+        {            var newComment = new BlogComment
             {
                 Content = request.Content,
-                UserId = user.Id,
+                UserId = userId,
                 BlogId = request.BlogId,
                 CreatedAt = DateTime.UtcNow
             };
@@ -67,13 +63,9 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
                 .ToListAsync();
             return (comments, totalPages);
         }
-        public async Task<bool> UpdateAsync(UpdateBlogCommentRequest request)
+        public async Task<bool> UpdateAsync(string userId, UpdateBlogCommentRequest request)
         {
-            var user = await _userService.GetUserByUsernameAsync(request.Username);
-            if (user == null) 
-                throw new Exception(ErrorMessage.NotFound);
-
-            var comment = await _context.BlogComments.FirstOrDefaultAsync(c => c.Id == request.CommentId && c.UserId == user.Id);
+            var comment = await _context.BlogComments.FirstOrDefaultAsync(c => c.Id == request.CommentId && c.UserId == userId);
             if (comment == null)
                 throw new Exception(ErrorMessage.NotFound);
             comment.Content = request.Content; // Assume only content can be updated
@@ -81,22 +73,18 @@ using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.BlogComment.Request;using FU.O
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> DeleteAsync(string userId, string id)
         {
-            var comment = await _context.BlogComments.FirstOrDefaultAsync(c => c.Id == id);
+            var comment = await _context.BlogComments.FirstOrDefaultAsync(c => c.Id == id && c.UserId == userId);
             if (comment == null)
                 return false;
             _context.BlogComments.Remove(comment);
             await _context.SaveChangesAsync();
             return true;
         }
-        public async Task<BlogComment?> GetLastCommentByUserAsync(string username, string blogId)
-        {
-            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserName == username);
-            if (user == null)
-                throw new Exception(ErrorMessage.NotFound);
-            return await _context.BlogComments
-                .Where(c => c.UserId == user.Id && c.BlogId == blogId)
+        public async Task<BlogComment?> GetLastCommentByUserAsync(string userId, string blogId)
+        {            return await _context.BlogComments
+                .Where(c => c.UserId == userId && c.BlogId == blogId)
                 .OrderByDescending(c => c.CreatedAt)
                 .FirstOrDefaultAsync();
         }

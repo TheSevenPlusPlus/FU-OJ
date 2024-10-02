@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadat
 namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperties
     {
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
+        public ICollection<ProblemUser> ProblemUsers { get; set; } = new List<ProblemUser>();
         public User User { get; set; } = null!;
     }
     public class ProblemProperties

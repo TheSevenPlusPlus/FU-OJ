@@ -7,7 +7,6 @@ export const submitCode = async (data: {
     languageId: number;
     languageName: string;
     problemId: string;
-    username: string;
 }) => {
     return await apiClient.post("/submissions/submit", data);
 };
@@ -16,11 +15,11 @@ export const submitCode = async (data: {
 export const getAllSubmissions = async (
     pageIndex: number,
     pageSize: number,
-    username: string | null,
     problemCode: string | null,
+    isMine: boolean | false
 ) => {
     return await apiClient.get(`/submissions/all`, {
-        params: { pageIndex, pageSize, username, problemCode },
+        params: { pageIndex, pageSize, problemCode, isMine },
     });
 };
 

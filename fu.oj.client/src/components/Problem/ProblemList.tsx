@@ -36,7 +36,7 @@ export default function ProblemList() {
         const fetchProblems = async () => {
             setLoading(true);
             try {
-                const response = await getAllProblems(pageIndex, pageSize);
+                const response = await getAllProblems(pageIndex, pageSize, null);
                 const { problems, totalPages } = response.data;
                 setProblems(problems);
                 setTotalPages(totalPages);
