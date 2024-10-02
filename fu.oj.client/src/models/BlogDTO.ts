@@ -18,7 +18,7 @@ export interface BlogView {
     title: string;
     content: string;
     userName: string;
-    createdAt: Date;
+    createdAt: string;
 }
 
 // Paging DTO for paginated results

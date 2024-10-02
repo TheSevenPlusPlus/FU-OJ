@@ -136,7 +136,7 @@ const SubmissionList = () => {
                         <TableRow key={submission.id}>
                             <TableCell>
                                 {submission.userName ? (
-                                    <Link to={`/user/${submission.userId}`} className="text-blue-600 hover:underline">
+                                    <Link to={`/Profile/${submission.userName}`} className="text-blue-600 hover:underline">
                                         {submission.userName}
                                     </Link>
                                 ) : (

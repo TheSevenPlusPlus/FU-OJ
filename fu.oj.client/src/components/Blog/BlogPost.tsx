@@ -30,7 +30,17 @@ import {
     updateBlogComment,
 } from "../../api/blogComment";
 import { getBlogById } from "../../api/blog";
-
+import * as Yup from "yup";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { UserView } from "../../models/UserDTO";
+import { getProfile } from "../../api/profile";
 interface BlogPost {
     id: string;
     title: string;
@@ -49,6 +59,7 @@ interface Comment {
 export default function BlogPost() {
     const { blog_id } = useParams<{ blog_id: string }>();
     const navigate = useNavigate();
+    const [user, setUser] = useState < UserView | null> (null);
     const [blogPost, setBlogPost] = useState<BlogPost | null>(null);
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState("");
@@ -59,6 +70,41 @@ export default function BlogPost() {
     const { toast } = useToast();
     const userData = JSON.parse(localStorage.getItem("user") || "{}");
     const userName = userData?.userName;
+
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    // New state for update and delete dialogs
+    const [showUpdateDialog, setShowUpdateDialog] = useState(false)
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [selectedComment, setSelectedComment] = useState<Comment | null>(null)
+    const [updatedContent, setUpdatedContent] = useState("")
+
+    // New state for validation errors
+    const [newCommentError, setNewCommentError] = useState(false)
+    const [updateCommentError, setUpdateCommentError] = useState(false)
+
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            try {
+                const fetchedProfile = await getProfile(userName);
+                if (!fetchedProfile) {
+                    setLoading(false);
+                    return;
+                }
+
+                setUser(fetchedProfile);
+            } catch (err) {
+                setError("Failed to load profile data.");
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProfileData();
+    }, []);
+
 
     useEffect(() => {
         const fetchBlogPost = async () => {
@@ -86,6 +132,14 @@ export default function BlogPost() {
         fetchBlogPost();
     }, [blog_id, pageIndex, pageSize, toast]);
 
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         return date.toLocaleString("en-GB", {
@@ -98,6 +152,24 @@ export default function BlogPost() {
         });
     };
 
+    // Create Comment Validation Schema
+    const createCommentSchema = Yup.object().shape({
+        content: Yup.string()
+            .required("Comment content is required")
+            .min(3, "Comment must be at least 3 characters long"),
+        username: Yup.string().required("Username is required"),
+        blogId: Yup.string().required("Blog ID is required"),
+    });
+
+    // Update Comment Validation Schema
+    const updateCommentSchema = Yup.object().shape({
+        content: Yup.string()
+            .required("Updated content is required")
+            .min(3, "Comment must be at least 3 characters long"),
+        username: Yup.string().required("Username is required"),
+        commentId: Yup.string().required("Comment ID is required"),
+    });
+
     const handleCommentSubmit = async () => {
         try {
             const lastCommentResponse = await getLastUserComment(blog_id, userName);
@@ -106,43 +178,61 @@ export default function BlogPost() {
 
             if (lastCommentResponse && lastCommentResponse.data.createdAt) {
                 const lastCommentTime = new Date(lastCommentResponse.data.createdAt).getTime();
-
                 if (currentTime - lastCommentTime < oneMinute) {
                     setShowAlert(true);
                     return;
                 }
             }
 
-            if (newComment.trim()) {
-                const createResponse = await createBlogComment({
-                    content: newComment,
-                    username: userName,
-                    blogId: blog_id,
-                });
+            // Validate new comment
+            const validComment = await createCommentSchema.validate({
+                content: newComment,
+                username: userName,
+                blogId: blog_id,
+            });
 
-                const newCommentData: Comment = {
-                    id: createResponse.data, // Use the ID from the response
-                    content: newComment,
-                    userName: userName || "CurrentUser",
-                    createdAt: new Date().toISOString(),
-                };
+            // Ensure that only the required properties are passed to createBlogComment
+            const createResponse = await createBlogComment({
+                content: validComment.content,
+                username: validComment.username,
+                blogId: validComment.blogId,
+            });
 
-                setComments((prevComments) => [...prevComments, newCommentData]);
-                setNewComment("");
+            const newCommentData: Comment = {
+                id: createResponse.data,
+                content: newComment,
+                userName: userName || "CurrentUser",
+                createdAt: new Date().toISOString(),
+            };
+
+            setComments((prevComments) => [...prevComments, newCommentData]);
+            setNewComment("");
+            setNewCommentError(false);
+            setShowAlert(false);
+            toast({
+                title: "Success",
+                description: "Comment submitted successfully",
+            });
+        } catch (error) {
+            if (error.name === "ValidationError") {
+                setNewCommentError(true);
                 toast({
-                    title: "Success",
-                    description: "Comment submitted successfully",
+                    title: "Validation Error",
+                    description: error.message,
+                    variant: "destructive",
+                });
+            } else {
+                console.error("Failed to submit comment", error);
+                toast({
+                    title: "Error",
+                    description: "Failed to submit comment",
+                    variant: "destructive",
                 });
             }
-        } catch (error) {
-            console.error("Failed to submit comment", error);
-            toast({
-                title: "Error",
-                description: "Failed to submit comment",
-                variant: "destructive",
-            });
         }
     };
+
+
 
     const handleDeleteComment = async (commentId: string) => {
         try {
@@ -154,6 +244,7 @@ export default function BlogPost() {
                 title: "Success",
                 description: "Comment deleted successfully",
             });
+            setShowDeleteDialog(false);
         } catch (error) {
             console.error("Failed to delete comment", error);
             toast({
@@ -165,13 +256,21 @@ export default function BlogPost() {
     };
 
 
-    const handleUpdateComment = async (
-        commentId: string,
-        updatedContent: string,
-    ) => {
+    const handleUpdateComment = async (commentId: string, updatedContent: string) => {
         try {
-            await updateBlogComment({ content: updatedContent, username: userName, commentId });
-            // Update the state to reflect the updated comment
+            // Validate updated comment
+            const validUpdate = await updateCommentSchema.validate({
+                content: updatedContent,
+                username: userName,
+                commentId,
+            });
+
+            // Proceed with API call if validation succeeds
+            await updateBlogComment({
+                content: validUpdate.content,
+                username: validUpdate.username,
+                commentId: validUpdate.commentId
+            });
             setComments((prevComments) =>
                 prevComments.map((comment) =>
                     comment.id === commentId
@@ -183,15 +282,28 @@ export default function BlogPost() {
                 title: "Success",
                 description: "Comment updated successfully",
             });
+            setShowUpdateDialog(false);
+            setUpdateCommentError(false);
+            setShowAlert(false);
         } catch (error) {
-            console.error("Failed to update comment", error);
-            toast({
-                title: "Error",
-                description: "Failed to update comment",
-                variant: "destructive",
-            });
+            if (error.name === "ValidationError") {
+                setUpdateCommentError(true);
+                toast({
+                    title: "Validation Error",
+                    description: error.message,
+                    variant: "destructive",
+                });
+            } else {
+                console.error("Failed to update comment", error);
+                toast({
+                    title: "Error",
+                    description: "Failed to update comment",
+                    variant: "destructive",
+                });
+            }
         }
     };
+
 
     const handleCommentPageChange = (newPageIndex: number) => {
         if (newPageIndex > 0 && newPageIndex <= totalCommentPages) {
@@ -313,7 +425,11 @@ export default function BlogPost() {
                                 <div className="flex items-center">
                                     <Avatar className="w-8 h-8 mr-2">
                                         <AvatarImage
-                                            src={`https://api.dicebear.com/6.x/initials/svg?seed=${comment.userName}`}
+                                            src={
+                                                user.avatarUrl ||
+                                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
+                                            }
+                                            alt={user.fullName}
                                         />
                                         <AvatarFallback>
                                             {comment.userName[0]}
@@ -340,27 +456,18 @@ export default function BlogPost() {
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuItem
                                             onClick={() => {
-                                                const newContent = prompt(
-                                                    "Update your comment:",
-                                                    comment.content,
-                                                );
-                                                if (
-                                                    newContent &&
-                                                    newContent.trim()
-                                                ) {
-                                                    handleUpdateComment(
-                                                        comment.id,
-                                                        newContent.trim(),
-                                                    );
-                                                }
+                                                setSelectedComment(comment)
+                                                setUpdatedContent(comment.content)
+                                                setShowUpdateDialog(true)
                                             }}
                                         >
                                             Edit
                                         </DropdownMenuItem>
                                         <DropdownMenuItem
-                                            onClick={() =>
-                                                handleDeleteComment(comment.id)
-                                            }
+                                            onClick={() => {
+                                                setSelectedComment(comment)
+                                                setShowDeleteDialog(true)
+                                            }}
                                         >
                                             Delete
                                         </DropdownMenuItem>
@@ -405,6 +512,26 @@ export default function BlogPost() {
                     </Alert>
                 )}
 
+                {newCommentError && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>
+                            Comment must be at least 3 characters long
+                        </AlertDescription>
+                    </Alert>
+                )}
+
+                {updateCommentError && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Error</AlertTitle>
+                        <AlertDescription>
+                            Comment must be at least 3 characters long
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                 <Card className="mt-8">
                     <CardHeader>
                         <h3 className="text-xl font-semibold">Add a Comment</h3>
@@ -426,6 +553,51 @@ export default function BlogPost() {
                         </Button>
                     </CardFooter>
                 </Card>
+
+                {/* Update Dialog */}
+                <Dialog open={showUpdateDialog} onOpenChange={setShowUpdateDialog}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Update Comment</DialogTitle>
+                            <DialogDescription>
+                                Edit your comment below. Click save when you're done.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <Textarea
+                            value={updatedContent}
+                            onChange={(e) => setUpdatedContent(e.target.value)}
+                            className="min-h-[100px]"
+                        />
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setShowUpdateDialog(false)}>
+                                Cancel
+                            </Button>
+                            <Button onClick={() => handleUpdateComment(selectedComment!.id, updatedContent)}>
+                                Save
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+                {/* Delete Dialog */}
+                <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Delete Comment</DialogTitle>
+                            <DialogDescription>
+                                Are you sure you want to delete this comment? This action cannot be undone.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                                Cancel
+                            </Button>
+                            <Button variant="destructive" onClick={() => handleDeleteComment(selectedComment!.id)}>
+                                Delete
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
     );

@@ -111,7 +111,12 @@ const SubmissionDetail: React.FC = () => {
                                     <User className="mr-2 text-gray-600" />
                                     <span className="font-semibold">User:</span>
                                     <span className="ml-2">
-                                        {submission.userName || "Anonymous"}
+                                        <Link
+                                            to={`/Profile/${submission.userName}`}
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            {submission.userName || "Anonymous"}
+                                        </Link>
                                     </span>
                                 </div>
                                 <div className="flex items-center">
