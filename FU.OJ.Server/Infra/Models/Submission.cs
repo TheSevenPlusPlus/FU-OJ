@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FU.OJ.Server.Infra.Models{    public class Submission : SubmissionProperties
     {
@@ -12,12 +12,12 @@ namespace FU.OJ.Server.Infra.Models{    public class Submission : SubmissionPr
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        public string? ProblemId { get; set; }
+        public string ProblemId { get; set; } = null!;
         public string? ProblemCode { get; set; }
         public string? SourceCode { get; set; }
         public string? LanguageName { get; set; }
         public DateTime SubmittedAt { get; set; }
-        public string? UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public string? UserName { get; set; }
         public string? Status { get; set; }
     }

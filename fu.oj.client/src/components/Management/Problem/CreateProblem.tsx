@@ -39,7 +39,6 @@ const CreateProblem: React.FC = () => {
         exampleOutput: "",
         timeLimit: "",
         memoryLimit: "",
-        userName: "",
         difficulty: "Easy",
     });
     const [testCaseFile, setTestCaseFile] = useState<File | null>(null);
@@ -69,16 +68,8 @@ const CreateProblem: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const userInfo: User = JSON.parse(
-                localStorage.getItem("user") || "{}",
-            );
-            const updatedFormState = {
-                ...formState,
-                userName: userInfo.userName,
-            };
-
-            const problemResponse = await createProblem(updatedFormState);
-            const problemCode: string = updatedFormState.code;
+            const problemResponse = await createProblem(formState);
+            const problemCode: string = formState.code;
 
             if (testCaseFile) {
                 const formData = new FormData();

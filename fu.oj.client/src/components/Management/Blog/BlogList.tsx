@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { BlogView } from '../../../models/BlogDTO';
+import { BlogDetail } from '../../../models/BlogDTO';
 
 interface BlogListProps {
-    blogs: BlogView[];
-    onEdit: (blog: BlogView) => void;
+    blogs: BlogDetail[];
+    onEdit: (blog: BlogDetail) => void;
     onDelete: (id: string) => void;
     onView: (id: string) => void;
 }

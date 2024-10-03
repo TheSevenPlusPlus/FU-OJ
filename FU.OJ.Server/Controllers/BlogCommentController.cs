@@ -7,13 +7,12 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
         public BlogCommentController(IBlogCommentService service, ILogger<BlogCommentController> logger) : base(logger)
         {
             _service = service;
-        }
-        [Authorize]        [HttpPost(BlogCommentRoute.Action.Create)]
+        }        [HttpPost(BlogCommentRoute.Action.Create)]
         public async Task<IActionResult> CreateBlogCommentAsync([FromBody] CreateBlogCommentRequest request)
         {
             try
             {
-                var commentId = await _service.CreateAsync(request);
+                var commentId = await _service.CreateAsync(UserHeader.UserId, request);
                 return Ok(commentId);
             }
             catch (Exception ex)
@@ -21,12 +20,12 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [Authorize(Roles = RoleAuthorize.AnyRole)]        [HttpPut(BlogCommentRoute.Action.Update)]
+        [HttpPut(BlogCommentRoute.Action.Update)]
         public async Task<IActionResult> UpdateBlogCommentAsync([FromBody] UpdateBlogCommentRequest request)
         {
             try
             {
-                var updated = await _service.UpdateAsync(request);
+                var updated = await _service.UpdateAsync(UserHeader.UserId, request);
                 if (!updated)
                     return NotFound();
                 return NoContent();
@@ -36,12 +35,12 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [Authorize(Roles = RoleAuthorize.AnyRole)]        [HttpDelete(BlogCommentRoute.Action.Delete)]
+        [HttpDelete(BlogCommentRoute.Action.Delete)]
         public async Task<IActionResult> DeleteBlogCommentAsync(string id)
         {
             try
             {
-                var deleted = await _service.DeleteAsync(id);
+                var deleted = await _service.DeleteAsync(UserHeader.UserId, id);
                 if (!deleted)
                     return NotFound();
                 return NoContent();
@@ -57,12 +56,12 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
             var (comments, totalPages) = await _service.GetCommentsByBlogIdAsync(blogId, query);
             return Ok(new { comments, totalPages });
         }
-        [AllowAnonymous]        [HttpGet(BlogCommentRoute.Action.GetLastTime)]
-        public async Task<IActionResult> getLastUserComment([FromRoute] string username, [FromQuery] string blogId)
+        [HttpGet(BlogCommentRoute.Action.GetLastTime)]
+        public async Task<IActionResult> getLastUserComment([FromRoute] string blogId)
         {
             try
             {
-                var response = await _service.GetLastCommentByUserAsync(username, blogId);
+                var response = await _service.GetLastCommentByUserAsync(UserHeader.UserId, blogId);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -70,6 +69,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
+
         [AllowAnonymous]        [HttpGet]
         public async Task<IActionResult> GetAllBlogCommentsAsync([FromQuery] Paging query)
         {

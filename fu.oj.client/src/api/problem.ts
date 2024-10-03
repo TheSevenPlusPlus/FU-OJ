@@ -1,9 +1,9 @@
 ﻿import { CreateProblemModel, UpdateProblemModel } from "../models/ProblemModel";
 import apiClient from "./client";
 
-export const getAllProblems = async (pageIndex: number, pageSize: number) => {
+export const getAllProblems = async (pageIndex: number, pageSize: number, isMine: boolean | false) => {
     return await apiClient.get("/problem", {
-        params: { pageIndex, pageSize }, // Thêm query params cho phân trang
+        params: { pageIndex, pageSize, isMine }, // Thêm query params cho phân trang
     });
 };
 

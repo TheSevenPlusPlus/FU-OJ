@@ -1,16 +1,12 @@
-using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Submission.Request;using FU.OJ.Server.DTOs.Submission.Response;using FU.OJ.Server.Infra.Const;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.EntityFrameworkCore;using System.Text;
+using Exceptions;using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Submission.Request;using FU.OJ.Server.DTOs.Submission.Response;using FU.OJ.Server.Infra.Const;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.EntityFrameworkCore;using System.Text;
 using System.Text.Json;
 
 namespace FU.OJ.Server.Service{
     public interface ISubmissionService
     {
-        Task<string> CreateAsync(CreateSubmissionRequest request, bool base64Encoded, bool wait); //
-        Task<SubmissionView> GetByIdAsync(string id);//
-        Task<SubmissionView?> GetByIdWithoutResultAsync(string id);//
-        Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? username = null, string? problemCode = null);//
-        Task<string> GetByTokenAsync(string token, bool base64Encoded = false, string fields = "stdout,time,memory,stderr,token,compile_output,message,status");
-        Task<Submission?> getByIdWithoutResult(string id); // Trả về Submission mà không kèm Result
-        Task<Submission?> getById(string id); // Trả về Submission kèm theo Result
+        Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool base64Encoded, bool wait); //
+        Task<SubmissionView> GetByIdAsync(string userId, string id);//
+        Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, bool? isMine = false);//
     }
     public class SubmissionService : ISubmissionService
     {
@@ -19,8 +15,9 @@ namespace FU.OJ.Server.Service{
         private readonly IProblemService _problemService;
         private readonly ITestcaseService _testcaseService;
         private readonly IUserService _userService;
+        private readonly IGeneralService _generalService;
         private readonly ApplicationDbContext _context;
-        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDbContext context, IConfiguration configuration, IUserService userService)
+        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDbContext context, IConfiguration configuration, IUserService userService, IGeneralService generalService)
         {
             _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl")!;
             _httpClient = httpClient;
@@ -28,26 +25,25 @@ namespace FU.OJ.Server.Service{
             _testcaseService = testcaseService;
             _context = context;
             _userService = userService;
+            _generalService = generalService;
         }
-        public async Task<string> CreateAsync(CreateSubmissionRequest request, bool base64Encoded, bool wait)
+        public async Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool base64Encoded, bool wait)
         {
-            var problem = await _problemService.GetByCodeAsync(request.ProblemCode);
-            if (problem == null)
-                throw new Exception(ErrorMessage.NotFound);
-            if (problem.TestCasePath == null)
-                throw new Exception(ErrorMessage.NotHaveTest);
+            var problem = await _context.Problems.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Id == request.ProblemId);
 
-            var user = await _userService.GetUserByUsernameAsync(request.username);
-            if (user == null)
-                throw new Exception(ErrorMessage.NotFound);
-            var submission = new Submission
+            if (problem == null)
+                throw new NotFoundException(ErrorMessage.NotFound);
+            if (problem.TestCasePath == null)
+                throw new NotFoundException(ErrorMessage.NotHaveTest);
+            var user = await _userService.GetUserByIdAsync(userId);            if (user == null)                throw new NotFoundException(ErrorMessage.NotFound);            var submission = new Submission
             {
                 ProblemId = request.ProblemId,
                 ProblemCode = request.ProblemCode,
                 SourceCode = request.SourceCode,
                 LanguageName = request.LanguageName,
                 SubmittedAt = DateTime.UtcNow,
-                UserId = user.Id,
+                UserId = userId,
                 UserName = user.UserName,
             };
             _context.Submissions.Add(submission);
@@ -80,7 +76,7 @@ namespace FU.OJ.Server.Service{
                 }
             }
             string status = "Accepted";
-            int acQuantity = 0;
+            int passedTestCount = 0;
             foreach (var token in tokenList)
             {
                 var tokenResult = await GetByTokenAsync(token);
@@ -111,16 +107,40 @@ namespace FU.OJ.Server.Service{
                     if (status == "Accepted")
                         status = JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString()!;
                 }
-                else acQuantity++;
+                else passedTestCount++;
                 _context.Results.Add(newResult);
             }
             submission.Status = status;
-            if (problem.AcQuantity == null || problem.AcQuantity < acQuantity)
+            var result = await _context.ProblemUsers.AsNoTracking()
+                .FirstOrDefaultAsync(pu => pu.ProblemId == request.ProblemId && pu.UserId == userId);
+
+            if (result == null)
             {
-                problem.AcQuantity = acQuantity;
-                _context.Problems.Update(problem);
+                result = new ProblemUser
+                {
+                    ProblemId = problem.Id,
+                    UserId = userId,
+                    Status = status,
+                    PassedTestCount = passedTestCount
+                };
+
+                _context.ProblemUsers.Add(result);
             }
-            await _context.SaveChangesAsync();
+            else
+            {
+                if (result.PassedTestCount < passedTestCount)
+                {
+                    result.PassedTestCount = passedTestCount;
+                    result.Status = status;
+
+                    _context.ProblemUsers.Update(result);
+                    if (status == "Accepted")
+                    {
+                        problem.AcQuantity++;
+                        _context.Problems.Update(problem);
+                    }
+                }
+            }            await _context.SaveChangesAsync();
             return submission.Id;
         }
         public async Task<string> GetByTokenAsync(string token, bool base64Encoded = false, string fields = "stdout,time,memory,stderr,token,compile_output,message,status")
@@ -141,30 +161,6 @@ namespace FU.OJ.Server.Service{
             }
             return responseContent;
         }
-        public async Task<Submission?> getByIdWithoutResult(string id)
-        {
-            var submission = await _context.Submissions.AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == id);
-            return submission;
-        }
-        public async Task<SubmissionView?> GetByIdWithoutResultAsync(string id)
-        {
-            var submission = await _context.Submissions.AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == id);
-            if (submission == null)
-                throw new Exception(ErrorMessage.NotFound);
-            return new SubmissionView
-            {
-                Id = submission.Id,
-                ProblemId = submission.ProblemId,
-                ProblemName = submission.ProblemCode,
-                SourceCode = submission.SourceCode,
-                LanguageName = submission.LanguageName,
-                SubmittedAt = submission.SubmittedAt,
-                UserName = submission.UserName,
-                Status = submission.Status
-            };
-        }
         public async Task<Submission?> getById(string id)
         {
             var submission = await _context.Submissions.AsNoTracking()
@@ -172,20 +168,20 @@ namespace FU.OJ.Server.Service{
                 .FirstOrDefaultAsync(s => s.Id == id);
             return submission;
         }
-        public async Task<SubmissionView> GetByIdAsync(string id)
+        public async Task<SubmissionView> GetByIdAsync(string userId, string id)
         {
             var submission = await _context.Submissions
+                .Where(s => s.Id == id)
                 .Include(s => s.Results)
                 .AsNoTracking()
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .FirstOrDefaultAsync();
             if (submission == null)
-                throw new Exception(ErrorMessage.NotFound);
-            return new SubmissionView
+                throw new Exception(ErrorMessage.NotFound);            bool isAc = await _problemService.IsAccepted(userId, submission.ProblemId);            var (userName, role) = await _generalService.GetUserRoleAsync(userId);            return new SubmissionView
             {
                 Id = submission.Id,
                 ProblemId = submission.ProblemId,
                 ProblemName = submission.ProblemCode,
-                SourceCode = submission.SourceCode,
+                SourceCode = (submission.UserId == userId || isAc == true || role == "Admin") ? submission.SourceCode : null,
                 LanguageName = submission.LanguageName,
                 SubmittedAt = submission.SubmittedAt,
                 UserName = submission.UserName,
@@ -198,15 +194,18 @@ namespace FU.OJ.Server.Service{
                 }).ToList()
             };
         }
-        public async Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? username = null, string? problemCode = null)
+        public async Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, bool? isMine = false)
         {
             // Đếm tổng số submissions
-            int totalItems = await _context.Submissions.CountAsync();
+            int totalItems = await _context.Submissions
+                .Where(submission => (isMine == false || submission.UserId == userId) &&
+                    (problemCode == null || submission.ProblemCode == problemCode))
+                .CountAsync();
             // Tính toán tổng số trang
             int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
             // Lấy danh sách submissions đã phân trang
             var submissions = await _context.Submissions.AsNoTracking()
-                .Where(submission => (username == null || submission.UserName == username) && 
+                .Where(submission => (isMine == false || submission.UserId == userId) &&
                     (problemCode == null || submission.ProblemCode == problemCode))
                 .Select(submission => new SubmissionView
                 {

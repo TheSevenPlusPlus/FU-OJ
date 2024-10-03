@@ -22,6 +22,7 @@ interface UserMenuProps {
 
 const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
     const isManagerOrAdmin = user.role === "Admin" || user.role === "Manager";
+    const isManager = user.role === "Manager";
 
     return (
         <DropdownMenu>
@@ -56,7 +57,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
                         <span>Edit Profile</span>
                     </Link>
                 </DropdownMenuItem>
-                {isManagerOrAdmin && <ManagerMenu />}
+                {isManagerOrAdmin && <ManagerMenu isManager={isManager} />}
                 <DropdownMenuItem
                     onClick={onLogout}
                     className="flex items-center"

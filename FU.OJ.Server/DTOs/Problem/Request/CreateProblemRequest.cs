@@ -11,10 +11,8 @@ namespace FU.OJ.Server.DTOs.Problem.Request{    public class CreateProblemRequ
         public string? Input { get; set; }
         public string? Output { get; set; }
         public string? ExampleInput { get; set; }
-        public string? ExampleOutput { get; set; }
-        public double TimeLimit { get; set; } = 1;
+        public string? ExampleOutput { get; set; }        public double TimeLimit { get; set; } = 1;
         public float MemoryLimit { get; set; } = 256 * 1024;
-        public string UserName { get; set; } = null!;
         public string? Difficulty { get; set; }
     }
 }

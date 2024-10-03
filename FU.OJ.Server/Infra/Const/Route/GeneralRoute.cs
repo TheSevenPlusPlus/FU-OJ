@@ -1,9 +1,12 @@
-namespace FU.OJ.Server.Infra.Const.Route{    public class GeneralRoute
+namespace FU.OJ.Server.Infra.Const.Route
+{
+    public class GeneralRoute
     {
         public const string INDEX = "general";
         public static class Action
         {
             public const string Rank = "rank";
-            public const string GetRole = "getrole/{username}";
+            public const string GetRole = "getrole";
         }
-    }}
+    }
+}

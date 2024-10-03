@@ -3,18 +3,18 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { BlogView, CreateBlogRequest, UpdateBlogRequest } from '../../../models/BlogDTO';
+import { BlogDetail, CreateBlogRequest, UpdateBlogRequest } from '../../../models/BlogDTO';
 import { createBlog, updateBlog, getBlogById } from '../../../api/blog';
 import { useToast } from '../../../hooks/use-toast';
 
 interface BlogFormProps {
-    blog?: BlogView | null;
+    blog?: BlogDetail | null;
 }
 
 const BlogForm: React.FC<BlogFormProps> = ({ blog: initialBlog }) => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
-    const [blog, setBlog] = useState<BlogView | null>(initialBlog || null);
+    const [blog, setBlog] = useState<BlogDetail | null>(initialBlog || null);
     const [isLoading, setIsLoading] = useState(false);
     const { toast } = useToast();
     const navigate = useNavigate();

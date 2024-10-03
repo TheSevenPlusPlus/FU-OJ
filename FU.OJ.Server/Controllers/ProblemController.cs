@@ -18,7 +18,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
         {
             try
             {
-                var code = await _service.CreateAsync(request);
+                var code = await _service.CreateAsync(UserHeader.UserId, request);
                 return Ok(code);
             }
             catch (Exception ex)
@@ -31,7 +31,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
         {
             try
             {
-                var problem = await _service.GetByCodeAsync(code);
+                var problem = await _service.GetByCodeAsync(UserHeader.UserId, code);
                 if (problem == null)
                     return NotFound();
                 return Ok(problem);
@@ -42,11 +42,11 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
             }
         }
         [AllowAnonymous]        [HttpGet(ProblemRoute.Action.GetAllProblemsAsync)]
-        public async Task<IActionResult> GetAllProblemsAsync([FromQuery] Paging query)
+        public async Task<IActionResult> GetAllProblemsAsync([FromQuery] Paging query, bool? isMine = false)
         {
             try
             {
-                var (problems, totalPages) = await _service.GetAllAsync(query);
+                var (problems, totalPages) = await _service.GetAllAsync(query, UserHeader.UserId, isMine);
                 return Ok(new { problems, totalPages });
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
         {
             try
             {
-                var updated = await _service.UpdateAsync(request);
+                var updated = await _service.UpdateAsync(UserHeader.Email, request);
                 if (!updated)
                     return NotFound();
                 return NoContent();
@@ -74,10 +74,8 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
         {
             try
             {
-                var problem = await _service.GetByIdAsync(id);
-                if (problem == null) return NotFound();
-                await _testcaseService.DeleteAsync(id);
-                await _service.DeleteAsync(id);
+                await _testcaseService.DeleteAsync(UserHeader.UserId, id);
+                await _service.DeleteAsync(UserHeader.UserId, id);
                 return NoContent();
             }
             catch (Exception ex)

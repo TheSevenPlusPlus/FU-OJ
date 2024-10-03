@@ -89,7 +89,7 @@ export default function ProblemDetail() {
 
                     <Progress
                         value={
-                            ((problem.acQuantity ?? 0) / (problem.totalTests ?? 1)) * 100
+                            ((problem.passedTestCount ?? 0) / (problem.totalTests ?? 1)) * 100
                         }
                     />
                 </CardHeader>
@@ -166,7 +166,7 @@ export default function ProblemDetail() {
                         </Link>
 
                         {/* View My Submissions Button */}
-                        <Link to={`/submissions/all?userName=${userName}&problemCode=${problemCode}`}>
+                        <Link to={`/submissions/all?isMine=${true}&problemCode=${problemCode}`}>
                             <Button variant="secondary">View my submissions</Button>
                         </Link>
                     </div>

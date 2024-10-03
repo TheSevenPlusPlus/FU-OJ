@@ -20,7 +20,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 {
                     return BadRequest(new { message = "Problem Code is required." });
                 }
-                return Ok(await _service.CreateAsync(request));
+                return Ok(await _service.CreateAsync(UserHeader.UserId, request));
             }
             catch (Exception ex)
             {
@@ -28,11 +28,11 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
             }
         }
         [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpDelete("{problemCode}")]
-        public async Task<IActionResult> DeleteTestCase(string problemId)
+        public async Task<IActionResult> DeleteTestCase(string problemCode)
         {
             try
             {
-                bool isDeleted = await _service.DeleteAsync(problemId);
+                bool isDeleted = await _service.DeleteAsync(UserHeader.UserId, problemCode);
                 if (isDeleted) return Ok("Delete success");
                 else return BadRequest(new { message = "Delete not succcess" });
             }

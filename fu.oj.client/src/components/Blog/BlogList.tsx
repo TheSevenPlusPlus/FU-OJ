@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { getAllBlogs } from "../../api/blog";
 import Pagination from '../Pagination/Pagination'; // Adjust the path as needed
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector'; // Import the new component
+import { UserView } from "../../models/UserDTO";
+import { getProfile } from "../../api/profile";
 
 interface Blog {
     id: number;
@@ -90,7 +92,7 @@ export default function BlogList() {
             <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogs.map((blog) => (
-                    <BlogCard key={blog.id} blog={blog} />
+                    <BlogCard key={blog.id} blog={blog} userName={blog.userName} />
                 ))}
             </div>
 
@@ -104,8 +106,19 @@ export default function BlogList() {
     );
 }
 
-function BlogCard({ blog }: { blog: Blog }) {
+function BlogCard({ blog, userName }: { blog: Blog, userName: string }) {
     const navigate = useNavigate();
+    const [user, setUser] = useState<UserView | null>(null); // Khởi tạo state để lưu thông tin user
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const fetchedUser = await getProfile(userName); // Gọi hàm fetchProfileData
+            setUser(fetchedUser); // Lưu thông tin user vào state
+        };
+
+        fetchUser();
+    }, [userName]); // Chỉ gọi khi userName thay đổi
 
     const handleClick = () => {
         navigate(`/blog/${blog.id}`);
@@ -127,14 +140,18 @@ function BlogCard({ blog }: { blog: Blog }) {
                 <div className="flex items-center space-x-2">
                     <Avatar className="border-2 border-gray-300 dark:border-gray-700">
                         <AvatarImage
-                            src={`https://api.dicebear.com/6.x/initials/svg?seed=${blog.userName}&backgroundColor=b6b6b6`}
+                            src={
+                                user?.avatarUrl ||
+                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
+                            }
+                            alt={userName}
                         />
                         <AvatarFallback>
-                            {blog.userName.charAt(0)}
+                            {userName.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
                     <span className="text-sm font-medium text-black dark:text-white">
-                        {blog.userName}
+                        {user ? user.userName : userName} {/* Hiển thị userName nếu user chưa được tải */}
                     </span>
                 </div>
                 <button
@@ -147,3 +164,5 @@ function BlogCard({ blog }: { blog: Blog }) {
         </Card>
     );
 }
+
+

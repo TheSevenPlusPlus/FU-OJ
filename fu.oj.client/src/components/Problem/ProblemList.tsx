@@ -36,7 +36,7 @@ export default function ProblemList() {
         const fetchProblems = async () => {
             setLoading(true);
             try {
-                const response = await getAllProblems(pageIndex, pageSize);
+                const response = await getAllProblems(pageIndex, pageSize, null);
                 const { problems, totalPages } = response.data;
                 setProblems(problems);
                 setTotalPages(totalPages);
@@ -75,16 +75,14 @@ export default function ProblemList() {
         navigate(`/problems?pageIndex=1&pageSize=${newSize}`);
     };
 
-    const getStatusIcon = (acQuantity: number | null, totalTests: number | null) => {
-        if (acQuantity === null || totalTests === null) return null;
+    const getStatusIcon = (passTestCount: number, totalTests: number) => {
+        if (passTestCount == null || totalTests == null ||
+            passTestCount === 0 || totalTests === 0) return null;
 
-        if (acQuantity === totalTests) {
+        if (passTestCount === totalTests)
             return <i className="fa fa-check-circle text-green-500"></i>;
-        } else if (acQuantity < totalTests) {
-            return <i className="fas fa-frown text-yellow-500"></i>;
-        }
 
-        return null;
+        return <i className="fas fa-frown text-yellow-500"></i>;
     };
 
     const getDifficultyColor = (difficulty: string) => {
@@ -144,7 +142,7 @@ export default function ProblemList() {
                             className="border-b border-gray-300 hover:bg-gray-100 transition duration-200"
                         >
                             <TableCell className="flex items-center justify-center">
-                                {getStatusIcon(problem.acQuantity, problem.totalTests)}
+                                {getStatusIcon(problem.passedTestCount, problem.totalTests)}
                             </TableCell>
 
                             <TableCell className="border border-gray-300">

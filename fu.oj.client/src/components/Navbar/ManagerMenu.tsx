@@ -9,7 +9,11 @@ import {
     DropdownMenuPortal,
 } from "@/components/ui/dropdown-menu";
 
-const ManagerMenu: React.FC = () => {
+interface ManagerMenuProps {
+    isManager: boolean;
+}
+
+const ManagerMenu: React.FC<ManagerMenuProps> = ({ isManager }) => {
     return (
         <DropdownMenuSub>
             <DropdownMenuSubTrigger className="flex items-center">
@@ -19,10 +23,7 @@ const ManagerMenu: React.FC = () => {
             <DropdownMenuPortal>
                 <DropdownMenuSubContent>
                     <DropdownMenuItem asChild>
-                        <Link
-                            to="/manager/problems"
-                            className="flex items-center"
-                        >
+                        <Link to="/manager/problems" className="flex items-center">
                             <FileQuestion className="mr-2 h-4 w-4" />
                             <span>Problem</span>
                         </Link>
@@ -33,12 +34,14 @@ const ManagerMenu: React.FC = () => {
                             <span>Blog</span>
                         </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <Link to="/manager/users" className="flex items-center">
-                            <Users className="mr-2 h-4 w-4" />
-                            <span>User</span>
-                        </Link>
-                    </DropdownMenuItem>
+                    {!isManager && (
+                        <DropdownMenuItem asChild>
+                            <Link to="/manager/users" className="flex items-center">
+                                <Users className="mr-2 h-4 w-4" />
+                                <span>User</span>
+                            </Link>
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuSubContent>
             </DropdownMenuPortal>
         </DropdownMenuSub>

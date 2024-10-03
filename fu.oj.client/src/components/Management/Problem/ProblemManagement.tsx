@@ -66,7 +66,7 @@ const ProblemManagement: React.FC = () => {
     const loadProblems = async () => {
         try {
             setLoading(true);
-            const response = await getAllProblems(pageIndex, pageSize);
+            const response = await getAllProblems(pageIndex, pageSize, true);
             setProblems(response.data.problems);
             setTotalPages(response.data.totalPages);
         } catch (err) {

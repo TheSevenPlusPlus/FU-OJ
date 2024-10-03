@@ -8,13 +8,12 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
         public SubmissionController(ISubmissionService submissionService, ILogger<ProblemController> logger) : base(logger)
         {
             _submissionService = submissionService;
-        }
-        [Authorize]        [HttpPost(SubmissionRoute.Action.Create)]
-        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request, [FromQuery] bool base64Encoded = false, [FromQuery] bool wait = true)
+        }        [HttpPost(SubmissionRoute.Action.Create)]
+        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request)
         {
             try
             {
-                return Ok(await _submissionService.CreateAsync(request, base64Encoded, wait));
+                return Ok(await _submissionService.CreateAsync(UserHeader.UserId, request, false, true));
             }
             catch (Exception ex)
             {
@@ -26,20 +25,7 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
         {
             try
             {
-                SubmissionView submission = await _submissionService.GetByIdAsync(id);
-                return Ok(submission);
-            }
-            catch (Exception ex)
-            {
-                return HandleException(ex);
-            }
-        }
-        [AllowAnonymous]        [HttpGet(SubmissionRoute.Action.GetWithoutResult)]
-        public async Task<IActionResult> GetSubmissionWithoutResultDetails([FromRoute] string id)
-        {
-            try
-            {
-                var submission = await _submissionService.GetByIdWithoutResultAsync(id);
+                SubmissionView submission = await _submissionService.GetByIdAsync(UserHeader.UserId, id);
                 return Ok(submission);
             }
             catch (Exception ex)
@@ -48,12 +34,12 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
             }
         }
         [AllowAnonymous]        [HttpGet(SubmissionRoute.Action.GetAll)]
-        public async Task<IActionResult> GetAllSubmissions([FromQuery] string? username, [FromQuery] Paging query, [FromQuery] string? problemCode)
+        public async Task<IActionResult> GetAllSubmissions([FromQuery] Paging query, [FromQuery] string? problemCode, [FromQuery] bool? isMine = false)
         {
             try
             {
                 // Gọi dịch vụ để lấy danh sách submissions và tổng số trang
-                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsAsync(query, username, problemCode);
+                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsAsync(query, problemCode, UserHeader.UserId, isMine);
                 // Trả về kết quả dưới dạng JSON
                 return Ok(new { submissions, totalPages });
             }

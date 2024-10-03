@@ -55,7 +55,6 @@ const CodeSubmission: React.FC = () => {
         setError(null);
         try {
             const response = await submitCode({
-                username: userName,
                 problemCode: problemCode,
                 sourceCode: code,
                 languageId: language?.languageId,
@@ -65,8 +64,12 @@ const CodeSubmission: React.FC = () => {
 
             let submissionId = response.data;
             navigate(`/submissions/${submissionId}`);
-        } catch (err) {
-            setError("Failed to submit code");
+        } catch (err: any) {
+            if (err.response?.status === 404) {
+                setError("Bài tập chưa có được nạp dữ liệu testcase");
+            } else {
+                setError("Failed to submit code");
+            }
         } finally {
             setLoading(false);
         }

@@ -3,7 +3,7 @@
 namespace FU.OJ.Server.Service{    public interface IGeneralService
     {
         Task<PaginatedResponse<UserRankResponse>> GetUserRankingsAsync(int page, int pageSize);
-        Task<(string UserName, string Role)> GetUserRoleAsync(string username);
+        Task<(string UserName, string Role)> GetUserRoleAsync(string userId);
 
     }
     public class GeneralService : IGeneralService
@@ -49,10 +49,10 @@ namespace FU.OJ.Server.Service{    public interface IGeneralService
             };
         }
 
-        public async Task<(string UserName, string Role)> GetUserRoleAsync(string username)
+        public async Task<(string UserName, string Role)> GetUserRoleAsync(string userId)
         {
             // Tìm user dựa vào username
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null) throw new Exception("User not found");
 
             // Lấy vai trò duy nhất của user
