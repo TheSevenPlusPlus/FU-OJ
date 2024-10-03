@@ -20,7 +20,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 {
                     return BadRequest(new { message = "Problem Code is required." });
                 }
-                return Ok(await _service.CreateAsync(request));
+                return Ok(await _service.CreateAsync(UserHeader.UserId, request));
             }
             catch (Exception ex)
             {

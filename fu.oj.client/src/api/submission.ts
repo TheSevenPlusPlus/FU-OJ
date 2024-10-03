@@ -8,7 +8,8 @@ export const submitCode = async (data: {
     languageName: string;
     problemId: string;
 }) => {
-    return await apiClient.post("/submissions/submit", data);
+    var response = await apiClient.post("/submissions/submit", data);
+    return response;
 };
 
 // Cập nhật hàm gọi API để hỗ trợ phân trang

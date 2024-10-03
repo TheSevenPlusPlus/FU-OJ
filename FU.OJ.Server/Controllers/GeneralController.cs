@@ -17,11 +17,11 @@ using FU.OJ.Server.Controllers;using FU.OJ.Server.Infra.Const.Route;using FU.O
         return Ok(result);
     }
     [HttpGet(GeneralRoute.Action.GetRole)]
-    public async Task<IActionResult> GetUserRoleAsync(string username)
+    public async Task<IActionResult> GetUserRoleAsync()
     {
         try
         {
-            var (userName, role) = await _generalService.GetUserRoleAsync(username);
+            var (userName, role) = await _generalService.GetUserRoleAsync(UserHeader.UserId);
             return Ok(new { UserName = userName, Role = role });
         }
         catch (Exception ex)

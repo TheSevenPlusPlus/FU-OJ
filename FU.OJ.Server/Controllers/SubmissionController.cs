@@ -9,11 +9,11 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
         {
             _submissionService = submissionService;
         }        [HttpPost(SubmissionRoute.Action.Create)]
-        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request, bool base64Encoded = false, bool wait = true)
+        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request)
         {
             try
             {
-                return Ok(await _submissionService.CreateAsync(UserHeader.UserId, request, base64Encoded, wait));
+                return Ok(await _submissionService.CreateAsync(UserHeader.UserId, request, false, true));
             }
             catch (Exception ex)
             {

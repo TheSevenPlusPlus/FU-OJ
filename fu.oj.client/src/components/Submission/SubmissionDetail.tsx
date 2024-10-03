@@ -136,7 +136,7 @@ const SubmissionDetail: React.FC = () => {
                                     language={submission.languageName.toLowerCase()}
                                     style={vs}
                                 >
-                                    {submission.sourceCode}
+                                    {submission.sourceCode ?? "Bạn phải vượt qua bài này để xem được code của mọi người"}
                                 </SyntaxHighlighter>
                             </div>
 

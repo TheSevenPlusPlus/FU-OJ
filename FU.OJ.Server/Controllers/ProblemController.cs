@@ -31,7 +31,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
         {
             try
             {
-                var problem = await _service.GetByCodeAsync(code);
+                var problem = await _service.GetByCodeAsync(UserHeader.UserId, code);
                 if (problem == null)
                     return NotFound();
                 return Ok(problem);

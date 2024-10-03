@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
     const fetchUserProfile = async (userName: string, token: string) => {
         try {
             const response = await getProfile(userName);
-            const userRole = await getRole(userName);
+            const userRole = await getRole();
             if (response) {
                 const updatedUser: User = {
                     userName: response.userName,

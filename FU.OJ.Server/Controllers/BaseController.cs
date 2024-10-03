@@ -22,6 +22,10 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
             {
                 return BadRequest(((BadException)ex).Message);
             }
+            if (ex is Exception)
+            {
+                return BadRequest(((BadException)ex).Message);
+            }
             return Problem(detail: ex.Message, statusCode: 500);
         }
         public BaseController(ILogger logger)

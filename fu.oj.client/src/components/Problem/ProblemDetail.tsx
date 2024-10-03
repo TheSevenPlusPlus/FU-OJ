@@ -89,7 +89,7 @@ export default function ProblemDetail() {
 
                     <Progress
                         value={
-                            ((problem.acQuantity ?? 0) / (problem.totalTests ?? 1)) * 100
+                            ((problem.passedTestCount ?? 0) / (problem.totalTests ?? 1)) * 100
                         }
                     />
                 </CardHeader>

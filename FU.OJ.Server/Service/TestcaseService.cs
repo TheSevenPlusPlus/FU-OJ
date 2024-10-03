@@ -1,8 +1,8 @@
-using FU.OJ.Server.DTOs.Testcase.Request;using FU.OJ.Server.Infra.Context;using Microsoft.EntityFrameworkCore;using System.IO.Compression;
+using FU.OJ.Server.DTOs.Testcase.Request;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.EntityFrameworkCore;using System.IO.Compression;
 
 namespace FU.OJ.Server.Service{    public interface ITestcaseService
     {
-        Task<string> CreateAsync(CreateTestcaseRequest request);
+        Task<string> CreateAsync(string userId, CreateTestcaseRequest request);
         Task<string?> GetByIdAsync(string problemId);
         Task<string?> UpdateAsync(CreateTestcaseRequest request);
         Task<bool> DeleteAsync(string userId, string problemId);
@@ -37,9 +37,9 @@ namespace FU.OJ.Server.Service{    public interface ITestcaseService
             }
             return problem.TestCasePath;
         }
-        public async Task<string> CreateAsync(CreateTestcaseRequest request)
+        public async Task<string> CreateAsync(string userId, CreateTestcaseRequest request)
         {
-            var problem = await _problemService.GetByCodeAsync(request.ProblemCode); // Use ProblemCode instead of problem_code
+            var problem = await _context.Problems.AsNoTracking().FirstOrDefaultAsync(p => p.Code == request.ProblemCode);
             if (problem == null)
                 throw new Exception("This problem " + request.ProblemCode + " not found");
             // Handle ZIP file
@@ -96,7 +96,7 @@ namespace FU.OJ.Server.Service{    public interface ITestcaseService
 
         public async Task<string?> UpdateAsync(CreateTestcaseRequest request)
         {
-            var problem = await _problemService.GetByCodeAsync(request.ProblemCode);
+            var problem = await _context.Problems.AsNoTracking().FirstOrDefaultAsync(p => p.Code == request.ProblemCode);
             if (problem == null)
                 throw new Exception("Problem not found");
             var testcase = problem.TestCasePath;

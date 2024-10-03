@@ -69,6 +69,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
+
         [AllowAnonymous]        [HttpGet]
         public async Task<IActionResult> GetAllBlogCommentsAsync([FromQuery] Paging query)
         {

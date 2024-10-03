@@ -17,6 +17,8 @@ namespace FU.OJ.Server.Infra.Models
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string UserId { get; set; } = null!;
         public string ProblemId { get; set; } = null!;
+        public string? Status { get; set; }
+        public int PassedTestCount { get; set; }
     }
 
     public class ProblemUserConfiguration : IEntityTypeConfiguration<ProblemUser>

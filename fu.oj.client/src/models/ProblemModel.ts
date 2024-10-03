@@ -45,4 +45,6 @@ export interface Problem {
     acQuantity: number | null;
     totalTests: number | null;
     hasSolution: string | null;
+    status: string | null;
+    passedTestCount: number
 }

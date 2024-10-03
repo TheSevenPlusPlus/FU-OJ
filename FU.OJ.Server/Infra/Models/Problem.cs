@@ -29,7 +29,6 @@ namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperti
         public string? Difficulty { get; set; }
         public string? HasSolution { get; set; }
         public string? TestCasePath { get; set; } = null!; // folder ch?a test
-
     }
     public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
     {
