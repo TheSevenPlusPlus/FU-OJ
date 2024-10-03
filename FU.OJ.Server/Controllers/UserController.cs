@@ -90,10 +90,10 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
         //    return Ok(userResponse);
         //}
 
-        [HttpGet(UserRoute.Action.GetByUsername)]
-        public async Task<IActionResult> GetUserByUserName(string userName)
+        [HttpGet(UserRoute.Action.GetDetail)]
+        public async Task<IActionResult> GetUserByUserName()
         {
-            var user = await _userService.GetUserByUsernameAsync(userName);
+            var user = await _userService.GetUserByIdAsync(UserHeader.UserId);
             if (user == null) return null;
             var userResponse = new UserView
             {

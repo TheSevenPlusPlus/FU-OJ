@@ -10,25 +10,33 @@ namespace FU.OJ.Server.Controllers{    [Route("Profile")]
             _userService = userService;
         }
         [AllowAnonymous]        [HttpGet(UserRoute.Action.GetByUsername)]
-        public async Task<IActionResult> GetUserByUsername(string username)
+        public async Task<IActionResult> GetUserByUsername([FromRoute] string username)
         {
-            var user = await _userService.GetUserByUsernameAsync(username);
-            if (user == null) return NotFound("User not found");
-            var userResponse = new UserView
+            try
             {
-                UserName = user.UserName,
-                Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
-                FullName = user.FullName,
-                City = user.City,
-                Description = user.Description,
-                FacebookLink = user.FacebookLink,
-                GithubLink = user.GithubLink,
-                School = user.School,
-                CreatedAt = user.CreatedAt,
-                AvatarUrl = user.AvatarUrl,
-            };
-            return Ok(userResponse);
+                var user = await _userService.GetUserByUsernameAsync(username == null ? UserHeader.UserName : username);
+                if (user == null) return null;
+                var userResponse = new UserView
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    FullName = user.FullName,
+                    City = user.City,
+                    Description = user.Description,
+                    FacebookLink = user.FacebookLink,
+                    GithubLink = user.GithubLink,
+                    School = user.School,
+                    CreatedAt = user.CreatedAt,
+                    AvatarUrl = user.AvatarUrl,
+                };
+
+                return Ok(userResponse);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
         }
         [Authorize]        [HttpPut(UserRoute.Action.Update)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)

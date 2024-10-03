@@ -1,5 +1,8 @@
-﻿using FU.OJ.Server.DTOs;
-using FU.OJ.Server.DTOs.User.Request;using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Identity;using Microsoft.EntityFrameworkCore;
+﻿using Exceptions;
+using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.User.Request;using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const;
+using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;using Microsoft.EntityFrameworkCore;
 
 namespace FU.OJ.Server.Service{    public interface IUserService
     {
@@ -77,7 +80,7 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                throw new Exception("User isn't exist");
+                throw new NotFoundException(ErrorMessage.NotFound);
             }
             return user;
         }
@@ -103,13 +106,11 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             }
             return user;
         }
-        public async Task<User> GetUserByUsernameAsync(string userName) // Added Async suffix for consistency
+        public async Task<User?> GetUserByUsernameAsync(string userName) // Added Async suffix for consistency
         {
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
-            {
-                throw new Exception("User isn't exist");
-            }
+                throw new NotFoundException(ErrorMessage.NotFound);
             return user;
         }
         //Don't allow change UserName

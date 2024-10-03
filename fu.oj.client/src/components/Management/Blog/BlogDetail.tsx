@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { BlogView as BlogViewType } from '../../../models/BlogDTO';
+import { BlogDetail as BlogViewType } from '../../../models/BlogDTO';
 
 interface BlogViewProps {
     blog: BlogViewType;

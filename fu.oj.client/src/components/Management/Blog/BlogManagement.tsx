@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toast } from "./Toast";
 import { getAllBlogs, deleteBlog } from "../../../api/blog";
-import { BlogView, GetAllBlogsResponse } from "../../../models/BlogDTO";
+import { BlogDetail, GetAllBlogsResponse } from "../../../models/BlogDTO";
 
 export default function BlogManagement() {
-    const [blogs, setBlogs] = useState<BlogView[]>([]);
+    const [blogs, setBlogs] = useState<BlogDetail[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -79,7 +79,7 @@ export default function BlogManagement() {
                     <>
                         <BlogList
                             blogs={blogs}
-                            onEdit={(blog: BlogView) =>
+                                onEdit={(blog: BlogDetail) =>
                                 navigate(`/manager/blogs/update/${blog.id}`)
                             }
                             onDelete={handleDeleteBlog}

@@ -25,7 +25,6 @@ interface Blog {
 
 export default function BlogList() {
     const navigate = useNavigate();
-    const [user, setUser] = useState<UserView | null>(null);
     const [blogs, setBlogs] = useState<Blog[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -33,8 +32,6 @@ export default function BlogList() {
     const [pageIndex, setPageIndex] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10); // Define page size
     const [searchParams] = useSearchParams();
-    const userData = JSON.parse(localStorage.getItem("user") || "{}");
-    const userName = userData?.userName;
 
     useEffect(() => {
         const index = searchParams.get("pageIndex");
@@ -42,28 +39,6 @@ export default function BlogList() {
         if (index) setPageIndex(Number(index));
         if (size) setPageSize(Number(size));
     }, [searchParams]);
-
-    useEffect(() => {
-        const fetchProfileData = async () => {
-            try {
-                const fetchedProfile = await getProfile(userName);
-                if (!fetchedProfile) {
-                    setLoading(false);
-                    return;
-                }
-
-                setUser(fetchedProfile);
-                console.log(user);
-            } catch (err) {
-                setError("Failed to load profile data.");
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProfileData();
-    }, []);
 
     // Fetch blogs with pagination
     useEffect(() => {
@@ -117,7 +92,7 @@ export default function BlogList() {
             <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {blogs.map((blog) => (
-                    <BlogCard key={blog.id} blog={blog} user={user} />
+                    <BlogCard key={blog.id} blog={blog} userName={blog.userName} />
                 ))}
             </div>
 
@@ -131,8 +106,19 @@ export default function BlogList() {
     );
 }
 
-function BlogCard({ blog, user }: { blog: Blog, user: UserView }) {
+function BlogCard({ blog, userName }: { blog: Blog, userName: string }) {
     const navigate = useNavigate();
+    const [user, setUser] = useState<UserView | null>(null); // Khởi tạo state để lưu thông tin user
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const fetchedUser = await getProfile(userName); // Gọi hàm fetchProfileData
+            setUser(fetchedUser); // Lưu thông tin user vào state
+        };
+
+        fetchUser();
+    }, [userName]); // Chỉ gọi khi userName thay đổi
 
     const handleClick = () => {
         navigate(`/blog/${blog.id}`);
@@ -155,17 +141,17 @@ function BlogCard({ blog, user }: { blog: Blog, user: UserView }) {
                     <Avatar className="border-2 border-gray-300 dark:border-gray-700">
                         <AvatarImage
                             src={
-                                user.avatarUrl ||
+                                user?.avatarUrl ||
                                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
                             }
-                            alt={user.fullName}
+                            alt={userName}
                         />
                         <AvatarFallback>
-                            {blog.userName.charAt(0)}
+                            {userName.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
                     <span className="text-sm font-medium text-black dark:text-white">
-                        {blog.userName}
+                        {user ? user.userName : userName} {/* Hiển thị userName nếu user chưa được tải */}
                     </span>
                 </div>
                 <button
@@ -178,3 +164,5 @@ function BlogCard({ blog, user }: { blog: Blog, user: UserView }) {
         </Card>
     );
 }
+
+

@@ -3,7 +3,9 @@ using FU.OJ.Server.Infra.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-namespace FU.OJ.Server.Controllers{    [ApiController]
+namespace FU.OJ.Server.Controllers
+{
+    [ApiController]
     public class BaseController : Controller
     {
         protected ILogger _logger;
@@ -32,7 +34,10 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
         {
             _logger = logger;
         }
-    }    [Authorize]    public class AuthorizeController : BaseController
+    }
+
+    [Authorize]
+    public class AuthorizeController : BaseController
     {
         public AuthorizeController(ILogger logger) : base(logger)
         {
@@ -61,4 +66,4 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
             }
         }
     }
-}
+}

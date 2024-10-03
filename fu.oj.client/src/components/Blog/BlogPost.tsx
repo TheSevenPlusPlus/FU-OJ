@@ -29,20 +29,22 @@ export default function BlogPost() {
 
     useEffect(() => {
         const fetchData = async () => {
+            setLoading(true);  // Show loading spinner
             try {
-                const userData = JSON.parse(localStorage.getItem("user") || "{}");
-                const userName = userData?.userName;
+                // Fetch the blog details first
+                const blogResponse = await getBlogById(blog_id);
+                const blogData = blogResponse.data;
+                setBlogPost(blogData);
 
-                const [fetchedProfile, blogResponse, commentsResponse] = await Promise.all([
-                    getProfile(userName),
-                    getBlogById(blog_id),
-                    getBlogCommentById(blog_id, pageIndex, pageSize)
-                ]);
-
+                // Now fetch the user profile based on the blog's `userName`
+                const fetchedProfile = await getProfile(blogData.userName);
                 setUser(fetchedProfile);
-                setBlogPost(blogResponse.data);
+
+                // Fetch the comments for the blog post with pagination
+                const commentsResponse = await getBlogCommentById(blog_id, pageIndex, pageSize);
                 setComments(commentsResponse.data.comments);
                 setTotalPages(commentsResponse.data.totalPages);
+
             } catch (err) {
                 setError("Failed to load data.");
                 console.error(err);
@@ -51,6 +53,7 @@ export default function BlogPost() {
             }
         };
 
+        // Fetch data when blog_id, pageIndex, or pageSize change
         fetchData();
     }, [blog_id, pageIndex, pageSize]);
 

@@ -14,10 +14,10 @@ const sanitizeProfileData = (profileData: UpdateUserProfile) => {
 };
 
 // Fetches profile based on userName
-export const getProfile = async (userName: string) => {
+export const getProfile = async (userName: string | null) => {
     try {
         const response = await apiClient.get(`/Profile/get/${userName}`);
-        return response.data;
+        return response == null ? null : response.data;
     } catch (error) {
         console.error("Error fetching profile:", error);
         throw error; // Rethrow so the caller can handle it
