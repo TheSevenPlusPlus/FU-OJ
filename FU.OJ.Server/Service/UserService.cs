@@ -1,8 +1,7 @@
-﻿using Exceptions;
-using FU.OJ.Server.DTOs;
+﻿using FU.OJ.Server.DTOs;
 using FU.OJ.Server.DTOs.User.Request;using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const;
-using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Identity;using Microsoft.EntityFrameworkCore;
+using FU.OJ.Server.Infra.Const.Authorize;
+using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Identity;using Microsoft.EntityFrameworkCore;
 
 namespace FU.OJ.Server.Service{    public interface IUserService
     {
@@ -78,39 +77,23 @@ namespace FU.OJ.Server.Service{    public interface IUserService
         public async Task<User> GetUserByIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new NotFoundException(ErrorMessage.NotFound);
-            }
             return user;
         }
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user == null)
-            {
-                //throw new Exception("User with this email doesn't exist");
-                return null;
-            }
             return user;
         }
 
         public async Task<User> GetUserByPhoneAsync(string phoneNumber)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
-            if (user == null)
-            {
-                //throw new Exception("User with this phone number doesn't exist");
-                return null;
-            }
             return user;
         }
-        public async Task<User?> GetUserByUsernameAsync(string userName) // Added Async suffix for consistency
+        public async Task<User> GetUserByUsernameAsync(string userName) // Added Async suffix for consistency
         {
             var user = await _userManager.FindByNameAsync(userName);
-            if (user == null)
-                throw new NotFoundException(ErrorMessage.NotFound);
             return user;
         }
         //Don't allow change UserName
@@ -141,21 +124,22 @@ namespace FU.OJ.Server.Service{    public interface IUserService
                 var result = await _userManager.DeleteAsync(user);
                 return result.Succeeded;
             }
-            throw new Exception("User isn't exist");
+            throw new Exception(ErrorMessage.UserNotFound);
 
         }
 
         public async Task<bool> EditUserRoleAsync(string userName, string role)
         {
-            if (!(role == "Admin" || role == "User" || role == "Manager"))
+            if (!(role == RoleStatic.RoleAdmin || role == RoleStatic.RoleUser || role == RoleStatic.RoleManager))
             {
-                throw new ArgumentException("Invalid role");
+                throw new ArgumentException(ErrorMessage.InvalidRole);
             }
+
 
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                throw new Exception("User isn't exist");
+                throw new Exception(ErrorMessage.UserNotFound);
             }
 
             var currentRoles = await _userManager.GetRolesAsync(user);
@@ -180,7 +164,7 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             var user = await _userManager.FindByNameAsync(changePasswordRequest.UserName);
             if (user == null)
             {
-                throw new Exception("User not found");
+                throw new Exception(ErrorMessage.UserNotFound);
             }
 
             var result = await _userManager.ChangePasswordAsync(user, changePasswordRequest.CurrentPassword, changePasswordRequest.NewPassword);

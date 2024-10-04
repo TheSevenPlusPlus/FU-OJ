@@ -55,14 +55,14 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
         }
     }, [submitError]);
 
-    const handleLogin = async (username: string, password: string) => {
+    const handleLogin = async (identifier: string, password: string) => {
         try {
-            const data = await loginUser({ username, password });
+            const data = await loginUser({ identifier, password });
             console.log("Login successful:", data);
             localStorage.setItem("user", JSON.stringify(data));
             navigate("/problems");
             navigate(0); // Reload
-        } catch (error: any) { // Thêm kiểu any cho error để tránh lỗi
+        } catch (error: any) {
             console.error("Login failed:", error.response?.data || error.message);
             setSubmitError("Login failed. Please check your credentials and try again.");
         }
@@ -80,7 +80,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
             localStorage.setItem("user", JSON.stringify(data));
             navigate("/profile");
             navigate(0); // Reload
-        } catch (error: any) { // Thêm kiểu any cho error để tránh lỗi
+        } catch (error: any) {
             console.error("Registration failed:", error.response?.data || error.message);
             setSubmitError("Registration failed. Please try again later.");
         }

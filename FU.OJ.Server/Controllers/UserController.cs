@@ -18,22 +18,27 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            var existingUserByUserName = await _userService.GetUserByUsernameAsync(createUserRequest.UserName);
+            if (existingUserByUserName != null)
+            {
+                return BadRequest("Tên người dùng đã tồn tại.");
+            }
 
             var existingUserByEmail = await _userService.GetUserByEmailAsync(createUserRequest.Email);
             if (existingUserByEmail != null)
             {
-                return BadRequest("Email is already in use.");
+                return BadRequest("Email đã tồn tại.");
             }
 
             var existingUserByPhone = await _userService.GetUserByPhoneAsync(createUserRequest.PhoneNumber);
             if (existingUserByPhone != null)
             {
-                return BadRequest("Phone number is already in use.");
+                return BadRequest("Số điện thoại đã tồn tại.");
             }
 
             var newUser = await _userService.CreateUserAsync(createUserRequest);
             if (newUser == null)
-                return StatusCode(500, "User creation failed");
+                return StatusCode(500, "Tạo người dùng thất bại");
 
             var userResponse = new UserView
             {
@@ -66,35 +71,12 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
                 return HandleException(ex);
             }
         }
-        //Duplicate route and param with GetUserByUserName
-        //[HttpGet(UserRoute.Action.GetById)]
-        //public async Task<IActionResult> GetUserById(string id)
-        //{
-        //    var user = await _userService.GetUserByIdAsync(id);
-        //    if (user == null) return NotFound("User not found");
-
-        //    var userResponse = new UserView
-        //    {
-        //        UserName = user.UserName,
-        //        Email = user.Email,
-        //        PhoneNumber = user.PhoneNumber,
-        //        FullName = user.FullName,
-        //        City = user.City,
-        //        Description = user.Description,
-        //        FacebookLink = user.FacebookLink,
-        //        GithubLink = user.GithubLink,
-        //        School = user.School,
-        //        AvatarUrl = user.AvatarUrl,
-        //        CreatedAt = user.CreatedAt,
-        //    };
-        //    return Ok(userResponse);
-        //}
 
         [HttpGet(UserRoute.Action.GetDetail)]
         public async Task<IActionResult> GetUserByUserName()
         {
             var user = await _userService.GetUserByIdAsync(UserHeader.UserId);
-            if (user == null) return null;
+            if (user == null) return NotFound("Không tìm thấy người dùng");
             var userResponse = new UserView
             {
                 UserName = user.UserName,
@@ -120,17 +102,17 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
             var existingUserByEmail = await _userService.GetUserByEmailAsync(updateUserRequest.Email);
             if (existingUserByEmail != null && existingUserByEmail.UserName != updateUserRequest.UserName)
             {
-                return BadRequest("Email is already in use.");
+                return BadRequest("Email đã tồn tại.");
             }
 
             var existingUserByPhone = await _userService.GetUserByPhoneAsync(updateUserRequest.PhoneNumber);
             if (existingUserByPhone != null && existingUserByPhone.UserName != updateUserRequest.UserName)
             {
-                return BadRequest("Phone number is already in use.");
+                return BadRequest("Số điện thoại đã tồn tại.");
             }
 
             var user = await _userService.UpdateUserAsync(updateUserRequest);
-            if (user == null) return NotFound("User not found");
+            if (user == null) return NotFound("Không tìm thấy người dùng");
 
             var userResponse = new UserView
             {

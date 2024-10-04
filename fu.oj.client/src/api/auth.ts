@@ -21,7 +21,7 @@ export const registerUser = async (userData) => {
 export const loginUser = async (credentials) => {
     try {
         const response = await apiClient.post("/auth/login", {
-            username: credentials.username,
+            identifier: credentials.identifier,
             password: credentials.password,
         });
         return response.data; // Return the response data

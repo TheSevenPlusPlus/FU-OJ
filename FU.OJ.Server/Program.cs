@@ -1,6 +1,7 @@
 using FU.OJ.Server;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.DBInitializer;
+using FU.OJ.Server.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +38,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 // Kích hoạt CORS
 app.UseCors("CORS");
