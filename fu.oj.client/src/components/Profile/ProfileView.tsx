@@ -42,8 +42,11 @@ export default function ProfileView() {
     const [error, setError] = useState<string | null>(null);
     const [userNotFound, setUserNotFound] = useState(false);
     const [isOwnProfile, setIsOwnProfile] = useState(false);
+
     const { userName: urlUserName } = useParams<{ userName?: string }>();
     const navigate = useNavigate();
+    const userData = JSON.parse(localStorage.getItem("user") || "{}");
+    const localUserName = userData?.userName;
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -56,39 +59,45 @@ export default function ProfileView() {
 
     useEffect(() => {
         const fetchProfileData = async () => {
-            try {
-                const fetchedProfile = await getProfile(urlUserName);
-                if (!fetchedProfile) {
-                    setUserNotFound(true);
-                    setLoading(false);
-                    return;
-                }
-                const userRole = await getRole(urlUserName);
+            const targetUserName = urlUserName || localUserName;
+            if (targetUserName) {
+                try {
+                    const fetchedProfile = await getProfile(targetUserName);
+                    if (!fetchedProfile) {
+                        setUserNotFound(true);
+                        setLoading(false);
+                        return;
+                    }
+                    const userRole = await getRole();
 
-                // Merge userRole into profile
-                const updatedProfile = {
-                    ...fetchedProfile,
-                    role: userRole,
-                };
-                setProfile(updatedProfile);
-                setIsOwnProfile(urlUserName == null);
-            } catch (err) {
-                if (
-                    (err as any).response &&
-                    (err as any).response.status === 404
-                ) {
-                    setUserNotFound(true);
-                } else {
-                    setError("Failed to load profile data.");
-                    console.error(err);
+                    // Merge userRole into profile
+                    const updatedProfile = {
+                        ...fetchedProfile,
+                        role: userRole,
+                    };
+                    setProfile(updatedProfile);
+                    setIsOwnProfile(targetUserName === localUserName);
+                } catch (err) {
+                    if (
+                        (err as any).response &&
+                        (err as any).response.status === 404
+                    ) {
+                        setUserNotFound(true);
+                    } else {
+                        setError("Failed to load profile data.");
+                        console.error(err);
+                    }
+                } finally {
+                    setLoading(false);
                 }
-            } finally {
+            } else {
+                setError("No username found in URL or local storage.");
                 setLoading(false);
             }
         };
 
         fetchProfileData();
-    }, [urlUserName]);
+    }, [urlUserName, localUserName]);
 
     if (loading) {
         return <div>Loading...</div>;
