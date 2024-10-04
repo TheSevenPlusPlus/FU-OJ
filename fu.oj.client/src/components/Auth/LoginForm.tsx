@@ -4,28 +4,31 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormInput } from "./FormInput";
 import { SubmitButton } from "./SubmitButton";
+import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 interface LoginFormProps {
-    onSubmit: (username: string, password: string) => Promise<void>;
+    onSubmit: (identifier: string, password: string) => Promise<void>;
     submitError: string | null;
 }
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, submitError }) => {
-    const [username, setUsername] = useState("");
+    const [identifier, setIdentifier] = useState("");
     const [password, setPassword] = useState("");
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (validateForm()) {
-            onSubmit(username, password);
+            onSubmit(identifier, password);
         }
     };
 
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
-        if (!username.trim()) newErrors.username = "Username is required";
+        if (!identifier.trim()) newErrors.identifier = "Username or Email is required";
         if (!password) newErrors.password = "Password is required";
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -35,6 +38,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, submitError }) =
         navigate("/forgotpassword");
     };
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -42,36 +49,54 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, submitError }) =
                 <CardDescription>Enter your credentials to access your account.</CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-4">
                     {submitError && (
                         <Alert variant="destructive">
                             <AlertDescription>{submitError}</AlertDescription>
                         </Alert>
                     )}
                     <FormInput
-                        id="login-username"
-                        name="username"
-                        label="Username"
+                        id="login-identifier"
+                        name="identifier"
+                        label="Username or Email"
                         type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        error={errors.username}
+                        value={identifier}
+                        onChange={(e) => setIdentifier(e.target.value)}
+                        error={errors.identifier}
                     />
-                    <FormInput
-                        id="login-password"
-                        name="password"
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        error={errors.password}
-                    />
+                    <div className="relative">
+                        <FormInput
+                            id="login-password"
+                            name="password"
+                            label="Password"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            error={errors.password}
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-2 top-8 h-8 w-8 px-0"
+                            onClick={togglePasswordVisibility}
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                            ) : (
+                                <Eye className="h-4 w-4" />
+                            )}
+                            <span className="sr-only">
+                                {showPassword ? "Hide password" : "Show password"}
+                            </span>
+                        </Button>
+                    </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
                     <SubmitButton>Login</SubmitButton>
-                    <SubmitButton variant="link" onClick={handleForgotPassword}>
+                    <Button variant="link" onClick={handleForgotPassword}>
                         Forgot Password?
-                    </SubmitButton>
+                    </Button>
                 </CardFooter>
             </form>
         </Card>

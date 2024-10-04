@@ -3,6 +3,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FormInput } from "./FormInput";
 import { SubmitButton } from "./SubmitButton";
+import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react";
 
 interface RegisterFormProps {
     onSubmit: (userData: { username: string; email: string; password: string; fullName: string }) => Promise<void>;
@@ -19,6 +21,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, submitErro
         fullName: "",
     });
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -69,6 +73,14 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, submitErro
         }
     };
 
+    const togglePasswordVisibility = (field: 'password' | 'confirmPassword') => {
+        if (field === 'password') {
+            setShowPassword(!showPassword);
+        } else {
+            setShowConfirmPassword(!showConfirmPassword);
+        }
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -76,7 +88,7 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, submitErro
                 <CardDescription>Create a new account to get started.</CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-4">
                     {submitError && (
                         <Alert variant="destructive">
                             <AlertDescription>{submitError}</AlertDescription>
@@ -100,24 +112,60 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, submitErro
                         onChange={handleInputChange}
                         error={errors.email}
                     />
-                    <FormInput
-                        id="register-password"
-                        name="password"
-                        label="Password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        error={errors.password}
-                    />
-                    <FormInput
-                        id="register-confirm-password"
-                        name="confirmPassword"
-                        label="Confirm Password"
-                        type="password"
-                        value={formData.confirmPassword}
-                        onChange={handleInputChange}
-                        error={errors.confirmPassword}
-                    />
+                    <div className="relative">
+                        <FormInput
+                            id="register-password"
+                            name="password"
+                            label="Password"
+                            type={showPassword ? "text" : "password"}
+                            value={formData.password}
+                            onChange={handleInputChange}
+                            error={errors.password}
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-2 top-8 h-8 w-8 px-0"
+                            onClick={() => togglePasswordVisibility('password')}
+                        >
+                            {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                            ) : (
+                                <Eye className="h-4 w-4" />
+                            )}
+                            <span className="sr-only">
+                                {showPassword ? "Hide password" : "Show password"}
+                            </span>
+                        </Button>
+                    </div>
+                    <div className="relative">
+                        <FormInput
+                            id="register-confirm-password"
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={formData.confirmPassword}
+                            onChange={handleInputChange}
+                            error={errors.confirmPassword}
+                        />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="absolute right-2 top-8 h-8 w-8 px-0"
+                            onClick={() => togglePasswordVisibility('confirmPassword')}
+                        >
+                            {showConfirmPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                            ) : (
+                                <Eye className="h-4 w-4" />
+                            )}
+                            <span className="sr-only">
+                                {showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                            </span>
+                        </Button>
+                    </div>
                     <FormInput
                         id="register-full-name"
                         name="fullName"

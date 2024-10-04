@@ -14,9 +14,11 @@ namespace FU.OJ.Server.Controllers{    [Route("Profile")]
         {
             try
             {
-                var user = await _userService.GetUserByUsernameAsync(username == null ? UserHeader.UserName : username);
-                if (user == null) return null;
-                var userResponse = new UserView
+                var user = await _userService.GetUserByUsernameAsync(username ?? UserHeader.UserName);
+                if (user == null)
+                    throw new Exception("User not found.");
+
+                var userResponse = new UserView
                 {
                     UserName = user.UserName,
                     Email = user.Email,
@@ -42,9 +44,11 @@ namespace FU.OJ.Server.Controllers{    [Route("Profile")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-            var updatedUser = await _userService.UpdateUserAsync(updateUserRequest);
-            if (updatedUser == null) return NotFound("User not found");
+                throw new Exception("Invalid model state.");
+
+            var updatedUser = await _userService.UpdateUserAsync(updateUserRequest);
+            if (updatedUser == null)
+                throw new Exception("User not found.");
             var userResponse = new UserView
             {
                 UserName = updatedUser.UserName,

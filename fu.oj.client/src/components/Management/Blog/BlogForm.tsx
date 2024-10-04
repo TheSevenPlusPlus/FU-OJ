@@ -11,7 +11,7 @@ interface BlogFormProps {
     blog?: BlogDetail | null;
 }
 
-const BlogForm: React.FC<BlogFormProps> = ({ blog: initialBlog }) => {
+export default function BlogForm({ blog: initialBlog }: BlogFormProps) {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [blog, setBlog] = useState<BlogDetail | null>(initialBlog || null);
@@ -55,10 +55,10 @@ const BlogForm: React.FC<BlogFormProps> = ({ blog: initialBlog }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (title.length === 0 || title.length > 100) {
+        if (title.length < 3 || title.length > 100) {
             toast({
                 title: "Validation Error",
-                description: "Title is required and must be less than 100 characters.",
+                description: "Title must be between 3 and 100 characters.",
                 variant: "destructive",
             });
             return;
@@ -67,7 +67,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blog: initialBlog }) => {
         if (content.length < 10) {
             toast({
                 title: "Validation Error",
-                description: "Content is required and must be at least 10 characters long.",
+                description: "Content must be at least 10 characters long.",
                 variant: "destructive",
             });
             return;
@@ -87,7 +87,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blog: initialBlog }) => {
                     title,
                     content,
                 };
-                const response = await updateBlog(updateData);
+                await updateBlog(updateData);
                 toast({
                     title: "Success",
                     description: "Blog updated successfully.",
@@ -98,7 +98,7 @@ const BlogForm: React.FC<BlogFormProps> = ({ blog: initialBlog }) => {
                     content,
                     userName: userName,
                 };
-                const response = await createBlog(createData);
+                await createBlog(createData);
                 toast({
                     title: "Success",
                     description: "Blog created successfully.",
@@ -114,60 +114,56 @@ const BlogForm: React.FC<BlogFormProps> = ({ blog: initialBlog }) => {
         }
     };
 
-    const handleViewBlog = () => {
-        if (blog) {
-            navigate(`/blog/${blog.id}`);
-        }
-    };
-
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div className="mt-8 flex justify-center">Loading...</div>;
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-4">
-            <h2 className="text-xl font-bold">{blog ? 'Edit Blog' : 'Create New Blog'}</h2>
-            <div>
-                <label htmlFor="title" className="block text-sm font-medium text-gray-700">
-                    Title
-                </label>
-                <Input
-                    id="title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                    maxLength={100}
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                    Title is required and must be less than 100 characters.
-                </p>
-            </div>
-            <div>
-                <label htmlFor="content" className="block text-sm font-medium text-gray-700">
-                    Content
-                </label>
-                <Textarea
-                    id="content"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    required
-                    rows={10}
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                    Content is required and must be at least 10 characters long.
-                </p>
-            </div>
-            <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={() => navigate('/manager/blogs')}>
-                    Cancel
-                </Button>
-                
-                <Button type="submit">
-                    {blog ? 'Update' : 'Create'}
-                </Button>
-            </div>
-        </form>
+        <div className="mt-8 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+            <form onSubmit={handleSubmit} className="space-y-6">
+                <h2 className="text-2xl font-bold text-center mb-6">{blog ? 'Edit Blog' : 'Create New Blog'}</h2>
+                <div>
+                    <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                        Title
+                    </label>
+                    <Input
+                        id="title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        required
+                        minLength={3}
+                        maxLength={100}
+                        className="w-full"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">
+                        Title must be between 3 and 100 characters.
+                    </p>
+                </div>
+                <div>
+                    <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
+                        Content
+                    </label>
+                    <Textarea
+                        id="content"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        required
+                        rows={10}
+                        className="w-full"
+                    />
+                    <p className="text-sm text-gray-500 mt-1">
+                        Content must be at least 10 characters long.
+                    </p>
+                </div>
+                <div className="flex justify-end space-x-2">
+                    <Button type="button" variant="outline" onClick={() => navigate('/manager/blogs')}>
+                        Cancel
+                    </Button>
+                    <Button type="submit">
+                        {blog ? 'Update' : 'Create'}
+                    </Button>
+                </div>
+            </form>
+        </div>
     );
-};
-
-export default BlogForm;
+}

@@ -59,7 +59,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
         {
             try
             {
-                var updated = await _service.UpdateAsync(UserHeader.Email, request);
+                var updated = await _service.UpdateAsync(UserHeader.UserId, request);
                 if (!updated)
                     return NotFound();
                 return NoContent();

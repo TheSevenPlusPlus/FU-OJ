@@ -32,7 +32,6 @@ const UpdateProblem: React.FC = () => {
         exampleOutput: "",
         timeLimit: "",
         memoryLimit: "",
-        userName: "",
         difficulty: "Easy",
     });
     const [testCaseFile, setTestCaseFile] = useState<File | null>(null);
@@ -56,7 +55,6 @@ const UpdateProblem: React.FC = () => {
                         exampleOutput: problem.exampleOutput,
                         timeLimit: problem.timeLimit.toString(),
                         memoryLimit: problem.memoryLimit.toString(),
-                        userName: "", // This should be set from the current user's context
                         difficulty: problem.difficulty,
                     });
                 }

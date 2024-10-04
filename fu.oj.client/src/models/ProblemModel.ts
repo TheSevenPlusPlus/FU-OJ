@@ -22,7 +22,6 @@ export interface UpdateProblemModel {
     exampleOutput: string;
     timeLimit: string;
     memoryLimit: string;
-    userName: string;
     difficulty: string;
 }
 
