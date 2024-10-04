@@ -15,18 +15,22 @@ namespace FU.OJ.Server.Infra.Models{    public class ContestParticipant : Cont
         public string? UserId { get; set; }
         [Comment("Id contest")]
         public string? ContestId { get; set; }
+        [Comment("Mã contest")]
+        public string? ContestCode { get; set; }
         [Comment("Điểm của người tham gia")]
         public double Score { get; set; }
     }
-    public class ContestParticipantConfiguration : IEntityTypeConfiguration<ContestParticipant>
+
+    public class ContestParticipantConfiguration : IEntityTypeConfiguration<ContestParticipant>
     {
         public void Configure(EntityTypeBuilder<ContestParticipant> builder)
         {
             builder.HasOne(cp => cp.User)
-               .WithMany()
-               .HasForeignKey(cp => cp.UserId)
-               .OnDelete(DeleteBehavior.Cascade);
-            builder.HasOne(cp => cp.Contest)
+                   .WithMany(u => u.ContestParticipants)
+                   .HasForeignKey(cp => cp.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(cp => cp.Contest)
                    .WithMany(c => c.ContestParticipants)
                    .HasForeignKey(cp => cp.ContestId)
                    .OnDelete(DeleteBehavior.Cascade);

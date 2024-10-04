@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace FU.OJ.Server.Service{
     public interface ISubmissionService
     {
-        Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool base64Encoded, bool wait); //
+        Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool? base64Encoded = false, bool? wait = true); //
         Task<SubmissionView> GetByIdAsync(string userId, string id);//
         Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, bool? isMine = false);//
     }
@@ -27,7 +27,7 @@ namespace FU.OJ.Server.Service{
             _userService = userService;
             _generalService = generalService;
         }
-        public async Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool base64Encoded, bool wait)
+        public async Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool? base64Encoded = false, bool? wait = true)
         {
             var problem = await _context.Problems.AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == request.ProblemId);

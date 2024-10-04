@@ -27,7 +27,7 @@ namespace FU.OJ.Server
             services.AddScoped<IBlogCommentService, BlogCommentService>();
             services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddScoped<IEmailSender, EmailSender>();
-
+            services.AddScoped<IContestService, ContestService>();
             services.AddIdentity<User, IdentityRole>(options =>
             {
                 // Thay đổi thời gian hết hạn của reset token

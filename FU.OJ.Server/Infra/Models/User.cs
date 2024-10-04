@@ -14,6 +14,8 @@ namespace FU.OJ.Server.Infra.Models{    public class User : IdentityUser
         public ICollection<Problem> Problems { get; set; } = new List<Problem>();
         public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
         public ICollection<ProblemUser> ProblemsUsers { get; set; } = new List<ProblemUser>();
+        public ICollection<ContestParticipant> ContestParticipants { get; set; } = new List<ContestParticipant>();
+        public ICollection<Contest> Contests { get; set; } = new List<Contest>();
     }
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
@@ -30,6 +32,21 @@ namespace FU.OJ.Server.Infra.Models{    public class User : IdentityUser
             builder.HasMany(u => u.Blogs)
                    .WithOne(b => b.User)
                    .HasForeignKey(b => b.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(u => u.ProblemsUsers)
+                    .WithOne(pu => pu.User)
+                   .HasForeignKey(pu => pu.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(u => u.ContestParticipants)
+                    .WithOne(pu => pu.User)
+                   .HasForeignKey(pu => pu.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(u => u.Contests)
+                    .WithOne(pu => pu.User)
+                   .HasForeignKey(pu => pu.OrganizationUserId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }

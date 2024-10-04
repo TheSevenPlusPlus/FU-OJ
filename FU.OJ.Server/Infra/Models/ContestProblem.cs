@@ -15,10 +15,14 @@ namespace FU.OJ.Server.Infra.Models
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
-        [Comment("Id người tham gia")]
-        public string? ContestId { get; set; }
         [Comment("Id contest")]
-        public string? ProblemId { get; set; }
+        public string? ContestId { get; set; }
+        [Comment("Mã bài tập")]
+        public string? ContestCode { get; set; }
+        [Comment("Id bài tập")]
+        public string ProblemId { get; set; } = null!;
+        [Comment("Mã bài tập")]
+        public string ProblemCode { get; set; } = null!;
         [Comment("Điểm của người tham gia")]
         public int Order { get; set; }
         [Comment("Số lần nộp tối đa")]
@@ -32,14 +36,14 @@ namespace FU.OJ.Server.Infra.Models
         public void Configure(EntityTypeBuilder<ContestProblem> builder)
         {
             builder.HasOne(cp => cp.Contest)
-               .WithMany()
-               .HasForeignKey(cp => cp.ContestId)
-               .OnDelete(DeleteBehavior.Cascade);
+                   .WithMany(c => c.ContestProblems)
+                   .HasForeignKey(cp => cp.ContestId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(cp => cp.Problem)
-               .WithMany()
-               .HasForeignKey(cp => cp.ProblemId)
-               .OnDelete(DeleteBehavior.Cascade);
+                   .WithMany(p => p.ContestProblems)
+                   .HasForeignKey(cp => cp.ProblemId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

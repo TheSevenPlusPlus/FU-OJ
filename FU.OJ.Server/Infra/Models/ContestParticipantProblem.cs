@@ -16,9 +16,11 @@ namespace FU.OJ.Server.Infra.Models
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
         [Comment("Id của người tham gia contest")]
-        public string? ContestParticipantId { get; set; }
+        public string ContestParticipantId { get; set; } = null!;
         [Comment("Id của bài trong contest")]
-        public string? ContestProblemId { get; set; }
+        public string ContestProblemId { get; set; } = null!;
+        [Comment("Mã của bài trong contest")]
+        public string ContestProblemCode { get; set; } = null!;
         [Comment("Số lần nộp một bài của một người tham gia contest")]
         public int SubmissionCount { get; set; }
     }
