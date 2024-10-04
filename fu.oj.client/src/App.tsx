@@ -27,7 +27,6 @@ import BlogForm from "./components/Management/Blog/BlogForm";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App: React.FC = () => {
@@ -146,7 +145,6 @@ const App: React.FC = () => {
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </main>
-                <ToastContainer position="bottom-right" autoClose={3000} />
             </div>
         </Router>
     );
