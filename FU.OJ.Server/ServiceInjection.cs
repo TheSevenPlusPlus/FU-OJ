@@ -61,6 +61,7 @@ namespace FU.OJ.Server
                         IssuerSigningKey = new SymmetricSecurityKey(
                             Encoding.UTF8.GetBytes(configuration["JWT:SigningKey"]) // Sử dụng configuration
                         ),
+                        ValidateLifetime = true
                     };
                 });
 
@@ -72,35 +73,34 @@ namespace FU.OJ.Server
 
             services.AddSwaggerGen(option =>
             {
-                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
-                option.AddSecurityDefinition(
-                    "Bearer",
-                    new OpenApiSecurityScheme
+                option.SwaggerDoc("v1", new OpenApiInfo { Title = "FU.OJ Server API", Version = "v1" });
+
+                // Thêm định nghĩa cho JWT Bearer
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Vui lòng nhập token theo định dạng Bearer {token}",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT"
+                });
+
+                // Thêm yêu cầu security
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
                     {
-                        In = ParameterLocation.Header,
-                        Description = "Please enter a valid token",
-                        Name = "Authorization",
-                        Type = SecuritySchemeType.Http,
-                        BearerFormat = "JWT",
-                        Scheme = "Bearer",
-                    }
-                );
-                option.AddSecurityRequirement(
-                    new OpenApiSecurityRequirement
-                    {
+                        new OpenApiSecurityScheme
                         {
-                            new OpenApiSecurityScheme
+                            Reference = new OpenApiReference
                             {
-                                Reference = new OpenApiReference
-                                {
-                                    Type = ReferenceType.SecurityScheme,
-                                    Id = "Bearer",
-                                },
-                            },
-                            new string[] { }
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
                         },
+                        Array.Empty<string>()
                     }
-                );
+                });
             });
         }
     }

@@ -1,4 +1,4 @@
-using FU.OJ.Server.Controllers;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
+﻿using FU.OJ.Server.Controllers;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
 
 [Route(GeneralRoute.INDEX)][ApiController]
 [AllowAnonymous]public class GeneralController : AuthorizeController{    private readonly IGeneralService _generalService;
@@ -28,5 +28,12 @@ using FU.OJ.Server.Controllers;using FU.OJ.Server.Infra.Const.Route;using FU.O
         {
             return NotFound(ex.Message);
         }
+    }
+    [Authorize]
+    [HttpGet("token-info")]
+    public IActionResult GetTokenInfo()
+    {
+        var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
+        return Ok(claims); // Trả về tất cả các claims từ token
     }
 }

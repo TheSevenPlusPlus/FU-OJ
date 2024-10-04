@@ -56,9 +56,6 @@ app.MapControllers();
 // Seed db
 SeedDatabase(app);
 
-// Fallback to index.html cho single-page applications (SPA)
-app.MapFallbackToFile("/index.html");
-
 app.Run();
 
 void SeedDatabase(WebApplication app) // Truyền app vào SeedDatabase
