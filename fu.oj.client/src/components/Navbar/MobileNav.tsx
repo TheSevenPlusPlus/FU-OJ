@@ -109,6 +109,13 @@ const MobileNav: React.FC<MobileNavProps> = ({
                                         Blog Management
                                     </Link>
                                     <Link
+                                        to="/manager/contests"
+                                        className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"
+                                        onClick={onToggle}
+                                    >
+                                        Contest Management
+                                    </Link>
+                                    <Link
                                         to="/manager/users"
                                         className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"
                                         onClick={onToggle}

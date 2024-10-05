@@ -1,11 +1,16 @@
-﻿namespace FU.OJ.Server.DTOs.Contest.Request
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FU.OJ.Server.DTOs.Contest.Request
 {
     public class CreateContestProblemRequest
     {
-        public string ProblemId { get; set; } = null!;
+        [Required]
         public string ProblemCode { get; set; } = null!;
-        public string UserId { get; set; } = null!;
+        [Required]
         public int Order { get; set; }
+        [Required]
         public double Point { get; set; }
+        [Required]
+        public int MaximumSubmission { get; set; }
     }
 }

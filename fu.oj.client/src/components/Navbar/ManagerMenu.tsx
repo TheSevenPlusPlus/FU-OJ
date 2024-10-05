@@ -34,6 +34,12 @@ const ManagerMenu: React.FC<ManagerMenuProps> = ({ isManager }) => {
                             <span>Blog</span>
                         </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <Link to="/manager/contests" className="flex items-center">
+                            <BookOpen className="mr-2 h-4 w-4" />
+                            <span>Contest</span>
+                        </Link>
+                    </DropdownMenuItem>
                     {!isManager && (
                         <DropdownMenuItem asChild>
                             <Link to="/manager/users" className="flex items-center">

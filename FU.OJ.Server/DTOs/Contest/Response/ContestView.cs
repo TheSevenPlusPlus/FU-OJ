@@ -12,9 +12,10 @@ namespace FU.OJ.Server.DTOs.Contest.Response
         public string? Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public string OrganizationUserId { get; set; } = null!;
+        public string OrganizationId { get; set; } = null!;
+        public string OrganizationName { get; set; } = null!;
         public string? Rules { get; set; }
-        public ICollection<ContestParticipant> Participants { get; set; } = new List<ContestParticipant>();
-        public ICollection<ContestProblem> Problems { get; set; } = new List<ContestProblem>();
+        public ICollection<ContestParticipantView> Participants { get; set; } = new List<ContestParticipantView>();
+        public ICollection<ContestProblemView> Problems { get; set; } = new List<ContestProblemView>();
     }
 }

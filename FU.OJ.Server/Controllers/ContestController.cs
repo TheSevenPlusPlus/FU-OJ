@@ -4,6 +4,7 @@ using FU.OJ.Server.DTOs.Blog.Request;
 using FU.OJ.Server.DTOs.Contest.Request;
 using FU.OJ.Server.Infra.Const.Authorize;
 using FU.OJ.Server.Infra.Const.Route;
+using FU.OJ.Server.Infra.Models;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,7 @@ public class ContestController : AuthorizeController
     }
 
     [HttpPost(ContestRoute.Action.Create)]
+    [Authorize(Roles = RoleAuthorize.AdminManager)]
     public async Task<IActionResult> CreateContestAsync([FromBody] CreateContestRequest request)
     {
         try
@@ -34,11 +36,11 @@ public class ContestController : AuthorizeController
     }
 
     [HttpGet(ContestRoute.Action.GetByCode)]
-    public async Task<IActionResult> GetContestByCodeAsync([FromRoute] string constestCode)
+    public async Task<IActionResult> GetContestByCodeAsync([FromRoute] string contestCode)
     {
         try
         {
-            var contest = await _contestService.GetContestInfoAsync(constestCode);
+            var contest = await _contestService.GetContestInfoAsync(contestCode);
             return Ok(contest);
         }
         catch (Exception ex)
@@ -76,12 +78,57 @@ public class ContestController : AuthorizeController
     }
 
     [HttpGet(ContestRoute.Action.GetAll)]
-    public async Task<IActionResult> GetAllContestAsync()
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAllContestAsync([FromQuery] Paging query, bool? isMine = false)
     {
         try
         {
-            var list = await _contestService.GetListContestsAsync();
+            var(contests, totalPages) = await _contestService.GetListContestsAsync(query, UserHeader.UserId, isMine);
+            return Ok(new {contests, totalPages});
+        }
+        catch (Exception ex)
+        {
+            return HandleException(ex);
+        }
+    }
+
+    [HttpGet(ContestRoute.Action.GetContestProblem)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetContestProblem([FromRoute] string contestCode)
+    {
+        try
+        {
+            var list = await _contestService.GetContestProblemInfoByCodeAsync(contestCode, UserHeader.UserId);
             return Ok(list);
+        }
+        catch (Exception ex)
+        {
+            return HandleException(ex);
+        }
+    }
+
+    [HttpGet(ContestRoute.Action.GetContestParticipant)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetContestParticipant([FromRoute] string contestCode)
+    {
+        try
+        {
+            var list = await _contestService.GetContestParticipantInfoByCodeAsync(contestCode);
+            return Ok(list);
+        }
+        catch (Exception ex)
+        {
+            return HandleException(ex);
+        }
+    }
+
+    [HttpGet(ContestRoute.Action.IsRegistered)]
+    public async Task<IActionResult> IsRegistered([FromRoute] string contestCode)
+    {
+        try
+        {
+            var result = await _contestService.IsRegistered(contestCode, UserHeader.UserId);
+            return Ok(result);
         }
         catch (Exception ex)
         {

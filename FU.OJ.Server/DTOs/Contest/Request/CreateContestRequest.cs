@@ -18,7 +18,9 @@ namespace FU.OJ.Server.DTOs.Contest.Request
         [Required]
         public DateTime EndTime { get; set; }
         [Required]
-        public string OrganizationUserId { get; set; } = null!;
+        public string OrganizationId { get; set; } = null!;
+        [Required]
+        public DateTime CreatedAt { get; set; }
         public string? Rules { get; set; }
         [Required, MinLength(2)]
         public List<CreateContestProblemRequest> Problems { get; set; } = new List<CreateContestProblemRequest>();

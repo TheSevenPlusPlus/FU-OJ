@@ -22,10 +22,14 @@ namespace FU.OJ.Server.Infra.Models{    public class Contest : ContestProperti
         public DateTime StartTime { get; set; }
         [Comment("Thời gian kết thúc")]
         public DateTime EndTime { get; set; }
-        [Comment("Người tổ chức contest")]
-        public string OrganizationUserId { get; set; } = null!;
+        [Comment("ID người tổ chức contest")]
+        public string OrganizationId { get; set; } = null!;
+        [Comment("Tên Người tổ chức contest")]
+        public string OrganizationName { get; set; } = null!;
         [Comment("Luật lệ")]
         public string? Rules { get; set; }
+        [Comment("Thời gian tạo")]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 
     public class ContestConfiguration : IEntityTypeConfiguration<Contest>
@@ -34,7 +38,7 @@ namespace FU.OJ.Server.Infra.Models{    public class Contest : ContestProperti
         {
             builder.HasOne(c => c.User)
                    .WithMany(u => u.Contests)
-                   .HasForeignKey(c => c.OrganizationUserId)
+                   .HasForeignKey(c => c.OrganizationId)
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(c => c.ContestParticipants)

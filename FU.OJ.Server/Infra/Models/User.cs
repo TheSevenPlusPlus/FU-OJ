@@ -46,7 +46,7 @@ namespace FU.OJ.Server.Infra.Models{    public class User : IdentityUser
 
             builder.HasMany(u => u.Contests)
                     .WithOne(pu => pu.User)
-                   .HasForeignKey(pu => pu.OrganizationUserId)
+                   .HasForeignKey(pu => pu.OrganizationId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }

@@ -15,5 +15,7 @@ namespace FU.OJ.Server.Infra.Const{    public class ErrorMessage
         public const string ContestEnded = "Cuộc thi đã kết thúc";
         public const string MaxSubmissionReached = "Đã đạt đến giới hạn số lần nộp bài";
         public const string AlreadyRegistered = "Người dùng đã tham gia cuộc thi";
+        public const string NotRegistered = "Người dùng chưa tham gia cuộc thi";
+        public const string ContestNotStarted = "Contest chưa được khởi động";
     }
 }

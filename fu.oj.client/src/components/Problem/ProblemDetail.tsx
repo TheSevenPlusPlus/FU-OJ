@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -14,14 +14,42 @@ import { Progress } from "@/components/ui/progress";
 import { getProblemByCode } from "../../api/problem"; // Ensure this function is correctly imported
 import { Problem } from "../../models/ProblemModel";
 import TextWithNewLines from "../TextWithNewLines/TextWithNewLines";
+import { getContestByCode, registerContest, isRegisteredContest, getContestProblems } from "../../api/contest";  // Import the isRegisteredContest API
+import { ContestView } from "../../models/ContestModel";
+import { ContestNavbar } from "../Contest/ContestNavbar";
 
 export default function ProblemDetail() {
     const { problemCode } = useParams<{ problemCode: string }>();
     const [problem, setProblem] = useState<Problem | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const userData = JSON.parse(localStorage.getItem("user") || "{}");
-    const userName = userData?.userName;
+    const [contestCode, setContestCode] = useState<string | null>(null);
+    const [contest, setContest] = useState<ContestView | null>(null);
+    const [isRegistered, setIsRegistered] = useState<boolean>(false);
+    const [searchParams] = useSearchParams();
+
+
+    useEffect(() => {
+        const fetchContestProblems = async () => {
+            setLoading(true);
+            try {
+                const contestCode = searchParams.get("contestCode");
+                setContestCode(contestCode);
+
+                const _response = await getContestByCode(contestCode);
+                setContest(_response.data);
+
+                const registeredResponse = await isRegisteredContest(contestCode);
+                setIsRegistered(registeredResponse.data);  // Assuming API returns { isRegistered: boolean }
+            } catch (err) {
+                setError("Failed to fetch problems.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchContestProblems();
+    }, [contestCode, searchParams]);
 
     useEffect(() => {
         const fetchProblem = async () => {
@@ -69,6 +97,13 @@ export default function ProblemDetail() {
     };
 
     return (
+        <>
+        {isRegistered && <ContestNavbar />}
+
+        {/* Contest title section */}
+        <div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
+            <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
+        </div>
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
@@ -172,6 +207,7 @@ export default function ProblemDetail() {
                     </div>
                 </CardFooter>
             </Card>
-        </div>
+            </div>
+        </>
     );
 }

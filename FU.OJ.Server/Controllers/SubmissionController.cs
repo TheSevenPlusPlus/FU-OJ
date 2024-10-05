@@ -9,11 +9,11 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
         {
             _submissionService = submissionService;
         }        [HttpPost(SubmissionRoute.Action.Create)]
-        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request)
+        public async Task<IActionResult> SubmitCode([FromBody] CreateSubmissionRequest request, string contestCode)
         {
             try
             {
-                return Ok(await _submissionService.CreateAsync(UserHeader.UserId, request, false, true));
+                return Ok(await _submissionService.CreateAsync(UserHeader.UserId, request, contestCode, false, true));
             }
             catch (Exception ex)
             {
