@@ -11,8 +11,9 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
         private readonly ITokenService _tokenService;
         private readonly IEmailSender _emailSender;
         private readonly string _clientUrl; // Khai báo _clientUrl
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
-            ITokenService tokenService, ILogger<AuthController> logger, IEmailSender emailSender, IConfiguration configuration) : base(logger)
+
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager,
+           ITokenService tokenService, ILogger<AuthController> logger, IEmailSender emailSender, IConfiguration configuration) : base(logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -71,10 +72,10 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.UserName);
-            if (user == null) return Unauthorized("Invalid username");
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.Identifier || u.Email == loginRequest.Identifier);
+            if (user == null) return Unauthorized("Username/Email không tồn tại");
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, false);
-            if (!result.Succeeded) return Unauthorized("Invalid password");
+            if (!result.Succeeded) return Unauthorized("Password không đúng");
             var token = await _tokenService.CreateToken(user); // Sử dụng await cho phương thức không đồng bộ
 
             return Ok(

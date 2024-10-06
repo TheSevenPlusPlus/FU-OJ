@@ -29,8 +29,10 @@ export default function CreateUser() {
             await updateRole(userData.userName, role);
             showToast("User created successfully.", "success");
             setTimeout(() => navigate("/manager/users"), 1000);
-        } catch (err) {
-            showToast("Failed to create user. Please try again.", "error");
+        } catch (error) {
+            const errorMessage = error.response.data || "Failed to create user. Please try again.";
+            //console.log(errorMessage);
+            showToast(errorMessage, "error");
         }
     };
 

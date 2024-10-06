@@ -172,7 +172,6 @@ const App: React.FC = () => {
                         <Route path="*" element={<NotFound />} />
                     </Routes>
                 </main>
-                <ToastContainer position="bottom-right" autoClose={3000} />
             </div>
         </Router>
     );

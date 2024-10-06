@@ -1,9 +1,8 @@
-using FU.OJ.Server.DTOs.Testcase.Request;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.EntityFrameworkCore;using System.IO.Compression;
+using FU.OJ.Server.DTOs.Testcase.Request;using FU.OJ.Server.Infra.Context;using Microsoft.EntityFrameworkCore;using System.IO.Compression;
 
 namespace FU.OJ.Server.Service{    public interface ITestcaseService
     {
         Task<string> CreateAsync(string userId, CreateTestcaseRequest request);
-        Task<string?> GetByIdAsync(string problemId);
         Task<string?> UpdateAsync(CreateTestcaseRequest request);
         Task<bool> DeleteAsync(string userId, string problemId);
     }
@@ -17,25 +16,6 @@ namespace FU.OJ.Server.Service{    public interface ITestcaseService
         {
             _context = context;
             _problemService = problemService;
-        }
-        public async Task<string?> GetByIdAsync(string id)
-        {
-            var problem = await _context.Problems.AsNoTracking()
-                .FirstOrDefaultAsync(tc => tc.Id == id); // Use Id instead of id
-            if (problem == null)
-            {
-                return null;
-            }
-            return problem.TestCasePath;
-        }
-        public async Task<string?> GetByProblemIdAsync(string problemId)
-        {
-            var problem = await _context.Problems.FindAsync(problemId);
-            if (problem == null)
-            {
-                return null;
-            }
-            return problem.TestCasePath;
         }
         public async Task<string> CreateAsync(string userId, CreateTestcaseRequest request)
         {

@@ -1,6 +1,15 @@
-using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Problem.Request;using FU.OJ.Server.DTOs.Problem.Respond;using FU.OJ.Server.Infra.Const;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-namespace FU.OJ.Server.Service{    public interface IProblemService
+using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Problem.Request;
+using FU.OJ.Server.DTOs.Problem.Respond;
+using FU.OJ.Server.Infra.Const;
+using FU.OJ.Server.Infra.Context;
+using FU.OJ.Server.Infra.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+
+namespace FU.OJ.Server.Service
+{
+    public interface IProblemService
     {
         Task<string> CreateAsync(string userId, CreateProblemRequest request);
         Task<ProblemView?> GetByCodeAsync(string userId, string code);
@@ -9,10 +18,12 @@ namespace FU.OJ.Server.Service{    public interface IProblemService
         Task<bool> DeleteAsync(string userId, string id);
         Task<bool> IsAccepted(string userId, string problemId);
     }
-    public class ProblemService : IProblemService
+
+    public class ProblemService : IProblemService
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+
         public ProblemService(ApplicationDbContext context, UserManager<User> userManager)
         {
             _context = context;
@@ -21,21 +32,23 @@ namespace FU.OJ.Server.Service{    public interface IProblemService
 
         public async Task<ProblemView?> GetByCodeAsync(string userId, string code)
         {
+            if (string.IsNullOrWhiteSpace(code))
+                throw new ArgumentException(ErrorMessage.InvalidInput);
+
             var problemData = await _context.Problems.AsNoTracking()
                 .Where(p => p.Code == code)
                 .Select(p => new
                 {
                     Problem = p,
-                    ProblemUser = p.ProblemUsers.FirstOrDefault(c => c.UserId == userId && c.ProblemId == p.Id) // Retrieve specific ProblemUser
+                    ProblemUser = p.ProblemUsers.FirstOrDefault(c => c.UserId == userId && c.ProblemId == p.Id)
                 })
                 .FirstOrDefaultAsync();
 
             if (problemData == null)
-            {
+                //throw new Exception(ErrorMessage.NotFound);
                 return null;
-            }
 
-            // Handle null-propagation outside of the query
+
             var problemView = new ProblemView
             {
                 Id = problemData.Problem.Id,
@@ -56,18 +69,21 @@ namespace FU.OJ.Server.Service{    public interface IProblemService
                 AcQuantity = problemData.Problem.AcQuantity,
                 Difficulty = problemData.Problem.Difficulty,
                 HasSolution = problemData.Problem.HasSolution,
-
-                // Assign values from the ProblemUser (if not null) or default values
-                Status = problemData.ProblemUser != null ? problemData.ProblemUser.Status : "Default",
-                PassedTestCount = problemData.ProblemUser != null ? problemData.ProblemUser.PassedTestCount : 0
+                Status = problemData.ProblemUser?.Status ?? "Default",
+                PassedTestCount = problemData.ProblemUser?.PassedTestCount ?? 0
             };
 
             return problemView;
         }
-        public async Task<string> CreateAsync(string userId, CreateProblemRequest request)
+
+        public async Task<string> CreateAsync(string userId, CreateProblemRequest request)
         {
+            if (string.IsNullOrEmpty(request.Code))
+                throw new ArgumentException(ErrorMessage.InvalidInput);
+
             var problem = await GetByCodeAsync(userId, request.Code);
-            if (problem != null)
+
+            if (problem != null)
                 throw new Exception(ErrorMessage.CodeExisted);
 
             var newProblem = new Problem
@@ -86,33 +102,31 @@ namespace FU.OJ.Server.Service{    public interface IProblemService
                 UserId = userId,
                 Difficulty = request.Difficulty
             };
-            _context.Problems.Add(newProblem);
+
+            _context.Problems.Add(newProblem);
             await _context.SaveChangesAsync();
-            return newProblem.Code;
+
+            return newProblem.Code;
         }
+
         public async Task<(List<ProblemView> problems, int totalPages)> GetAllAsync(Paging query, string userId, bool? isMine = false)
         {
-            // Count total number of problems
             int totalItems = await _context.Problems.CountAsync();
-
-            // Calculate total pages
             int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
 
-            // Fetch problems with pagination
             var problems = await _context.Problems.AsNoTracking()
-                .Where(p => isMine == false || p.UserId == userId)
-                .Include(p => p.ProblemUsers) // Ensure ProblemUsers are loaded
+                .Where(p => !isMine.Value || p.UserId == userId)
+                .Include(p => p.ProblemUsers)
                 .Select(p => new
                 {
                     Problem = p,
-                    ProblemUser = p.ProblemUsers.FirstOrDefault(c => c.UserId == userId && c.ProblemId == p.Id) // Retrieve specific ProblemUser
+                    ProblemUser = p.ProblemUsers.FirstOrDefault(c => c.UserId == userId && c.ProblemId == p.Id)
                 })
                 .OrderByDescending(p => p.Problem.CreatedAt)
                 .Skip((query.pageIndex - 1) * query.pageSize)
                 .Take(query.pageSize)
                 .ToListAsync();
 
-            // Map the result to ProblemView
             var problemViews = problems.Select(p => new ProblemView
             {
                 Id = p.Problem.Id,
@@ -133,22 +147,24 @@ namespace FU.OJ.Server.Service{    public interface IProblemService
                 AcQuantity = p.Problem.AcQuantity,
                 Difficulty = p.Problem.Difficulty,
                 HasSolution = p.Problem.HasSolution,
-
-                // Assign values from the ProblemUser (if not null) or default values
                 Status = p.ProblemUser?.Status ?? "Default",
                 PassedTestCount = p.ProblemUser?.PassedTestCount ?? 0
-            })
-            .ToList();
+            }).ToList();
 
             return (problemViews, totalPages);
         }
-        public async Task<bool> UpdateAsync(string userId, UpdateProblemRequest request)
+
+        public async Task<bool> UpdateAsync(string userId, UpdateProblemRequest request)
         {
-            if (request.Code == null) throw new Exception("Problem Code isn's existed");
+            if (string.IsNullOrEmpty(request.Code))
+                throw new ArgumentException(ErrorMessage.InvalidInput);
+
             var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Code == request.Code);
-            if (problem == null || problem.UserId != userId)
+
+            if (problem == null || problem.UserId != userId)
                 throw new Exception(ErrorMessage.NotFound);
-            problem.Title = request.Title;
+
+            problem.Title = request.Title;
             problem.Description = request.Description;
             problem.Constraints = request.Constraints;
             problem.Input = request.Input;
@@ -158,25 +174,35 @@ namespace FU.OJ.Server.Service{    public interface IProblemService
             problem.TimeLimit = request.TimeLimit;
             problem.MemoryLimit = request.MemoryLimit;
             problem.Difficulty = request.Difficulty;
-            _context.Problems.Update(problem);
+
+            _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
-            return true;
+
+            return true;
         }
-        public async Task<bool> DeleteAsync(string userId, string id)
+
+        public async Task<bool> DeleteAsync(string userId, string id)
         {
             var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
-            if (problem == null)
+
+            if (problem == null)
                 throw new Exception(ErrorMessage.NotFound);
-            _context.Problems.Remove(problem);
+
+            _context.Problems.Remove(problem);
             await _context.SaveChangesAsync();
-            return true;
+
+            return true;
         }
 
         public async Task<bool> IsAccepted(string userId, string problemId)
         {
             var problemUser = await _context.ProblemUsers.AsNoTracking()
-                .FirstOrDefaultAsync(pu => pu.UserId == userId &&
-                        pu.ProblemId == problemId);            return (problemUser != null && problemUser.Status == "Accepted");
+                .FirstOrDefaultAsync(pu => pu.UserId == userId && pu.ProblemId == problemId);
+
+            if (problemUser == null)
+                throw new Exception(ErrorMessage.NotFound);
+
+            return problemUser.Status == "Accepted";
         }
     }
-}
+}

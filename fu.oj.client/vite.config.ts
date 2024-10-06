@@ -41,15 +41,12 @@ export default defineConfig({
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "src"), // Adjust 'src' to match your project structure
-            //'components': path.resolve(__dirname, 'src/components'),
-            //'ui': path.resolve(__dirname, 'src/components/ui'),
-            //'lib': path.resolve(__dirname, 'src/lib'),
-            //'utils': path.resolve(__dirname, 'src/lib/utils'),
-            //'hooks': path.resolve(__dirname, 'src/hooks'),
         },
     },
     server: {
+        host: '0.0.0.0',
         port: 5173,
+        strictPort: true,
         https: {
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),
