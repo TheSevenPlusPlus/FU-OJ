@@ -3,6 +3,7 @@ import apiClient from "./client";
 
 // Lấy tất cả contests
 export const getAllContests = async (pageIndex: number, pageSize: number, isMine: boolean | false) => {
+    console.log("isMine = ", isMine);
     var data = await apiClient.get("/contests", {
         params: { pageIndex, pageSize, isMine }, // Thêm query params cho phân trang
     });
@@ -43,5 +44,11 @@ export const getContestProblems = async (code: string) => {
 // submit code
 export const submitContestCode = async (data: SubmitCodeContestProblemRequest) => {
     var response = await apiClient.post("/contests/submit", data);
+    return response;
+};
+
+// Lấy bảng rank
+export const getRank = async (code: string) => {
+    var response = await apiClient.get(`/contests/rank/${code}`);
     return response;
 };

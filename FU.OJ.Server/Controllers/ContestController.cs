@@ -135,4 +135,18 @@ public class ContestController : AuthorizeController
             return HandleException(ex);
         }
     }
+
+    [HttpGet(ContestRoute.Action.Rank)]
+    public async Task<IActionResult> GetRank([FromRoute] string contestCode)
+    {
+        try
+        {
+            var result = await _contestService.GetRank(contestCode);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return HandleException(ex);
+        }
+    }
 }

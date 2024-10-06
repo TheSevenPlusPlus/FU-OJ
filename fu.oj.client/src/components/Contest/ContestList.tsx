@@ -37,7 +37,7 @@ const ContestList: React.FC = () => {
     const loadContests = async () => {
         try {
             setLoading(true);
-            const response = await getAllContests(pageIndex, pageSize, true); // Call API
+            const response = await getAllContests(pageIndex, pageSize, false); // Call API
             setContests(response.data.contests); // Map the API response to the local state
             setTotalPages(response.data.totalPages); // Set total pages for pagination
         } catch (err) {

@@ -14,20 +14,26 @@ export interface ContestView {
 
 export interface ContestProblemView {
     id: string;               // Contest problem unique ID
-    contestId?: string;       // Contest ID (optional)
-    contestCode?: string;     // Contest code (optional)
     problemId: string;        // Problem unique ID
     problemCode: string;      // Problem code
     order: number;            // Problem order in contest
     point: number;            // Points awarded for solving the problem
+    title: string;
+    timeLimit: number;
+    memoryLimit: number;
+    difficulty: string;
+    totalTests: number | null;
+    passedTestCount: number;
 }
 
 export interface ContestParticipantView {
     id: string;               // Participant unique ID
     userId?: string;          // User ID of the participant (optional)
+    userName: string;         // User name of the participant
     contestId?: string;       // Contest ID (optional)
     contestCode?: string;     // Contest code (optional)
     score: number;            // Score achieved by the participant
+    problems: ContestProblemView[]; // List of problems solved by the participant
 }
 export interface CreateContestRequest {
     code: string;             // Contest code

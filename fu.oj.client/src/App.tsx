@@ -29,6 +29,7 @@ import ResetPassword from "./components/Auth/ResetPassword";
 import ContestManagement from "./components/Management/Contest/ContestManagement";
 import ContestList from "./components/Contest/ContestList";
 import ContestProblem from "./components/Contest/ContestProblem";
+import { ContestRank } from "./components/Contest/ContestRank";
 import { ContestHome } from "./components/Contest/ContestHome";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -117,6 +118,12 @@ const App: React.FC = () => {
                             path="/contests/:contestCode/problems"
                             element={
                                 <ContestProblem />
+                            }
+                        />
+                        <Route
+                            path="/contests/:contestCode/rank"
+                            element={
+                                <ContestRank />
                             }
                         />
 

@@ -24,6 +24,7 @@ namespace FU.OJ.Server.Service
         public Task<List<ContestProblemView>> GetContestProblemInfoByCodeAsync(string contestCode, string userId);
         public Task<List<ContestParticipantView>> GetContestParticipantInfoByCodeAsync(string contestCode);
         public Task<bool> IsRegistered(string contestCode, string userId);
+        public Task<List<ContestParticipantView>> GetRank(string contestCode);
     }
     public class ContestService : IContestService
     {
@@ -315,9 +316,68 @@ namespace FU.OJ.Server.Service
                     UserId = participant.UserId,
                     Score = participant.Score,
                     ContestId = participant.ContestId,
-                    ContestCode = participant.ContestCode
+                    ContestCode = participant.ContestCode,
+                    UserName = participant.User.UserName
                 })
                 .ToListAsync();
+        }
+
+        public async Task<List<ContestParticipantView>> GetRank(string contestCode)
+        {
+            // Step 1: Fetch participants based on the contest code
+            var participants = await _context.ContestParticipants.AsNoTracking()
+                .Where(c => c.ContestCode == contestCode)
+                .Select(participant => new ContestParticipantView
+                {
+                    Id = participant.Id,
+                    UserId = participant.UserId,
+                    UserName= participant.User.UserName,
+                    ContestId = participant.ContestId,
+                    ContestCode = participant.ContestCode,
+                    Score = participant.Score
+                })
+                .ToListAsync();
+
+            // Step 2: Fetch contest problems for the contest code
+            var contestProblems = await _context.ContestProblems.AsNoTracking()
+                .Where(c => c.ContestCode == contestCode)
+                .Include(c => c.Problem)
+                .ToListAsync();
+
+            // Step 3: Get a list of problem ids for the contest
+            var problemIds = contestProblems.Select(cp => cp.ProblemId).ToList();
+
+            // Step 4: Fetch the ProblemUser records for all participants and problems
+            var problemUsers = await _context.ProblemUsers.AsNoTracking()
+                .Where(pu => problemIds.Contains(pu.ProblemId) && participants.Select(p => p.UserId).Contains(pu.UserId))
+                .ToListAsync();
+
+            // Step 5: For each participant, map the problems
+            foreach (var participant in participants)
+            {
+                var participantProblems = contestProblems.Select(problem => new ContestProblemView
+                {
+                    Id = problem.Id,
+                    ProblemId = problem.ProblemId,
+                    ProblemCode = problem.ProblemCode,
+                    Point = problem.Point,
+                    Order = problem.Order,
+                    Title = problem.Problem.Title,
+                    TimeLimit = problem.Problem.TimeLimit,
+                    MemoryLimit = problem.Problem.MemoryLimit,
+                    TotalTests = problem.Problem.TotalTests,
+                    Difficulty = problem.Problem.Difficulty,
+                    // PassedTestCount from the ProblemUsers list for the specific participant
+                    PassedTestCount = problemUsers
+                        .FirstOrDefault(pu => pu.ProblemId == problem.ProblemId && pu.UserId == participant.UserId)?.PassedTestCount ?? 0
+                })
+                .OrderBy(p => p.Order)
+                .ToList();
+
+                participant.Problems = participantProblems; // Set the problems list for each participant
+            }
+
+            return participants;
         }
 
         public async Task<bool> IsRegistered(string contestCode, string userId)
