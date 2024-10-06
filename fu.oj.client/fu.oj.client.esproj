@@ -9,6 +9,7 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="src\components\Management\Contest\" />
     <Folder Include="src\components\Pagination\" />
   </ItemGroup>
   <ItemGroup>

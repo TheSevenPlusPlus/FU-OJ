@@ -26,7 +26,12 @@ import BlogManagement from "./components/Management/Blog/BlogManagement";
 import BlogForm from "./components/Management/Blog/BlogForm";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
-
+import ContestManagement from "./components/Management/Contest/ContestManagement";
+import ContestList from "./components/Contest/ContestList";
+import ContestProblem from "./components/Contest/ContestProblem";
+import { ContestRank } from "./components/Contest/ContestRank";
+import { ContestHome } from "./components/Contest/ContestHome";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App: React.FC = () => {
@@ -94,9 +99,31 @@ const App: React.FC = () => {
                         <Route
                             path="/contests"
                             element={
-                                <ComingSoon
-                                    targetDate={new Date("2024-10-07T00:00:00")}
-                                />
+                                <ContestList />
+                            }
+                        />
+                        <Route
+                            path="/contests/:contestCode"
+                            element={
+                                <ContestHome />
+                            }
+                        />
+                        <Route
+                            path="/manager/contests"
+                            element={
+                                <ContestManagement />
+                            }
+                        />
+                        <Route
+                            path="/contests/:contestCode/problems"
+                            element={
+                                <ContestProblem />
+                            }
+                        />
+                        <Route
+                            path="/contests/:contestCode/rank"
+                            element={
+                                <ContestRank />
                             }
                         />
 

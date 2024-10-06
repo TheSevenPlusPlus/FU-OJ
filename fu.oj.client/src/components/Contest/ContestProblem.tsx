@@ -1,5 +1,5 @@
-﻿import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
     Table,
     TableBody,
@@ -8,39 +8,37 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { getAllProblems } from "../../api/problem";
-import { Problem } from "../../models/ProblemModel";
+import { getContestByCode, registerContest, isRegisteredContest, getContestProblems } from "../../api/contest";  // Import the isRegisteredContest API
+import { ContestProblem as ContestProblemModel } from "../../models/ProblemModel";
 import { Badge } from "@/components/ui/badge";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Pagination from '../Pagination/Pagination';
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
+import { ContestNavbar } from "./ContestNavbar";
+import { ContestView } from "../../models/ContestModel";
 
-export default function ProblemList() {
+export default function ContestProblem() {
     const navigate = useNavigate();
-    const [problems, setProblems] = useState<Problem[]>([]);
+    const [contest, setContest] = useState<ContestView | null>(null);
+    const { contestCode } = useParams<{ contestCode: string }>(); // Get the contest code from URL parameters
+    const [problems, setProblems] = useState<ContestProblemModel[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [pageIndex, setPageIndex] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(10);
-    const [totalPages, setTotalPages] = useState<number>(1);
-    const [searchParams] = useSearchParams();
+    const [isRegistered, setIsRegistered] = useState<boolean>(false);
 
     useEffect(() => {
-        const index = searchParams.get("pageIndex");
-        const size = searchParams.get("pageSize");
-        if (index) setPageIndex(Number(index));
-        if (size) setPageSize(Number(size));
-    }, [searchParams]);
-
-    useEffect(() => {
-        const fetchProblems = async () => {
+        const fetchContestProblems = async () => {
             setLoading(true);
             try {
-                const response = await getAllProblems(pageIndex, pageSize, null);
-                const { problems, totalPages } = response.data;
-                //console.log("Data:  ", response.data);
+                const response = await getContestProblems(contestCode); // Fetch problems for the specific contest
+                var problems = response.data;
                 setProblems(problems);
-                setTotalPages(totalPages);
+
+                const _response = await getContestByCode(contestCode);
+                setContest(_response.data);
+
+                const registeredResponse = await isRegisteredContest(contestCode);
+                setIsRegistered(registeredResponse.data);  // Assuming API returns { isRegistered: boolean }
             } catch (err) {
                 setError("Failed to fetch problems.");
             } finally {
@@ -48,8 +46,8 @@ export default function ProblemList() {
             }
         };
 
-        fetchProblems();
-    }, [pageIndex, pageSize]);
+        fetchContestProblems();
+    }, [contestCode]);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -63,22 +61,8 @@ export default function ProblemList() {
         });
     };
 
-    const handlePageChange = (newPageIndex: number) => {
-        if (newPageIndex > 0 && newPageIndex <= totalPages) {
-            setPageIndex(newPageIndex);
-            navigate(`/problems?pageIndex=${newPageIndex}&pageSize=${pageSize}`);
-        }
-    };
-
-    const handleItemsPerPageChange = (newSize: number) => {
-        setPageSize(newSize);
-        setPageIndex(1);
-        navigate(`/problems?pageIndex=1&pageSize=${newSize}`);
-    };
-
     const getStatusIcon = (passTestCount: number, totalTests: number) => {
-        if (passTestCount == null || totalTests == null ||
-            passTestCount === 0 || totalTests === 0) return null;
+        if (passTestCount == null || totalTests == null || passTestCount === 0 || totalTests === 0) return null;
 
         if (passTestCount === totalTests)
             return <i className="fa fa-check-circle text-green-500"></i>;
@@ -117,10 +101,17 @@ export default function ProblemList() {
     }
 
     return (
+        <>
+            {isRegistered && <ContestNavbar />}
+
+            {/* Contest title section */}
+            <div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
+                <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
+            </div>
+
         <div className="container mx-auto py-8">
             <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold">All Problems</h1>
-                <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
+                <h1 className="text-3xl font-bold">Contest Problems</h1>
             </div>
 
             <Table className="border border-gray-300">
@@ -132,14 +123,12 @@ export default function ProblemList() {
                         <TableHead className="border border-gray-300 text-white font-bold">Title</TableHead>
                         <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Time Limit</TableHead>
                         <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Memory (MB)</TableHead>
-                        <TableHead className="w-[150px] border border-gray-300 text-white font-bold">Created at</TableHead>
-                        <TableHead className="w-[100px] border border-gray-300 text-white font-bold">Has Solution</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {problems.map((problem) => (
                         <TableRow
-                            key={problem.code}
+                            key={problem.problemCode}
                             className="border-b border-gray-300 hover:bg-gray-100 transition duration-200"
                         >
                             <TableCell className="flex items-center justify-center">
@@ -161,9 +150,9 @@ export default function ProblemList() {
                                 </Badge>
                             </TableCell>
 
-                            <TableCell className="font-medium border border-gray-300">{problem.code}</TableCell>
+                            <TableCell className="font-medium border border-gray-300">{problem.problemCode}</TableCell>
                             <TableCell className="border border-gray-300">
-                                <Link to={`/problem/${problem.code}`} className="text-blue-600 hover:underline">
+                                <Link to={`/problem/${problem.problemCode}?contestCode=${contestCode}`} className="text-blue-600 hover:underline">
                                     {problem.title}
                                 </Link>
                             </TableCell>
@@ -171,22 +160,11 @@ export default function ProblemList() {
                                 {problem.timeLimit === 0 ? 1 : problem.timeLimit}s
                             </TableCell>
                             <TableCell className="font-medium border border-gray-300">{Math.floor(problem.memoryLimit / 1024)} MB</TableCell>
-                            <TableCell className="font-medium border border-gray-300">
-                                {formatDate(problem.createdAt)}
-                            </TableCell>
-                            <TableCell className="flex items-center justify-center">
-                                {getSolutionIcon(problem.hasSolution)}
-                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-
-            <Pagination
-                currentPage={pageIndex}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-            />
         </div>
+        </>
     );
 }

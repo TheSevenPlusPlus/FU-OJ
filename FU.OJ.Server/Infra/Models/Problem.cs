@@ -6,6 +6,7 @@ namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperti
     {
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
         public ICollection<ProblemUser> ProblemUsers { get; set; } = new List<ProblemUser>();
+        public ICollection<ContestProblem> ContestProblems { get; set; } = new List<ContestProblem>();
         public User User { get; set; } = null!;
     }
     public class ProblemProperties
@@ -30,18 +31,31 @@ namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperti
         public string? HasSolution { get; set; }
         public string? TestCasePath { get; set; } = null!; // folder ch?a test
     }
-    public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
+
+    public class ProblemConfiguration : IEntityTypeConfiguration<Problem>
     {
         public void Configure(EntityTypeBuilder<Problem> builder)
         {
             builder.HasOne(p => p.User)
-               .WithMany(u => u.Problems)
-               .HasForeignKey(p => p.UserId)
-               .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(p => p.Submissions)
+                   .WithMany(u => u.Problems)
+                   .HasForeignKey(p => p.UserId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(p => p.Submissions)
                    .WithOne(s => s.Problem)
                    .HasForeignKey(s => s.ProblemId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(p => p.ContestProblems)
+                   .WithOne(cp => cp.Problem)
+                   .HasForeignKey(cp => cp.ProblemId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(p => p.ProblemUsers)
+                   .WithOne(cp => cp.Problem)
+                   .HasForeignKey(cp => cp.ProblemId)
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
+
 }

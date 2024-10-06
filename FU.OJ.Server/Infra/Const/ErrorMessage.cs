@@ -19,5 +19,14 @@ namespace FU.OJ.Server.Infra.Const{    public class ErrorMessage
         public const string BadRequest = "Yêu cầu không hợp lệ hoặc thiếu thông tin cần thiết.";
         public const string Conflict = "Có sự xung đột với trạng thái hiện tại của tài nguyên.";
         public const string InvalidRole = "Role không hợp lệ";
+
+        // Contest
+        public const string ContestCodeExisted = "Mã cuộc thi đã tồn tại";
+        public const string StartTimeGreaterThanEndTime = "Thời gian bắt đầu cuộc thi đang được thiết lập lớn hơn thời gian kết thúc. Vui lòng kiểm tra lại";
+        public const string ContestEnded = "Cuộc thi đã kết thúc";
+        public const string MaxSubmissionReached = "Đã đạt đến giới hạn số lần nộp bài";
+        public const string AlreadyRegistered = "Người dùng đã tham gia cuộc thi";
+        public const string NotRegistered = "Người dùng chưa tham gia cuộc thi";
+        public const string ContestNotStarted = "Contest chưa được khởi động";
     }
 }

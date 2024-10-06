@@ -47,3 +47,16 @@ export interface Problem {
     status: string | null;
     passedTestCount: number
 }
+export interface ContestProblem {
+    id: string;
+    problemId: string;
+    problemCode: string;
+    title: string;
+    order: number;
+    point: number;
+    timeLimit: number;
+    memoryLimit: number;
+    difficulty: string;
+    totalTests: number | null;
+    passedTestCount: number
+}
