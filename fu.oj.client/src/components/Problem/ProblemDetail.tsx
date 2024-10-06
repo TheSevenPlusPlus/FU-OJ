@@ -24,6 +24,7 @@ export default function ProblemDetail() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [contestCode, setContestCode] = useState<string | null>(null);
+    const [maximumSubmission, setMaximumSubmission] = useState<number | null>(null);
     const [contest, setContest] = useState<ContestView | null>(null);
     const [isRegistered, setIsRegistered] = useState<boolean>(false);
     const [searchParams] = useSearchParams();
@@ -36,11 +37,16 @@ export default function ProblemDetail() {
                 const contestCode = searchParams.get("contestCode");
                 setContestCode(contestCode);
 
-                const _response = await getContestByCode(contestCode);
-                setContest(_response.data);
+                if (contestCode != null) {
+                    const _response = await getContestByCode(contestCode);
+                    setContest(_response.data);
 
-                const registeredResponse = await isRegisteredContest(contestCode);
-                setIsRegistered(registeredResponse.data);  // Assuming API returns { isRegistered: boolean }
+                    const registeredResponse = await isRegisteredContest(contestCode);
+                    setIsRegistered(registeredResponse.data);  // Assuming API returns { isRegistered: boolean }
+                }
+
+                const response = await getProblemByCode(problemCode);
+                setProblem(response.data);
             } catch (err) {
                 setError("Failed to fetch problems.");
             } finally {
@@ -49,22 +55,7 @@ export default function ProblemDetail() {
         };
 
         fetchContestProblems();
-    }, [contestCode, searchParams]);
-
-    useEffect(() => {
-        const fetchProblem = async () => {
-            try {
-                const response = await getProblemByCode(problemCode);
-                setProblem(response.data);
-            } catch (err) {
-                setError("Failed to fetch problem details");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProblem();
-    }, [problemCode]);
+    }, [contestCode, searchParams, problemCode]);
 
     if (loading) {
         return (
@@ -98,12 +89,14 @@ export default function ProblemDetail() {
 
     return (
         <>
-        {isRegistered && <ContestNavbar />}
+            {isRegistered && <ContestNavbar />}
 
-        {/* Contest title section */}
-        <div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
-            <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
-        </div>
+            {isRegistered &&
+                < div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
+                    <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
+                </div >
+            }
+
         <div className="container mx-auto py-8">
             <Card>
                 <CardHeader>
@@ -189,21 +182,39 @@ export default function ProblemDetail() {
                     </div>
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    {/* Submit Solution Button */}
-                    <Link to={`/problem/${problemCode}/submit`}>
-                        <Button>Submit Solution</Button>
-                    </Link>
+                        {/* Submit Solution Button */}
+                        {contestCode == null ?
+                            <Link to={`/problem/${problemCode}/submit`}>
+                                <Button>Submit Solution</Button>
+                            </Link>
+                            :
+                            <Link to={`/problem/${problemCode}/submit?contestCode=${contestCode}`}>
+                                <Button>Submit Solution</Button>
+                            </Link>
+                        }
 
                     <div className="space-x-2">
-                        {/* View All Submissions Button */}
-                        <Link to={`/submissions/all?problemCode=${problemCode}`}>
-                            <Button variant="secondary">View all submissions</Button>
-                        </Link>
+                            {/* View All Submissions Button */}
+                            {contestCode == null ?
+                                <Link to={`/submissions/all?problemCode=${problemCode}`}>
+                                    <Button variant="secondary">View all submissions</Button>
+                                </Link>
+                                :
+                                <Link to={`/submissions/all?problemCode=${problemCode}&contestCode=${contestCode}`}>
+                                    <Button variant="secondary">View all submissions</Button>
+                                </Link>
+                            }
 
-                        {/* View My Submissions Button */}
-                        <Link to={`/submissions/all?isMine=${true}&problemCode=${problemCode}`}>
-                            <Button variant="secondary">View my submissions</Button>
-                        </Link>
+                            {/* View My Submissions Button */}
+                            {contestCode == null ?
+                                <Link to={`/submissions/all?isMine=${true}&problemCode=${problemCode}`}>
+                                    <Button variant="secondary">View my submissions</Button>
+                                </Link>
+                                :
+                                <Link to={`/submissions/all?isMine=${true}&problemCode=${problemCode}&contestCode=${contestCode}`}>
+                                    <Button variant="secondary">View my submissions</Button>
+                                </Link>
+                            }
                     </div>
                 </CardFooter>
             </Card>

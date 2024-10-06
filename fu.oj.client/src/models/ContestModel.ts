@@ -52,11 +52,10 @@ export interface CreateContestProblemRequest {
 export interface CreateSubmissionRequest {
     sourceCode: string;      // Source code of the submission
     languageId: number;      // ID of the programming language used
-    languageName: string;    // Name of the programming language used
+    languageName: string;
     problemCode: string;     // Code of the problem being solved
-    problemId: string;       // Unique ID of the problem being solved
+    problemId: string;       // ID of the problem
 }
 export interface SubmitCodeContestProblemRequest extends CreateSubmissionRequest {
-    contestId: string;        // Contest unique ID
     contestCode: string;      // Contest code
 }

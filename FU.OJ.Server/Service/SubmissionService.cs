@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace FU.OJ.Server.Service{
     public interface ISubmissionService
     {
-        Task<string> CreateAsync(string userId, CreateSubmissionRequest request, string contestCode, bool? base64Encoded = false, bool? wait = true); //
+        Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool? base64Encoded = false, bool? wait = true); //
         Task<SubmissionView> GetByIdAsync(string userId, string id);//
         Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, bool? isMine = false);//
     }
@@ -17,8 +17,7 @@ namespace FU.OJ.Server.Service{
         private readonly IUserService _userService;
         private readonly IGeneralService _generalService;
         private readonly ApplicationDbContext _context;
-        private readonly IContestService _contestService;
-        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDbContext context, IConfiguration configuration, IUserService userService, IGeneralService generalService, IContestService contestService)
+        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDbContext context, IConfiguration configuration, IUserService userService, IGeneralService generalService)
         {
             _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl")!;
             _httpClient = httpClient;
@@ -27,9 +26,8 @@ namespace FU.OJ.Server.Service{
             _context = context;
             _userService = userService;
             _generalService = generalService;
-            _contestService = contestService;
         }
-        public async Task<string> CreateAsync(string userId, CreateSubmissionRequest request, string contestCode, bool? base64Encoded = false, bool? wait = true)
+        public async Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool? base64Encoded = false, bool? wait = true)
         {
             var problem = await _context.Problems.AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == request.ProblemId);
@@ -38,33 +36,7 @@ namespace FU.OJ.Server.Service{
                 throw new NotFoundException(ErrorMessage.NotFound);
             if (problem.TestCasePath == null)
                 throw new NotFoundException(ErrorMessage.NotHaveTest);
-            var user = await _userService.GetUserByIdAsync(userId);            if (user == null)                throw new NotFoundException(ErrorMessage.NotFound);            var contest = contestCode != null ? await _contestService.GetContestByCodeAsync(contestCode) : null;            if (contest == null)                throw new NotFoundException(ErrorMessage.NotFound);
-
-            if (contest != null && DateTime.UtcNow > contest.EndTime)
-                throw new BadException(ErrorMessage.ContestEnded);            var contestUser = contestCode != null ? await _contestService.GetContestParticipantByCodeAsync(contestCode, userId) : null;            if (contestCode != null && contestUser == null)                throw new NotFoundException(ErrorMessage.NotFound);            var contestProblem = contestCode != null ? await _contestService.GetContestProblemByCodeAsync(contestCode, problem.Code) : null;
-            if (contestCode != null && contestProblem == null)                throw new NotFoundException(ErrorMessage.NotRegistered);            var participantProblem = contestCode != null ? await _contestService.GetContestParticipantproblemByCodeAsync(contestCode, userId) : null;            if (contestCode != null)
-            {
-                if (participantProblem != null)
-                {
-                    if (participantProblem.SubmissionCount >= contestProblem!.MaximumSubmission)
-                        throw new BadException(ErrorMessage.MaxSubmissionReached);
-
-                    participantProblem.SubmissionCount++;
-                    _context.ContestParticipantProblems.Update(participantProblem);
-                }
-                else
-                {
-                    participantProblem = new ContestParticipantProblem
-                    {
-                        ContestParticipantId = contestUser!.Id,
-                        ContestProblemId = problem.Id,
-                        ContestProblemCode = request.ProblemCode,
-                        SubmissionCount = 1
-                    };
-
-                    _context.ContestParticipantProblems.Add(participantProblem);
-                }
-            }            var submission = new Submission
+            var user = await _userService.GetUserByIdAsync(userId);            if (user == null)                throw new NotFoundException(ErrorMessage.NotFound);            var submission = new Submission
             {
                 ProblemId = request.ProblemId,
                 ProblemCode = request.ProblemCode,

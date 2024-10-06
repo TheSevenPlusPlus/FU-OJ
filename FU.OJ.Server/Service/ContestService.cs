@@ -25,6 +25,7 @@ namespace FU.OJ.Server.Service
         public Task<List<ContestProblemView>> GetContestProblemInfoByCodeAsync(string contestCode, string userId);
         public Task<List<ContestParticipantView>> GetContestParticipantInfoByCodeAsync(string contestCode);
         public Task<bool> IsRegistered(string contestCode, string userId);
+        public Task<int> GetMaximumSubmissionAsync(string contestCode, string problemCode);
     }
     public class ContestService : IContestService
     {
@@ -216,7 +217,7 @@ namespace FU.OJ.Server.Service
                     ProblemCode = problem.ProblemCode
                 };
 
-                await _submissionService.CreateAsync(userId, submission, request.ContestCode, false, true);
+                await _submissionService.CreateAsync(userId, submission, false, true);
                 var _problem = await _problemService.GetByCodeAsync(userId, request.ProblemCode);
                 if (_problem == null)
                     throw new NotFoundException(ErrorMessage.NotFound);
@@ -358,6 +359,15 @@ namespace FU.OJ.Server.Service
             var participant = await GetContestParticipantByCodeAsync(contestCode, userId);
 
             return participant != null;
+        }
+
+        public async Task<int> GetMaximumSubmissionAsync(string contestCode, string problemCode)
+        {
+            var problem = await GetContestProblemByCodeAsync(contestCode, problemCode);
+            if (problem == null)
+                throw new NotFoundException(ErrorMessage.NotFound);
+
+            return problem.MaximumSubmission;
         }
     }
 }

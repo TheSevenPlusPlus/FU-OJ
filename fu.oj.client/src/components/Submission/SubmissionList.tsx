@@ -14,7 +14,10 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { getAllSubmissions } from "../../api/submission";
+import { getContestByCode, registerContest, isRegisteredContest, getContestProblems } from "../../api/contest";  // Import the isRegisteredContest API
 import { Submission } from "../../models/SubmissionModel";
+import { ContestView } from "../../models/ContestModel";
+import { ContestNavbar } from "../Contest/ContestNavbar";
 import Pagination from '../Pagination/Pagination';
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { Badge } from "@/components/ui/badge"; // Import Badge for status colors
@@ -27,20 +30,42 @@ const SubmissionList = () => {
     const [pageIndex, setPageIndex] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(10);
     const [totalPages, setTotalPages] = useState<number>(1);
+    const [contestCode, setContestCode] = useState<string | null>(null);
     const [searchParams] = useSearchParams();
+    const [isRegistered, setIsRegistered] = useState<boolean>(false);
     const problemCode = searchParams.get("problemCode") || null;
     const [isMine, setIsMine] = useState<boolean>(false);
+    const [contest, setContest] = useState<ContestView | null>(null);
 
     useEffect(() => {
-        const index = searchParams.get("pageIndex");
-        const size = searchParams.get("pageSize");
-        const isMine = searchParams.get("isMine");
+        const fetchData = async () => {
+            const index = searchParams.get("pageIndex");
+            const size = searchParams.get("pageSize");
+            const isMine = searchParams.get("isMine");
+            const contestCode = searchParams.get("contestCode");
 
-        if (index) setPageIndex(Number(index));
-        if (size) setPageSize(Number(size));
-        // Chuyển đổi giá trị chuỗi sang boolean
-        if (isMine != null) setIsMine(isMine === "true");
+            if (index) setPageIndex(Number(index));
+            if (size) setPageSize(Number(size));
+            // Chuyển đổi giá trị chuỗi sang boolean
+            if (isMine != null) setIsMine(isMine === "true");
+
+            if (contestCode != null) {
+                setContestCode(contestCode);
+                try {
+                    const _response = await getContestByCode(contestCode);
+                    setContest(_response.data);
+
+                    const registeredResponse = await isRegisteredContest(contestCode);
+                    setIsRegistered(registeredResponse.data);  // Assuming API returns { isRegistered: boolean }
+                } catch (error) {
+                    console.error("Error fetching registration status", error);
+                }
+            }
+        };
+
+        fetchData();
     }, [searchParams]);
+
 
     useEffect(() => {
         const fetchSubmissions = async () => {
@@ -49,7 +74,6 @@ const SubmissionList = () => {
                 const response = await getAllSubmissions(
                     pageIndex,
                     pageSize,
-                    problemCode,
                     isMine
                 );
                 const { submissions, totalPages } = response.data;
@@ -93,16 +117,28 @@ const SubmissionList = () => {
     const handlePageChange = (newPageIndex: number) => {
         if (newPageIndex > 0 && newPageIndex <= totalPages) {
             setPageIndex(newPageIndex);
-            navigate(
-                `/submissions/all?pageIndex=${newPageIndex}&pageSize=${pageSize}&isMine=${isMine}`,
-            );
+            if (contestCode == null) {
+                navigate(
+                    `/submissions/all?pageIndex=${newPageIndex}&pageSize=${pageSize}&isMine=${isMine}`,
+                );
+            }
+            else {
+                navigate(
+                    `/submissions/all?contestCode=${contestCode}&pageIndex=${newPageIndex}&pageSize=${pageSize}&isMine=${isMine}`,
+                );
+            }
         }
     };
 
     const handleItemsPerPageChange = (newSize: number) => {
         setPageSize(newSize);
         setPageIndex(1);
-        navigate(`/submissions/all?pageIndex=1&pageSize=${newSize}&isMine=${isMine}`);
+        if (contestCode == null) {
+            navigate(`/submissions/all?pageIndex=1&pageSize=${newSize}&isMine=${isMine}`);
+        }
+        else {
+            navigate(`/submissions/all?contestCode=${contestCode}&pageIndex=1&pageSize=${newSize}&isMine=${isMine}`);
+        }
     };
 
     if (loading) {
@@ -119,6 +155,15 @@ const SubmissionList = () => {
     }
 
     return (
+        <>
+            {isRegistered && <ContestNavbar />}
+
+            {isRegistered &&
+                < div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
+                    <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
+                </div >
+            }
+
         <div className="container mx-auto py-8">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold">All Submissions</h1>
@@ -148,9 +193,15 @@ const SubmissionList = () => {
                                 )}
                             </TableCell>
                             <TableCell>
-                                <Link to={`/problem/${submission.problemName}`} className="text-blue-600 hover:underline">
-                                    {submission.problemName}
-                                </Link>
+                                {contestCode == null ?
+                                    <Link to={`/problem/${submission.problemName}`} className="text-blue-600 hover:underline">
+                                        {submission.problemName}
+                                    </Link>
+                                    :
+                                    <Link to={`/problem/${submission.problemName}?contestCode=${contestCode}`} className="text-blue-600 hover:underline">
+                                        {submission.problemName}
+                                    </Link>
+                                }
                             </TableCell>
                             <TableCell>
                                 <Badge className={`${getStatusColor(submission.status)} text-white`}>
@@ -162,9 +213,15 @@ const SubmissionList = () => {
                                 {formatDate(submission.submittedAt)}
                             </TableCell>
                             <TableCell className="text-center">
-                                <Button onClick={() => navigate(`/submissions/${submission.id}`)} variant="secondary" size="sm">
-                                    View Detail
-                                </Button>
+                                {contestCode == null ?
+                                    <Button onClick={() => navigate(`/submissions/${submission.id}`)} variant="secondary" size="sm">
+                                        View Detail
+                                    </Button>
+                                    :
+                                    <Button onClick={() => navigate(`/submissions/${submission.id}?contestCode=${contestCode}`)} variant="secondary" size="sm">
+                                        View Detail
+                                    </Button>
+                                }
                             </TableCell>
                         </TableRow>
                     ))}
@@ -177,7 +234,8 @@ const SubmissionList = () => {
                 totalPages={totalPages}
                 onPageChange={handlePageChange}
             />
-        </div>
+            </div>
+        </>
     );
 };
 

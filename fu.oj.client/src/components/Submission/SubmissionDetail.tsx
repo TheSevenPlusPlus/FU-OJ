@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,18 +16,33 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vs } from "react-syntax-highlighter/dist/esm/styles/prism"; // Sử dụng theme "vs" của Visual Studio Code
 import { Result } from "../../models/ResultModel";
 import { Submission } from "../../models/SubmissionModel";
+import { getContestByCode, registerContest, isRegisteredContest, getContestProblems } from "../../api/contest";  // Import the isRegisteredContest API
+import { ContestView } from "../../models/ContestModel";
+import { ContestNavbar } from "../Contest/ContestNavbar";
 
 const SubmissionDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [submission, setSubmission] = useState<Submission | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchParams] = useSearchParams();
+    const [contestCode, setContestCode] = useState<string | null>(null);
+    const [contest, setContest] = useState<ContestView | null>(null);
+    const [isRegistered, setIsRegistered] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchSubmission = async () => {
             try {
                 const response = await getSubmissionById(id);
-                
+                const contestCode = searchParams.get("contestCode");
+                if (contestCode != null) {
+                    const _response = await getContestByCode(contestCode);
+                    setContest(_response.data);
+
+                    const registeredResponse = await isRegisteredContest(contestCode);
+                    setIsRegistered(registeredResponse.data);  // Assuming API returns { isRegistered: boolean }
+                }
+
                 setSubmission(response.data);
             } catch (err) {
                 setError("Failed to fetch problem details");
@@ -37,7 +52,7 @@ const SubmissionDetail: React.FC = () => {
         };
 
         fetchSubmission();
-    }, [id]);
+    }, [id, searchParams]);
 
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
@@ -65,17 +80,34 @@ const SubmissionDetail: React.FC = () => {
     };
 
     return (
+        <>
+                {isRegistered && <ContestNavbar />}
+
+                {isRegistered &&
+                    < div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
+                        <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
+                    </div >
+                }
         <div className="container mx-auto py-8 bg-gray-100 min-h-screen">
             <Card className="w-full max-w-4xl mx-auto bg-white text-black">
                 <CardHeader className="border-b border-gray-200">
                     {submission ? (
                         <CardTitle className="text-2xl font-bold">
-                            <Link
-                                to={`/problem/${submission.problemName}`}
-                                className="text-blue-600 hover:underline"
-                            >
-                                {submission.problemName}
-                            </Link>
+                            {contestCode == null ?
+                                <Link
+                                    to={`/problem/${submission.problemName}`}
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    {submission.problemName}
+                                </Link>
+                                :
+                                <Link
+                                    to={`/problem/${submission.problemName}?contestCode=${contestCode}`}
+                                    className="text-blue-600 hover:underline"
+                                >
+                                    {submission.problemName}
+                                </Link>
+                            }
                         </CardTitle>
                     ) : (
                         <CardTitle className="text-2xl font-bold">
@@ -192,7 +224,8 @@ const SubmissionDetail: React.FC = () => {
                     )}
                 </CardContent>
             </Card>
-        </div>
+            </div>
+        </>
     );
 };
 

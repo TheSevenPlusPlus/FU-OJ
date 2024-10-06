@@ -1,4 +1,4 @@
-﻿import { CreateContestRequest } from "../models/ContestModel";
+﻿import { CreateContestRequest, SubmitCodeContestProblemRequest } from "../models/ContestModel";
 import apiClient from "./client";
 
 // Lấy tất cả contests
@@ -38,4 +38,16 @@ export const isRegisteredContest = async (code: string) => {
 // Lấy danh sách problems
 export const getContestProblems = async (code: string) => {
     return await apiClient.get(`/contests/problem/${code}`);
+};
+
+// submit code
+export const submitContestCode = async (data: SubmitCodeContestProblemRequest) => {
+    var response = await apiClient.post("/contests/submit", data);
+    return response;
+};
+
+// maximum submission
+export const getMaximumSubmission = async (code: string, problemCode: string) => {
+    var response = await apiClient.post(`/contests/maximum-submission/${code}?problemCode=${problemCode}`);
+    return response;
 };

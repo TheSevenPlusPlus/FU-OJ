@@ -16,11 +16,10 @@ export const submitCode = async (data: {
 export const getAllSubmissions = async (
     pageIndex: number,
     pageSize: number,
-    problemCode: string | null,
     isMine: boolean | false
 ) => {
     return await apiClient.get(`/submissions/all`, {
-        params: { pageIndex, pageSize, problemCode, isMine },
+        params: { pageIndex, pageSize, isMine },
     });
 };
 

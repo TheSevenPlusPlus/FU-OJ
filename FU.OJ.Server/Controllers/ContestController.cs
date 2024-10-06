@@ -135,4 +135,18 @@ public class ContestController : AuthorizeController
             return HandleException(ex);
         }
     }
+
+    [HttpGet(ContestRoute.Action.MaximumSubmission)]
+    public async Task<IActionResult> MaximumSubmission([FromRoute] string contestCode, string problemCode)
+    {
+        try
+        {
+            var result = await _contestService.GetMaximumSubmissionAsync(contestCode, problemCode);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return HandleException(ex);
+        }
+    }
 }
