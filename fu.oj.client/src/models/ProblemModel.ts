@@ -54,7 +54,6 @@ export interface ContestProblem {
     problemCode: string;
     title: string;
     order: number;
-    maximumSubmission: number;
     point: number;
     timeLimit: number;
     memoryLimit: number;

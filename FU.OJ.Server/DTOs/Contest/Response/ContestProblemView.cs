@@ -12,7 +12,6 @@ namespace FU.OJ.Server.DTOs.Contest.Response
         public double? TimeLimit { get; set; }
         public double? MemoryLimit { get; set; }
         public int Order { get; set; }
-        public int MaximumSubmission { get; set; }
         public double Point { get; set; }
         public int TotalTests { get; set; }
         public string? Difficulty { get; set; }

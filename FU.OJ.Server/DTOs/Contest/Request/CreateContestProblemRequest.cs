@@ -10,7 +10,5 @@ namespace FU.OJ.Server.DTOs.Contest.Request
         public int Order { get; set; }
         [Required]
         public double Point { get; set; }
-        [Required]
-        public int MaximumSubmission { get; set; }
     }
 }

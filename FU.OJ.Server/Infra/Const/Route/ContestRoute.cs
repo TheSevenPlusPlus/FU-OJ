@@ -13,7 +13,6 @@
             public const string SubmitCode = "submit";
             public const string RegisterContest = "register/{contestCode}";
             public const string IsRegistered = "is-registered/{contestCode}";
-            public const string MaximumSubmission = "maximum-submission/{contestCode}";
         }
     }
 }

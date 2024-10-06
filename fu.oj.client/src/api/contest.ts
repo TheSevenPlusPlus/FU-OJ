@@ -45,9 +45,3 @@ export const submitContestCode = async (data: SubmitCodeContestProblemRequest) =
     var response = await apiClient.post("/contests/submit", data);
     return response;
 };
-
-// maximum submission
-export const getMaximumSubmission = async (code: string, problemCode: string) => {
-    var response = await apiClient.post(`/contests/maximum-submission/${code}?problemCode=${problemCode}`);
-    return response;
-};

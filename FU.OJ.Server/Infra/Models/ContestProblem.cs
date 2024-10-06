@@ -25,8 +25,6 @@ namespace FU.OJ.Server.Infra.Models
         public string ProblemCode { get; set; } = null!;
         [Comment("Điểm của người tham gia")]
         public int Order { get; set; }
-        [Comment("Số lần nộp tối đa")]
-        public int MaximumSubmission { get; set; }
         [Comment("Điểm của bài tập")]
         public double Point { get; set; }
     }

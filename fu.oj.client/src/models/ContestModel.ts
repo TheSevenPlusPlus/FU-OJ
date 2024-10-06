@@ -19,7 +19,6 @@ export interface ContestProblemView {
     problemId: string;        // Problem unique ID
     problemCode: string;      // Problem code
     order: number;            // Problem order in contest
-    maximumSubmission: number; // Max number of submissions allowed
     point: number;            // Points awarded for solving the problem
 }
 
@@ -46,7 +45,6 @@ export interface CreateContestProblemRequest {
     problemCode: string;      // Problem code
     order: number;            // Problem order in the contest
     point: number;            // Points awarded for solving the problem
-    maximumSubmission: number; // Max number of submissions allowed
 }
 
 export interface CreateSubmissionRequest {

@@ -18,14 +18,12 @@ namespace FU.OJ.Server.Service
         public Task<ContestView> GetContestInfoAsync(string contestCode);
         public Task<ContestProblem?> GetContestProblemByCodeAsync(string contestCode, string code);
         public Task<ContestParticipant?> GetContestParticipantByCodeAsync(string contestCode, string userId);
-        public Task<ContestParticipantProblem?> GetContestParticipantproblemByCodeAsync(string problemCode, string userId);
-        public Task<bool> SubmitCode(string userId, SubmitCodeContestProblemRequest request);
+        public Task<string> SubmitCode(string userId, SubmitCodeContestProblemRequest request);
         public Task<bool> RegisterContest(string userId, string contestCode);
         public Task<(List<ContestView> contests,  int totalPages)> GetListContestsAsync(Paging query, string userId, bool? isMine = false);
         public Task<List<ContestProblemView>> GetContestProblemInfoByCodeAsync(string contestCode, string userId);
         public Task<List<ContestParticipantView>> GetContestParticipantInfoByCodeAsync(string contestCode);
         public Task<bool> IsRegistered(string contestCode, string userId);
-        public Task<int> GetMaximumSubmissionAsync(string contestCode, string problemCode);
     }
     public class ContestService : IContestService
     {
@@ -64,14 +62,6 @@ namespace FU.OJ.Server.Service
                 .FirstOrDefaultAsync(c => c.ContestCode == contestCode && c.UserId == userId);
 
             return contestPaticipant;
-        }
-
-        public async Task<ContestParticipantProblem?> GetContestParticipantproblemByCodeAsync(string problemCode, string userId)
-        {
-            var paticipantProblem = await _context.ContestParticipantProblems.AsNoTracking()
-                .FirstOrDefaultAsync(c => c.ContestParticipantId == userId && c.ContestProblemCode == problemCode);
-
-            return paticipantProblem;
         }
 
         public async Task<string> CreateContestAsync(string userId, CreateContestRequest request)
@@ -160,13 +150,12 @@ namespace FU.OJ.Server.Service
                     ProblemId = cp.ProblemId,
                     ProblemCode = cp.ProblemCode,
                     Point = cp.Point,
-                    Order = cp.Order,
-                    MaximumSubmission = cp.MaximumSubmission
+                    Order = cp.Order
                 }).ToList()
             };
         }
 
-        public async Task<bool> SubmitCode(string userId, SubmitCodeContestProblemRequest request)
+        public async Task<string> SubmitCode(string userId, SubmitCodeContestProblemRequest request)
         {
             var transaction = await _context.Database.BeginTransactionAsync();
             try
@@ -186,28 +175,6 @@ namespace FU.OJ.Server.Service
                 if (DateTime.UtcNow > contest.EndTime)
                     throw new BadException(ErrorMessage.ContestEnded);
 
-                var participantProblem = await GetContestParticipantproblemByCodeAsync(request.ProblemCode, participant.Id);
-                if (participantProblem != null)
-                {
-                    if (participantProblem.SubmissionCount >= problem.MaximumSubmission)
-                        throw new BadException(ErrorMessage.MaxSubmissionReached);
-
-                    participantProblem.SubmissionCount++;
-                    _context.ContestParticipantProblems.Update(participantProblem);
-                }
-                else
-                {
-                    participantProblem = new ContestParticipantProblem
-                    {
-                        ContestParticipantId = participant.Id,
-                        ContestProblemId = problem.Id,
-                        ContestProblemCode = request.ProblemCode,
-                        SubmissionCount = 1
-                    };
-
-                    _context.ContestParticipantProblems.Add(participantProblem);
-                }
-
                 var submission = new CreateSubmissionRequest
                 {
                     SourceCode = request.SourceCode,
@@ -217,7 +184,7 @@ namespace FU.OJ.Server.Service
                     ProblemCode = problem.ProblemCode
                 };
 
-                await _submissionService.CreateAsync(userId, submission, false, true);
+                var submissionId = await _submissionService.CreateAsync(userId, submission, false, true);
                 var _problem = await _problemService.GetByCodeAsync(userId, request.ProblemCode);
                 if (_problem == null)
                     throw new NotFoundException(ErrorMessage.NotFound);
@@ -231,12 +198,12 @@ namespace FU.OJ.Server.Service
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return true;
+                return submissionId;
             }
             catch
             {
                 await transaction.RollbackAsync();
-                return false;
+                return null;
             }
         }
 
@@ -323,7 +290,6 @@ namespace FU.OJ.Server.Service
                 ProblemCode = problem.ProblemCode,
                 Point = problem.Point,
                 Order = problem.Order,
-                MaximumSubmission = problem.MaximumSubmission,
                 Title = problem.Problem.Title,
                 TimeLimit = problem.Problem.TimeLimit,
                 MemoryLimit = problem.Problem.MemoryLimit,
@@ -359,15 +325,6 @@ namespace FU.OJ.Server.Service
             var participant = await GetContestParticipantByCodeAsync(contestCode, userId);
 
             return participant != null;
-        }
-
-        public async Task<int> GetMaximumSubmissionAsync(string contestCode, string problemCode)
-        {
-            var problem = await GetContestProblemByCodeAsync(contestCode, problemCode);
-            if (problem == null)
-                throw new NotFoundException(ErrorMessage.NotFound);
-
-            return problem.MaximumSubmission;
         }
     }
 }

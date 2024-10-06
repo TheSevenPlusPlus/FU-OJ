@@ -24,7 +24,6 @@ export default function ProblemDetail() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [contestCode, setContestCode] = useState<string | null>(null);
-    const [maximumSubmission, setMaximumSubmission] = useState<number | null>(null);
     const [contest, setContest] = useState<ContestView | null>(null);
     const [isRegistered, setIsRegistered] = useState<boolean>(false);
     const [searchParams] = useSearchParams();
