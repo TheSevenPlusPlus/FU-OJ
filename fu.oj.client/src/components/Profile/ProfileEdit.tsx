@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { getProfile, updateProfile } from "../../api/profile";
 import { UpdateUserProfile, UserProfile } from "../../models/UserProfileModel";
+import { Helmet } from "react-helmet-async";
 
 export default function ProfileEdit() {
     const navigate = useNavigate();
@@ -92,6 +93,9 @@ export default function ProfileEdit() {
 
     return (
         <div className="container mx-auto p-4">
+            <Helmet>
+                <title> Edit profile</title> 
+            </Helmet>
             <Card className="max-w-2xl mx-auto">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold">

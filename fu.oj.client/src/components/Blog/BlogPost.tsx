@@ -14,6 +14,7 @@ import { UserView } from "../../models/UserDTO";
 import { BlogDetail } from "../../models/BlogDTO";
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import Pagination from '../Pagination/Pagination';
+import { Helmet } from "react-helmet-async";
 
 export default function BlogPost() {
     const { blog_id } = useParams<{ blog_id: string }>();
@@ -76,6 +77,11 @@ export default function BlogPost() {
 
     return (
         <div className="min-h-screen bg-gray-50 text-gray-900 flex justify-center py-12">
+            <Helmet>
+                <title> Blog: {blogPost.title} </title>
+                <meta name="description" content="This blog is interesting" />
+            </Helmet>
+
             <div className="w-full max-w-3xl space-y-8">
                 <BlogPostHeader blogPost={blogPost} />
                 <Separator className="my-8" />

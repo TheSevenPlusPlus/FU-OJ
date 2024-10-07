@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import Pagination from '../Pagination/Pagination';
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
+import { Helmet } from "react-helmet-async";
 
 export default function ProblemList() {
     const navigate = useNavigate();
@@ -118,6 +119,9 @@ export default function ProblemList() {
 
     return (
         <div className="container mx-auto py-8">
+            <Helmet>
+                <title> Problem List</title> 
+            </Helmet>
             <div className="flex justify-between items-center mb-4">
                 <h1 className="text-3xl font-bold">All Problems</h1>
                 <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />

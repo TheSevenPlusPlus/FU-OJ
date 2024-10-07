@@ -21,6 +21,7 @@ import { ContestNavbar } from "../Contest/ContestNavbar";
 import Pagination from '../Pagination/Pagination';
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { Badge } from "@/components/ui/badge"; // Import Badge for status colors
+import { Helmet } from "react-helmet-async";
 
 const SubmissionList = () => {
     const navigate = useNavigate();
@@ -164,76 +165,81 @@ const SubmissionList = () => {
                 </div >
             }
 
-        <div className="container mx-auto py-8">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-3xl font-bold">All Submissions</h1>
-                <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
-            </div>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>User</TableHead>
-                        <TableHead>Problem</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Language</TableHead>
-                        <TableHead className="text-right">Submitted At</TableHead>
-                        <TableHead className="text-center">Action</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {submissions.map((submission) => (
-                        <TableRow key={submission.id}>
-                            <TableCell>
-                                {submission.userName ? (
-                                    <Link to={`/Profile/${submission.userName}`} className="text-blue-600 hover:underline">
-                                        {submission.userName}
-                                    </Link>
-                                ) : (
-                                    "Anonymous"
-                                )}
-                            </TableCell>
-                            <TableCell>
-                                {contestCode == null ?
-                                    <Link to={`/problem/${submission.problemName}`} className="text-blue-600 hover:underline">
-                                        {submission.problemName}
-                                    </Link>
-                                    :
-                                    <Link to={`/problem/${submission.problemName}?contestCode=${contestCode}`} className="text-blue-600 hover:underline">
-                                        {submission.problemName}
-                                    </Link>
-                                }
-                            </TableCell>
-                            <TableCell>
-                                <Badge className={`${getStatusColor(submission.status)} text-white`}>
-                                    {submission.status}
-                                </Badge>
-                            </TableCell>
-                            <TableCell>{submission.languageName}</TableCell>
-                            <TableCell className="text-right">
-                                {formatDate(submission.submittedAt)}
-                            </TableCell>
-                            <TableCell className="text-center">
-                                {contestCode == null ?
-                                    <Button onClick={() => navigate(`/submissions/${submission.id}`)} variant="secondary" size="sm">
-                                        View Detail
-                                    </Button>
-                                    :
-                                    <Button onClick={() => navigate(`/submissions/${submission.id}?contestCode=${contestCode}`)} variant="secondary" size="sm">
-                                        View Detail
-                                    </Button>
-                                }
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+            <div className="container mx-auto py-8">
+                <Helmet>
+                    <title> {problemCode ? `Submission List of ${problemCode}` : 'Submission List'} </title>
+                </Helmet>
 
-            {/* Pagination Component */}
-            <Pagination
-                currentPage={pageIndex}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-            />
+
+                <div className="flex justify-between items-center mb-6">
+                    <h1 className="text-3xl font-bold">All Submissions</h1>
+                    <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
+                </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>User</TableHead>
+                            <TableHead>Problem</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Language</TableHead>
+                            <TableHead className="text-right">Submitted At</TableHead>
+                            <TableHead className="text-center">Action</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {submissions.map((submission) => (
+                            <TableRow key={submission.id}>
+                                <TableCell>
+                                    {submission.userName ? (
+                                        <Link to={`/Profile/${submission.userName}`} className="text-blue-600 hover:underline">
+                                            {submission.userName}
+                                        </Link>
+                                    ) : (
+                                        "Anonymous"
+                                    )}
+                                </TableCell>
+                                <TableCell>
+                                    {contestCode == null ?
+                                        <Link to={`/problem/${submission.problemName}`} className="text-blue-600 hover:underline">
+                                            {submission.problemName}
+                                        </Link>
+                                        :
+                                        <Link to={`/problem/${submission.problemName}?contestCode=${contestCode}`} className="text-blue-600 hover:underline">
+                                            {submission.problemName}
+                                        </Link>
+                                    }
+                                </TableCell>
+                                <TableCell>
+                                    <Badge className={`${getStatusColor(submission.status)} text-white`}>
+                                        {submission.status}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>{submission.languageName}</TableCell>
+                                <TableCell className="text-right">
+                                    {formatDate(submission.submittedAt)}
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    {contestCode == null ?
+                                        <Button onClick={() => navigate(`/submissions/${submission.id}`)} variant="secondary" size="sm">
+                                            View Detail
+                                        </Button>
+                                        :
+                                        <Button onClick={() => navigate(`/submissions/${submission.id}?contestCode=${contestCode}`)} variant="secondary" size="sm">
+                                            View Detail
+                                        </Button>
+                                    }
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+
+                {/* Pagination Component */}
+                <Pagination
+                    currentPage={pageIndex}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
             </div>
         </>
     );

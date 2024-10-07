@@ -8,6 +8,7 @@ import { Toast } from "./Toast";
 import { getUserByUserName, updateUser, updateRole } from "../../../api/user";
 import { UserView, UpdateUserRequest } from "../../../models/UserDTO";
 import { getRole } from "../../../api/general";
+import { Helmet } from "react-helmet-async";
 
 export default function UpdateUser() {
     const { userName } = useParams<{ userName: string }>();
@@ -70,6 +71,10 @@ export default function UpdateUser() {
 
     return (
         <Card className="w-full max-w-2xl mx-auto">
+            <Helmet>
+                <title> Update an user </title>
+                <meta name="description" content="" />
+            </Helmet>
             <CardHeader>
                 <CardTitle className="text-2xl font-bold">
                     Update User

@@ -21,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { getProfile } from "../../api/profile";
 import { UserProfile } from "../../models/UserProfileModel";
 import { getRole } from "../../api/general";
+import { Helmet } from "react-helmet-async";
 
 function NotFound() {
     const navigate = useNavigate();
@@ -117,6 +118,9 @@ export default function ProfileView() {
 
     return (
         <div className="container mx-auto p-4">
+            <Helmet>
+                <title>{profile.userName || "User" } profile</title>
+            </Helmet>
             <Card className="max-w-3xl mx-auto">
                 <CardHeader>
                     <div className="flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-4">

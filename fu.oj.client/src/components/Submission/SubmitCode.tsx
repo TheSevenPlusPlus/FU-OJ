@@ -9,6 +9,7 @@ import { getProblemByCode } from "../../api/problem";
 import { getContestByCode, isRegisteredContest } from "../../api/contest";
 import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
+import { Helmet } from "react-helmet-async";
 
 // Define model for language
 interface Language {
@@ -121,6 +122,11 @@ const CodeSubmission: React.FC = () => {
             )}
 
             <div className="container mx-auto py-8">
+                <Helmet>
+                    <title>Submit for {problem?.title || "Unknown Problem"}</title>
+                    <meta name="description" content="Submit your code for the problem." />
+                </Helmet>
+
                 <h1 className="text-3xl font-bold mb-4">Submit Your Code</h1>
                 <select
                     id="language"

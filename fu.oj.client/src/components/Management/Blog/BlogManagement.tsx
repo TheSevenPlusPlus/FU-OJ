@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toast } from "./Toast";
 import { getAllBlogs, deleteBlog } from "../../../api/blog";
 import { BlogDetail, GetAllBlogsResponse } from "../../../models/BlogDTO";
+import { Helmet } from "react-helmet-async";
 
 export default function BlogManagement() {
     const [blogs, setBlogs] = useState<BlogDetail[]>([]);
@@ -62,6 +63,10 @@ export default function BlogManagement() {
 
     return (
         <Card className="w-full max-w-4xl mx-auto">
+            <Helmet>
+                <title> Blog Management </title>
+                <meta name="description" content="" />
+            </Helmet>
             <CardHeader>
                 <CardTitle className="text-2xl font-bold">
                     Blog Management

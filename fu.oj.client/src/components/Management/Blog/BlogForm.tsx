@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { BlogDetail, CreateBlogRequest, UpdateBlogRequest } from '../../../models/BlogDTO';
 import { createBlog, updateBlog, getBlogById } from '../../../api/blog';
 import { useToast } from '../../../hooks/use-toast';
+import { Helmet } from 'react-helmet-async';
 
 interface BlogFormProps {
     blog?: BlogDetail | null;
@@ -120,6 +121,10 @@ export default function BlogForm({ blog: initialBlog }: BlogFormProps) {
 
     return (
         <div className="mt-8 max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+            <Helmet>
+                <title>{blog ? `Edit Blog: ${blog.title}` : 'Create New Blog'}</title>
+                <meta name="description" content="Create or edit a blog post." />
+            </Helmet>
             <form onSubmit={handleSubmit} className="space-y-6">
                 <h2 className="text-2xl font-bold text-center mb-6">{blog ? 'Edit Blog' : 'Create New Blog'}</h2>
                 <div>

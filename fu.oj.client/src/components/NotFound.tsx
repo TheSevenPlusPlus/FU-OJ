@@ -1,10 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Home } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 export default function NotFound() {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <Helmet>
+                <title> Not Found! </title>
+                <meta name="description" content="" />
+            </Helmet>
             <div className="text-center">
                 <h1 className="text-6xl font-bold text-gray-900 mb-4">404</h1>
                 <p className="text-2xl font-semibold text-gray-700 mb-4">

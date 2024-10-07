@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toast } from "./Toast";
 import { getAllUsers, deleteUser } from "../../../api/user";
 import { UserView } from "../../../models/UserDTO";
+import { Helmet } from "react-helmet-async";
 
 interface UsersResponse {
     users: UserView[];
@@ -63,6 +64,10 @@ export default function UserManagement() {
 
     return (
         <Card className="w-full max-w-4xl mx-auto">
+            <Helmet>
+                <title> User Management </title>
+                <meta name="description" content="" />
+            </Helmet>
             <CardHeader>
                 <CardTitle className="text-2xl font-bold">
                     User Management

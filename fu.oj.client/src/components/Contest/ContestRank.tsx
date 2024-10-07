@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { getRank, getContestByCode, isRegisteredContest } from "../../api/contest";
 import { ContestParticipantView, ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "./ContestNavbar";
+import { Helmet } from "react-helmet-async";
 
 export function ContestRank() {
     const { contestCode } = useParams<{ contestCode: string }>();
@@ -65,6 +66,10 @@ export function ContestRank() {
     return (
         <div className="min-h-screen bg-gray-100">
             {isRegistered && <ContestNavbar />}
+            <Helmet>
+                <title> Rank of contest: {contest.name} </title>
+                <meta name="description" content="" />
+            </Helmet>
 
             <div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10 shadow-md">
                 <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest?.name}</h1>

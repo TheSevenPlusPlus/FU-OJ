@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
 import { loginUser, registerUser } from "../../api/auth";
+import { Helmet } from "react-helmet-async"; // Nhập Helmet ở đây
 
 interface RegisterProps {
     additionalFields?: { name: string; label: string }[];
@@ -87,17 +88,23 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
     };
 
     return (
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[400px]">
-            <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
-            </TabsList>
-            <TabsContent value="login">
-                <LoginForm onSubmit={handleLogin} submitError={submitError} />
-            </TabsContent>
-            <TabsContent value="register">
-                <RegisterForm onSubmit={handleRegister} submitError={submitError} additionalFields={additionalFields} />
-            </TabsContent>
-        </Tabs>
+        <>
+            <Helmet>
+                <title>{activeTab === "login" ? "Login | FUOJ" : "Register | FUOJ"}</title>
+                <meta name="description" content={activeTab === "login" ? "Đăng nhập vào tài khoản của bạn." : "Đăng ký tài khoản mới."} />
+            </Helmet>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[400px]">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="login">Login</TabsTrigger>
+                    <TabsTrigger value="register">Register</TabsTrigger>
+                </TabsList>
+                <TabsContent value="login">
+                    <LoginForm onSubmit={handleLogin} submitError={submitError} />
+                </TabsContent>
+                <TabsContent value="register">
+                    <RegisterForm onSubmit={handleRegister} submitError={submitError} additionalFields={additionalFields} />
+                </TabsContent>
+            </Tabs>
+        </>
     );
 }

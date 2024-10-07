@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import { changePassword } from "../../api/user";
+import { Helmet } from "react-helmet-async";
 
 export default function ChangePassword() {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -63,6 +64,9 @@ export default function ChangePassword() {
 
     return (
         <div className="container mx-auto p-4">
+            <Helmet>
+                <title> Change Password </title> 
+            </Helmet>
             <Card className="max-w-md mx-auto">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold">

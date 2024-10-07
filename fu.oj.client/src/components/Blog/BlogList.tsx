@@ -14,6 +14,7 @@ import Pagination from '../Pagination/Pagination'; // Adjust the path as needed
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector'; // Import the new component
 import { UserView } from "../../models/UserDTO";
 import { getProfile } from "../../api/profile";
+import { Helmet } from "react-helmet-async";
 
 interface Blog {
     id: number;
@@ -86,6 +87,11 @@ export default function BlogList() {
 
     return (
         <div className="container mx-auto py-8 px-4">
+            <Helmet>
+                <title> Blogs </title>
+                <meta name="description" content="Blog for everone" />
+            </Helmet>
+
             <h1 className="text-4xl font-bold mb-8 text-center text-black dark:text-white">
                 Latest Blog Posts
             </h1>
