@@ -20,6 +20,7 @@ namespace FU.OJ.Server.Infra.Models{    public class Submission : SubmissionPr
         public string UserId { get; set; } = null!;
         public string? UserName { get; set; }
         public string? Status { get; set; }
+        public string? ContestCode { get; set; }
     }
     public class SubmissionConfiguration : IEntityTypeConfiguration<Submission>
     {

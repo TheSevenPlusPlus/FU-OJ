@@ -41,13 +41,11 @@ export interface CreateContestRequest {
     description?: string;     // Contest description (optional)
     startTime: string;          // Contest start time
     endTime: string;            // Contest end time
-    organizationUserId: string; // Organizer's user ID
     rules?: string;           // Contest rules (optional)
     problems: CreateContestProblemRequest[]; // List of problems for the contest
 }
 
 export interface CreateContestProblemRequest {
-    problemId: string;        // Problem unique ID
     problemCode: string;      // Problem code
     order: number;            // Problem order in the contest
     point: number;            // Points awarded for solving the problem

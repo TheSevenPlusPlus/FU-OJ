@@ -21,6 +21,7 @@ import { ContestNavbar } from "../Contest/ContestNavbar";
 import Pagination from '../Pagination/Pagination';
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { Badge } from "@/components/ui/badge"; // Import Badge for status colors
+import { Search } from "lucide-react";
 
 const SubmissionList = () => {
     const navigate = useNavigate();
@@ -33,8 +34,8 @@ const SubmissionList = () => {
     const [contestCode, setContestCode] = useState<string | null>(null);
     const [searchParams] = useSearchParams();
     const [isRegistered, setIsRegistered] = useState<boolean>(false);
-    const problemCode = searchParams.get("problemCode") || null;
-    const [isMine, setIsMine] = useState<boolean>(false);
+    const [problemCode, setProblemCode] = useState<string | null>(null);
+    const [isMine, setIsMine] = useState<string>(null);
     const [contest, setContest] = useState<ContestView | null>(null);
 
     useEffect(() => {
@@ -43,11 +44,15 @@ const SubmissionList = () => {
             const size = searchParams.get("pageSize");
             const isMine = searchParams.get("isMine");
             const contestCode = searchParams.get("contestCode");
+            const problemCode = searchParams.get("problemCode");
 
             if (index) setPageIndex(Number(index));
             if (size) setPageSize(Number(size));
             // Chuyển đổi giá trị chuỗi sang boolean
-            if (isMine != null) setIsMine(isMine === "true");
+            if (isMine != null) {
+                setIsMine(isMine);
+                //console.log("isMine: ", _isMine);
+            }
 
             if (contestCode != null) {
                 setContestCode(contestCode);
@@ -61,20 +66,17 @@ const SubmissionList = () => {
                     console.error("Error fetching registration status", error);
                 }
             }
-        };
 
-        fetchData();
-    }, [searchParams]);
+            if (problemCode != null) setProblemCode(problemCode);
 
-
-    useEffect(() => {
-        const fetchSubmissions = async () => {
-            setLoading(true);
             try {
+                setLoading(true);
                 const response = await getAllSubmissions(
                     pageIndex,
                     pageSize,
-                    isMine
+                    isMine,
+                    problemCode,
+                    contestCode
                 );
                 const { submissions, totalPages } = response.data;
                 setSubmissions(submissions);
@@ -86,8 +88,8 @@ const SubmissionList = () => {
             }
         };
 
-        fetchSubmissions();
-    }, [pageIndex, pageSize, problemCode, isMine]);
+        fetchData();
+    }, [searchParams, pageIndex, pageSize, problemCode, isMine]);
 
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {
