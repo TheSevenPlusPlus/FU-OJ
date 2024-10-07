@@ -45,9 +45,6 @@ export function ContestRank() {
 
                 const registeredResponse = await isRegisteredContest(contestCode);
                 setIsRegistered(registeredResponse.data);
-
-                console.log("Rank table: ", data);
-                console.log("AC counts: ", problemAcCounts);
             } catch (error) {
                 console.error("Failed to fetch rankings", error);
                 setError("Failed to fetch rankings. Please try again later.");
@@ -87,7 +84,9 @@ export function ContestRank() {
                                     </th>
                                     {problems.map((problem, index) => (
                                         <th key={problem} scope="col" className={`px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider ${index !== problems.length - 1 ? 'border-r border-gray-600' : ''}`}>
-                                            {problem}
+                                            <Link to={`/problem/${problem}?contestCode=${contestCode}`} className="text-white hover:underline">
+                                                {problem}
+                                            </Link>
                                         </th>
                                     ))}
                                 </tr>
@@ -105,7 +104,7 @@ export function ContestRank() {
                                             const result = ranking.problems?.find((r) => r.problemCode === problem);
                                             return (
                                                 <td key={problem} className={`px-6 py-4 whitespace-nowrap text-sm font-bold text-green-500 ${problemIndex !== problems.length - 1 ? 'border-r border-gray-200' : ''}`}>
-                                                    <Link to={`/submissions/all?contestCode=${contestCode}`} className="text-green-500 hover:underline">
+                                                    <Link to={`/submissions/all?contestCode=${contestCode}&problemCode=${result?.problemCode}`} className="text-green-500 hover:underline">
                                                         {result ? `${result.passedTestCount}/${result.totalTests}` : "-"}
                                                     </Link>
                                                 </td>

@@ -9,6 +9,7 @@ namespace FU.OJ.Server.Infra.Models
     {
         public Contest Contest { get; set; } = null!;
         public Problem Problem { get; set; } = null!;
+        public ICollection<ContestRank> ContestRank { get; set; } = new List<ContestRank>();
     }
 
     public class ContestProblemProperties

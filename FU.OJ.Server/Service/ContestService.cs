@@ -74,12 +74,8 @@ namespace FU.OJ.Server.Service
             if (request.StartTime > request.EndTime)
                 throw new BadException(ErrorMessage.StartTimeGreaterThanEndTime);
 
-            var user = await _userService.GetUserByIdAsync(request.OrganizationId);
+            var user = await _userService.GetUserByIdAsync(userId);
             if (user == null)
-                throw new NotFoundException(ErrorMessage.NotFound);
-
-            var _user = await _userService.GetUserByIdAsync(userId);
-            if (_user == null)
                 throw new NotFoundException(ErrorMessage.NotFound);
 
             contest = new Contest
@@ -89,7 +85,8 @@ namespace FU.OJ.Server.Service
                 Description = request.Description,
                 StartTime = request.StartTime,
                 EndTime = request.EndTime,
-                OrganizationId = request.OrganizationId,
+                OrganizationId = userId,
+                CreatedAt = DateTime.UtcNow,
                 OrganizationName = user.UserName ?? "Unknown",
                 Rules = request.Rules
             };
@@ -169,6 +166,10 @@ namespace FU.OJ.Server.Service
                 if (participant == null)
                     throw new NotFoundException(ErrorMessage.NotFound);
 
+                var user = await _userService.GetUserByIdAsync(userId);
+                if (user == null)
+                    throw new NotFoundException(ErrorMessage.NotFound);
+
                 var contest = await GetContestByCodeAsync(request.ContestCode);
                 if (contest == null)
                     throw new NotFoundException(ErrorMessage.NotFound);
@@ -184,17 +185,45 @@ namespace FU.OJ.Server.Service
                     ProblemId = problem.ProblemId,
                     ProblemCode = problem.ProblemCode
                 };
-
-                var submissionId = await _submissionService.CreateAsync(userId, submission, false, true);
+                   
+                var submissionId = await _submissionService.CreateAsync(userId, submission, request.ContestCode, false, true);
                 var _problem = await _problemService.GetByCodeAsync(userId, request.ProblemCode);
                 if (_problem == null)
                     throw new NotFoundException(ErrorMessage.NotFound);
 
-                double point = (problem.Point != 0 ? _problem.PassedTestCount / _problem.TotalTests : 0) * problem.Point;
-                if (participant.Score < point)
+                var rank = await _context.contestRanks.AsNoTracking()
+                    .FirstOrDefaultAsync(r => r.ContestParticipantId == participant.Id && r.ContestProblemId == problem.Id);
+
+                if (rank == null)
                 {
-                    participant.Score = point;
+                    double point = 1.0 * _problem.PassedTestCount / (double) _problem.TotalTests * problem.Point;
+                    rank = new ContestRank
+                    {
+                        ContestParticipantId = participant.Id,
+                        ContestProblemId = problem.Id,
+                        ContestProblemCode = problem.ProblemCode,
+                        ContestParticipantName = user.UserName,
+                        PassedTestCount = _problem.PassedTestCount,
+                        Point = point
+                    };
+
+                    _context.contestRanks.Add(rank);
+
+                    participant.Score += point;
                     _context.ContestParticipants.Update(participant);
+                }
+                else
+                {
+                    if (_problem.PassedTestCount > rank.PassedTestCount)
+                    {
+                        double point = _problem.PassedTestCount / _problem.TotalTests * problem.Point;
+                        double oldPoint = rank.PassedTestCount / _problem.TotalTests * problem.Point;
+                        rank.PassedTestCount = _problem.PassedTestCount;
+                        rank.Point = point;
+                        _context.contestRanks.Update(rank);
+                        participant.Score += point - oldPoint;
+                        _context.ContestParticipants.Update(participant);
+                    }
                 }
 
                 await _context.SaveChangesAsync();
@@ -216,6 +245,9 @@ namespace FU.OJ.Server.Service
 
             if (contest.StartTime > DateTime.UtcNow)
                 throw new BadException(ErrorMessage.ContestNotStarted);
+
+            if (contest.EndTime < DateTime.UtcNow)
+                throw new BadException(ErrorMessage.ContestEnded);
 
             var participant = await GetContestParticipantByCodeAsync(contestCode, userId);
             if (participant != null)
@@ -276,11 +308,15 @@ namespace FU.OJ.Server.Service
                 .ToListAsync();
 
             // Step 2: Get the list of ProblemIds from the retrieved contest problems
-            var problemIds = contestProblems.Select(cp => cp.ProblemId).ToList();
+            var problemIds = contestProblems.Select(cp => cp.Id).ToList();
+
+            var participant = await GetContestParticipantByCodeAsync(contestCode, userId);
+            if (participant == null)
+                throw new NotFoundException(ErrorMessage.NotFound);
 
             // Step 3: Fetch the corresponding ProblemUser records for the userId and ProblemIds
-            var problemUsers = await _context.ProblemUsers.AsNoTracking()
-                .Where(pu => pu.UserId == userId && problemIds.Contains(pu.ProblemId))
+            var contestRank = await _context.contestRanks.AsNoTracking()
+                .Where(pu => pu.ContestParticipantId == participant.Id && problemIds.Contains(pu.ContestProblemId))
                 .ToListAsync();
 
             // Step 4: Map the contest problems to the DTO
@@ -297,7 +333,7 @@ namespace FU.OJ.Server.Service
                 TotalTests = problem.Problem.TotalTests,
                 Difficulty = problem.Problem.Difficulty,
                 // Get PassedTestCount from the ProblemUsers list
-                PassedTestCount = problemUsers.FirstOrDefault(pu => pu.ProblemId == problem.ProblemId)?.PassedTestCount ?? 0
+                PassedTestCount = contestRank.FirstOrDefault(pu => pu.ContestProblemId == problem.Id)?.PassedTestCount ?? 0
             })
             .OrderBy(p => p.Order)
             .ToList();
@@ -345,11 +381,11 @@ namespace FU.OJ.Server.Service
                 .ToListAsync();
 
             // Step 3: Get a list of problem ids for the contest
-            var problemIds = contestProblems.Select(cp => cp.ProblemId).ToList();
+            var problemIds = contestProblems.Select(cp => cp.Id).ToList();
 
             // Step 4: Fetch the ProblemUser records for all participants and problems
-            var problemUsers = await _context.ProblemUsers.AsNoTracking()
-                .Where(pu => problemIds.Contains(pu.ProblemId) && participants.Select(p => p.UserId).Contains(pu.UserId))
+            var contestRank = await _context.contestRanks.AsNoTracking()
+                .Where(pu => problemIds.Contains(pu.ContestProblemId) && participants.Select(p => p.Id).Contains(pu.ContestParticipantId))
                 .ToListAsync();
 
             // Step 5: For each participant, map the problems
@@ -368,8 +404,8 @@ namespace FU.OJ.Server.Service
                     TotalTests = problem.Problem.TotalTests,
                     Difficulty = problem.Problem.Difficulty,
                     // PassedTestCount from the ProblemUsers list for the specific participant
-                    PassedTestCount = problemUsers
-                        .FirstOrDefault(pu => pu.ProblemId == problem.ProblemId && pu.UserId == participant.UserId)?.PassedTestCount ?? 0
+                    PassedTestCount = contestRank
+                        .FirstOrDefault(pu => pu.ContestProblemId == problem.Id && pu.ContestParticipantId == participant.Id)?.PassedTestCount ?? 0
                 })
                 .OrderBy(p => p.Order)
                 .ToList();
