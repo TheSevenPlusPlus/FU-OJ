@@ -17,6 +17,7 @@ import TextWithNewLines from "../TextWithNewLines/TextWithNewLines";
 import { getContestByCode, registerContest, isRegisteredContest, getContestProblems } from "../../api/contest";  // Import the isRegisteredContest API
 import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
+import { Helmet } from "react-helmet-async";
 
 export default function ProblemDetail() {
     const { problemCode } = useParams<{ problemCode: string }>();
@@ -97,91 +98,96 @@ export default function ProblemDetail() {
                 </div >
             }
 
-        <div className="container mx-auto py-8">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-3xl">{problem.title}</CardTitle>
-                    <CardDescription className={getDifficultyColor(problem.difficulty)}>
-                        <Badge
-                            variant={
-                                problem.difficulty === "Easy"
-                                    ? "accepted"
-                                    : problem.difficulty === "Medium"
-                                        ? "timeLimitExceeded"
-                                        : "destructive"
+            <div className="container mx-auto py-8">
+                <Helmet>
+                    <title>Problem: {problem.title}</title>
+                    <meta name="description" content={problem.description || "Details about the problem."} />
+                </Helmet>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="text-3xl">{problem.title}</CardTitle>
+                        <CardDescription className={getDifficultyColor(problem.difficulty)}>
+                            <Badge
+                                variant={
+                                    problem.difficulty === "Easy"
+                                        ? "accepted"
+                                        : problem.difficulty === "Medium"
+                                            ? "timeLimitExceeded"
+                                            : "destructive"
+                                }
+                            >
+                                {problem.difficulty || "Unknown"}
+                            </Badge>
+                        </CardDescription>
+
+                        <Progress
+                            value={
+                                ((problem.passedTestCount ?? 0) / (problem.totalTests ?? 1)) * 100
                             }
-                        >
-                            {problem.difficulty || "Unknown"}
-                        </Badge>
-                    </CardDescription>
+                        />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            {/* Description */}
+                            <div>
+                                <TextWithNewLines text={problem.description} />
+                            </div>
 
-                    <Progress
-                        value={
-                            ((problem.passedTestCount ?? 0) / (problem.totalTests ?? 1)) * 100
-                        }
-                    />
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        {/* Description */}
-                        <div>
-                            <TextWithNewLines text={problem.description} />
-                        </div>
+                            <div>
+                                <h2 className="text-xl font-semibold mb-2">Input</h2>
+                                <hr className="my-4" />
+                                <TextWithNewLines text={problem.input} />
+                            </div>
 
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2">Input</h2>
-                            <hr className="my-4" />
-                            <TextWithNewLines text={problem.input} />
-                        </div>
+                            <div>
+                                <h2 className="text-xl font-semibold mb-2">Output</h2>
+                                <hr className="my-4" />
+                                <TextWithNewLines text={problem.output} />
+                            </div>
 
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2">Output</h2>
-                            <hr className="my-4" />
-                            <TextWithNewLines text={problem.output} />
-                        </div>
+                            {/* Example Input/Output */}
+                            <div>
+                                <h2 className="text-xl font-semibold mb-2">Example</h2>
+                                <table className="min-w-full table-auto">
+                                    <thead>
+                                        <tr>
+                                            <th className="px-4 py-2 border border-b border-gray-300 bg-black text-white font-bold">Input</th>
+                                            <th className="px-4 py-2 border border-b border-gray-300 bg-black text-white font-bold">Output</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td className="px-4 py-2 border">
+                                                {problem.exampleInput}
+                                            </td>
+                                            <td className="px-4 py-2 border">
+                                                {problem.exampleOutput}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                        {/* Example Input/Output */}
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2">Example</h2>
-                            <table className="min-w-full table-auto">
-                                <thead>
-                                    <tr>
-                                        <th className="px-4 py-2 border border-b border-gray-300 bg-black text-white font-bold">Input</th>
-                                        <th className="px-4 py-2 border border-b border-gray-300 bg-black text-white font-bold">Output</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td className="px-4 py-2 border">
-                                            {problem.exampleInput}
-                                        </td>
-                                        <td className="px-4 py-2 border">
-                                            {problem.exampleOutput}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                            {/* Constraints */}
+                            <div>
+                                <h2 className="text-xl font-semibold mb-2">Constraints</h2>
+                                <hr className="my-4" />
+                                <TextWithNewLines text={problem.constraints} />
+                            </div>
 
-                        {/* Constraints */}
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2">Constraints</h2>
-                            <hr className="my-4" />
-                            <TextWithNewLines text={problem.constraints} />
+                            {/* Time and Memory Limits */}
+                            <div>
+                                <h2 className="text-xl font-semibold mb-2">Limits</h2>
+                                <hr className="my-4" />
+                                <ul className="list-disc list-inside">
+                                    <li>Time Limit: {problem.timeLimit} seconds</li>
+                                    <li>Memory Limit: {Math.floor(problem.memoryLimit / 1024)} MB</li>
+                                </ul>
+                            </div>
                         </div>
-
-                        {/* Time and Memory Limits */}
-                        <div>
-                            <h2 className="text-xl font-semibold mb-2">Limits</h2>
-                            <hr className="my-4" />
-                            <ul className="list-disc list-inside">
-                                <li>Time Limit: {problem.timeLimit} seconds</li>
-                                <li>Memory Limit: {Math.floor(problem.memoryLimit / 1024)} MB</li>
-                            </ul>
-                        </div>
-                    </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
                         {/* Submit Solution Button */}
                         {contestCode == null ?
                             <Link to={`/problem/${problemCode}/submit`}>
@@ -193,7 +199,7 @@ export default function ProblemDetail() {
                             </Link>
                         }
 
-                    <div className="space-x-2">
+                        <div className="space-x-2">
                             {/* View All Submissions Button */}
                             {contestCode == null ?
                                 <Link to={`/submissions/all?problemCode=${problemCode}`}>
@@ -215,9 +221,9 @@ export default function ProblemDetail() {
                                     <Button variant="secondary">View my submissions</Button>
                                 </Link>
                             }
-                    </div>
-                </CardFooter>
-            </Card>
+                        </div>
+                    </CardFooter>
+                </Card>
             </div>
         </>
     );

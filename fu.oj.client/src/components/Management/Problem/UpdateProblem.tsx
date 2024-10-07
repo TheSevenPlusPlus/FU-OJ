@@ -17,6 +17,7 @@ import { Upload, X, AlertCircle } from "lucide-react";
 import { updateProblem, getProblemByCode } from "../../../api/problem";
 import { createTestCase, updateTestCase } from "../../../api/testcase";
 import { Problem, UpdateProblemModel } from "../../../models/ProblemModel";
+import { Helmet } from "react-helmet-async";
 
 const UpdateProblem: React.FC = () => {
     const navigate = useNavigate();
@@ -130,6 +131,10 @@ const UpdateProblem: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4">
+            <Helmet>
+                <title> Update problem </title>
+                <meta name="description" content="" />
+            </Helmet>
             <h1 className="text-2xl font-bold mb-4">Update Problem</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>

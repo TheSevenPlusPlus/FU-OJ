@@ -34,6 +34,7 @@ import { getAllProblems, deleteProblem } from "../../../api/problem";
 import Pagination from '../../Pagination/Pagination';
 import ItemsPerPageSelector from '../../Pagination/ItemsPerPageSelector';
 import { Badge } from "@/components/ui/badge";
+import { Helmet } from "react-helmet-async";
 interface Problem {
     id: string;
     code: string;
@@ -121,6 +122,10 @@ const ProblemManagement: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4">
+            <Helmet>
+                <title> Problem Management </title>
+                <meta name="description" content="" />
+            </Helmet>
             <h1 className="text-2xl font-bold mb-4">Problem Management</h1>
             <div className="flex justify-between items-center mb-4">
                 <Link to="/manager/problems/create">

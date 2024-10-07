@@ -17,6 +17,7 @@ import { createProblem } from "../../../api/problem";
 import { CreateProblemModel } from "../../../models/ProblemModel";
 import { createTestCase } from "../../../api/testcase";
 import { Alert, AlertDescription } from "../../ui/alert";
+import { Helmet } from "react-helmet-async";
 
 interface User {
     userName: string;
@@ -86,6 +87,10 @@ const CreateProblem: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4">
+            <Helmet>
+                <title> Create a problem </title>
+                <meta name="description" content="" />
+            </Helmet>
             <h1 className="text-2xl font-bold mb-4">Create New Problem</h1>
             {error && <div className="text-red-500 mb-4">{error}</div>}
             <form onSubmit={handleSubmit} className="space-y-4">

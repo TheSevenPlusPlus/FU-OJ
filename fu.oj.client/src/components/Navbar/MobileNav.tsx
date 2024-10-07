@@ -41,13 +41,13 @@ const MobileNav: React.FC<MobileNavProps> = ({
             </SheetTrigger>
             <SheetContent side="right" className="bg-black text-white">
                 <div className="flex flex-col space-y-4 mt-4">
-                    <Link
-                        to="/"
-                        className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"
-                        onClick={onToggle}
-                    >
-                        Home
-                    </Link>
+                    {/*<Link*/}
+                    {/*    to="/"*/}
+                    {/*    className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"*/}
+                    {/*    onClick={onToggle}*/}
+                    {/*>*/}
+                    {/*    Home*/}
+                    {/*</Link>*/}
                     <Link
                         to="/problems"
                         className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"

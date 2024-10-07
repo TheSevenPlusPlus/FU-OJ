@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Code, BarChart, Users, BookOpen, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Helmet } from "react-helmet-async";
 
 const features = [
     {
@@ -69,6 +70,10 @@ const blogPosts = [
 const HomePage: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen bg-white">
+            <Helmet>
+                <title> FU Online Judge </title>
+            </Helmet>
+
             {/* Hero Section */}
             <section className="bg-black text-white">
                 <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">

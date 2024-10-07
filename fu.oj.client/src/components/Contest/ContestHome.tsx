@@ -5,6 +5,7 @@ import { ContestView } from "../../models/ContestModel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { ContestNavbar } from "./ContestNavbar";
+import { Helmet } from "react-helmet-async";
 
 export function ContestHome() {
     const { contestCode } = useParams<{ contestCode: string }>();
@@ -64,9 +65,13 @@ export function ContestHome() {
             <div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
                 <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
             </div>
-
+            
             <Card className="max-w-2xl mx-auto mt-8">
                 <br />
+                <Helmet>
+                    <title> Contest: {contest.name}  </title>
+                    <meta name="description" content="This is contest register" />
+                </Helmet>
                 <CardContent className="space-y-4">
                     <p><strong>Description:</strong> {contest.description}</p>
                     <p><strong>Start Time:</strong> {new Date(contest.startTime).toLocaleString()}</p>
