@@ -33,7 +33,7 @@ const DesktopNav: React.FC = () => {
                     to="/rank"
                     className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"
                 >
-                    Rank
+                    Leaderboard
                 </Link>
                 <Link
                     to="/blog"
