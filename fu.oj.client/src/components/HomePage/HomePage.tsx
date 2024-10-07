@@ -47,14 +47,14 @@ const HomePage: React.FC = () => {
 
             {/* Phần Giới Thiệu */}
             <section className="bg-black text-white">
-                <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8 text-center">
+                <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8 text-center">
                     <h1 className="text-4xl font-extrabold sm:text-5xl md:text-6xl">
                         Nâng Cao Kỹ Năng Lập Trình Của Bạn
                     </h1>
-                    <p className="mt-3 max-w-md mx-auto text-base sm:text-lg md:mt-5 md:text-xl text-gray-300">
+{/*                    <p className="mt-3 max-w-md mx-auto text-base sm:text-lg md:mt-5 md:text-xl text-gray-300">
                         Thử thách bản thân với các bài toán lập trình, tham gia cuộc thi
                         và cải thiện kỹ năng giải thuật của bạn.
-                    </p>
+                    </p>*/}
                 </div>
             </section>
 
