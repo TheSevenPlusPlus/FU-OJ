@@ -5,12 +5,12 @@ const DesktopNav: React.FC = () => {
     return (
         <div className="hidden md:block ml-10">
             <div className="flex items-baseline space-x-4">
-                <Link
-                    to="/"
-                    className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"
-                >
-                    Home
-                </Link>
+                {/*<Link*/}
+                {/*    to="/"*/}
+                {/*    className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"*/}
+                {/*>*/}
+                {/*    Home*/}
+                {/*</Link>*/}
                 <Link
                     to="/problems"
                     className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"

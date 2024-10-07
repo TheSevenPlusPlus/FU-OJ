@@ -119,7 +119,7 @@ export default function ProfileView() {
     return (
         <div className="container mx-auto p-4">
             <Helmet>
-                <title>{profile.userName || "User" } profile</title>
+                <title>Profile: {profile.userName || "User" }</title>
             </Helmet>
             <Card className="max-w-3xl mx-auto">
                 <CardHeader>
