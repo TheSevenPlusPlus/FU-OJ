@@ -20,6 +20,7 @@ import Pagination from '../Pagination/Pagination';
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { getAllContests, deleteContest } from "../../api/contest"; // Import API methods
 import { ContestView } from "../../models/ContestModel"
+import { Helmet } from "react-helmet-async";
 
 const ContestList: React.FC = () => {
     const navigate = useNavigate();
@@ -87,6 +88,11 @@ const ContestList: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4">
+            <Helmet>
+                <title> Contests </title>
+                <meta name="description" content="A list of contests" />
+            </Helmet>
+
             <h1 className="text-2xl font-bold mb-4">All contest</h1>
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center">

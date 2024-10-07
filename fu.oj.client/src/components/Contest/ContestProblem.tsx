@@ -16,6 +16,7 @@ import Pagination from '../Pagination/Pagination';
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { ContestNavbar } from "./ContestNavbar";
 import { ContestView } from "../../models/ContestModel";
+import { Helmet } from "react-helmet-async";
 
 export default function ContestProblem() {
     const navigate = useNavigate();
@@ -109,62 +110,66 @@ export default function ContestProblem() {
                 <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
             </div>
 
-        <div className="container mx-auto py-8">
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-3xl font-bold">Contest Problems</h1>
-            </div>
+            <div className="container mx-auto py-8">
+                <Helmet>
+                    <title> Contest: {contest.name} </title>
+                    <meta name="description" content="" />
+                </Helmet>
+                <div className="flex justify-between items-center mb-4">
+                    <h1 className="text-3xl font-bold">Contest Problems</h1>
+                </div>
 
-            <Table className="border border-gray-300">
-                <TableHeader>
-                    <TableRow className="border-b border-gray-300 bg-black">
-                        <TableHead className="w-[50px] border border-gray-300 text-white font-bold">Status</TableHead>
-                        <TableHead className="w-[80px] border border-gray-300 text-white font-bold">Difficulty</TableHead>
-                        <TableHead className="w-[100px] border border-gray-300 text-white font-bold">Code</TableHead>
-                        <TableHead className="border border-gray-300 text-white font-bold">Title</TableHead>
-                        <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Time Limit</TableHead>
-                        <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Memory (MB)</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {problems.map((problem) => (
-                        <TableRow
-                            key={problem.problemCode}
-                            className="border-b border-gray-300 hover:bg-gray-100 transition duration-200"
-                        >
-                            <TableCell className="flex items-center justify-center">
-                                {getStatusIcon(problem.passedTestCount, problem.totalTests)}
-                            </TableCell>
-
-                            <TableCell className="border border-gray-300">
-                                <Badge
-                                    className={`font-medium text-white ${getDifficultyColor(problem.difficulty)}`}
-                                    variant={
-                                        problem.difficulty === "Easy"
-                                            ? "default"
-                                            : problem.difficulty === "Medium"
-                                                ? "secondary"
-                                                : "destructive"
-                                    }
-                                >
-                                    {problem.difficulty || "Unknown"}
-                                </Badge>
-                            </TableCell>
-
-                            <TableCell className="font-medium border border-gray-300">{problem.problemCode}</TableCell>
-                            <TableCell className="border border-gray-300">
-                                <Link to={`/problem/${problem.problemCode}?contestCode=${contestCode}`} className="text-blue-600 hover:underline">
-                                    {problem.title}
-                                </Link>
-                            </TableCell>
-                            <TableCell className="font-medium border border-gray-300">
-                                {problem.timeLimit === 0 ? 1 : problem.timeLimit}s
-                            </TableCell>
-                            <TableCell className="font-medium border border-gray-300">{Math.floor(problem.memoryLimit / 1024)} MB</TableCell>
+                <Table className="border border-gray-300">
+                    <TableHeader>
+                        <TableRow className="border-b border-gray-300 bg-black">
+                            <TableHead className="w-[50px] border border-gray-300 text-white font-bold">Status</TableHead>
+                            <TableHead className="w-[80px] border border-gray-300 text-white font-bold">Difficulty</TableHead>
+                            <TableHead className="w-[100px] border border-gray-300 text-white font-bold">Code</TableHead>
+                            <TableHead className="border border-gray-300 text-white font-bold">Title</TableHead>
+                            <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Time Limit</TableHead>
+                            <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Memory (MB)</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
+                    </TableHeader>
+                    <TableBody>
+                        {problems.map((problem) => (
+                            <TableRow
+                                key={problem.problemCode}
+                                className="border-b border-gray-300 hover:bg-gray-100 transition duration-200"
+                            >
+                                <TableCell className="flex items-center justify-center">
+                                    {getStatusIcon(problem.passedTestCount, problem.totalTests)}
+                                </TableCell>
+
+                                <TableCell className="border border-gray-300">
+                                    <Badge
+                                        className={`font-medium text-white ${getDifficultyColor(problem.difficulty)}`}
+                                        variant={
+                                            problem.difficulty === "Easy"
+                                                ? "default"
+                                                : problem.difficulty === "Medium"
+                                                    ? "secondary"
+                                                    : "destructive"
+                                        }
+                                    >
+                                        {problem.difficulty || "Unknown"}
+                                    </Badge>
+                                </TableCell>
+
+                                <TableCell className="font-medium border border-gray-300">{problem.problemCode}</TableCell>
+                                <TableCell className="border border-gray-300">
+                                    <Link to={`/problem/${problem.problemCode}?contestCode=${contestCode}`} className="text-blue-600 hover:underline">
+                                        {problem.title}
+                                    </Link>
+                                </TableCell>
+                                <TableCell className="font-medium border border-gray-300">
+                                    {problem.timeLimit === 0 ? 1 : problem.timeLimit}s
+                                </TableCell>
+                                <TableCell className="font-medium border border-gray-300">{Math.floor(problem.memoryLimit / 1024)} MB</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
         </>
     );
 }

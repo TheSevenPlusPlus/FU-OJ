@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Award } from "lucide-react";
 import { getRank } from "../../api/general"; // Assuming the api file is in the same directory
+import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom"; 
+
 
 type Participant = {
     rank: number;
@@ -78,6 +81,11 @@ export default function Rank() {
 
     return (
         <div className="container mx-auto py-10">
+            <Helmet>
+                <title> Rank of users</title>
+                <meta name="description" content="This is a scoreboard of AC problem." />
+            </Helmet>
+
             <Card className="border-2 border-black">
                 <CardContent className="p-0">
                     <div className="overflow-x-auto">
@@ -110,7 +118,9 @@ export default function Rank() {
                                             </div>
                                         </td>
                                         <td className="px-4 py-2">
-                                            {participant.userName}
+                                            <Link to={`/profile/${participant.userName}`} className="text-blue-600 hover:underline">
+                                                {participant.userName}
+                                            </Link>
                                         </td>
                                         <td className="px-4 py-2 text-right">
                                             <Badge

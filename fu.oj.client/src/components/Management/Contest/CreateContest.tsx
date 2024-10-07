@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { createContest } from "../../../api/contest"; // API call to create contest
 import { CreateContestRequest, CreateContestProblemRequest } from "../../../models/ContestModel";
 import { X, Plus } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 
 const CreateContest: React.FC = () => {
     const navigate = useNavigate();
@@ -78,6 +79,9 @@ const CreateContest: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4">
+            <Helmet>
+                <title> Create a contest </title>
+            </Helmet>
             <h1 className="text-2xl font-bold mb-4">Create New Contest</h1>
             {error && <div className="text-red-500 mb-4">{error}</div>}
             <form onSubmit={handleSubmit} className="space-y-4">

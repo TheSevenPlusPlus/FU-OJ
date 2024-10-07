@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toast } from "./Toast";
 import { createUser, updateRole } from "../../../api/user";
 import { CreateUserRequest } from "../../../models/UserDTO";
+import { Helmet } from "react-helmet-async";
 
 export default function CreateUser() {
     const navigate = useNavigate();
@@ -38,6 +39,10 @@ export default function CreateUser() {
 
     return (
         <Card className="w-full max-w-2xl mx-auto">
+            <Helmet>
+                <title> Create an user </title>
+                <meta name="description" content="" />
+            </Helmet>
             <CardHeader>
                 <CardTitle className="text-2xl font-bold">
                     Create New User

@@ -20,6 +20,7 @@ import Pagination from '../../Pagination/Pagination';
 import ItemsPerPageSelector from '../../Pagination/ItemsPerPageSelector';
 import { getAllContests, deleteContest } from "../../../api/contest"; // Import API methods
 import { ContestView } from "../../../models/ContestModel"
+import { Helmet } from "react-helmet-async";
 
 const ContestManagement: React.FC = () => {
     const navigate = useNavigate();
@@ -87,6 +88,10 @@ const ContestManagement: React.FC = () => {
 
     return (
         <div className="container mx-auto p-4">
+            <Helmet>
+                <title> Contest Management </title>
+                <meta name="description" content="" />
+            </Helmet>
             <h1 className="text-2xl font-bold mb-4">Contest Management</h1>
             <div className="flex justify-between items-center mb-4">
                 <Link to="/manager/contests/create">

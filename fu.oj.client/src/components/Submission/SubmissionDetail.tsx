@@ -19,6 +19,7 @@ import { Submission } from "../../models/SubmissionModel";
 import { getContestByCode, registerContest, isRegisteredContest, getContestProblems } from "../../api/contest";  // Import the isRegisteredContest API
 import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
+import { Helmet } from "react-helmet-async";
 
 const SubmissionDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -82,149 +83,154 @@ const SubmissionDetail: React.FC = () => {
 
     return (
         <>
-                {isRegistered && <ContestNavbar />}
+            {isRegistered && <ContestNavbar />}
 
-                {isRegistered &&
-                    < div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
-                        <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
-                    </div >
-                }
-        <div className="container mx-auto py-8 bg-gray-100 min-h-screen">
-            <Card className="w-full max-w-4xl mx-auto bg-white text-black">
-                <CardHeader className="border-b border-gray-200">
-                    {submission ? (
-                        <CardTitle className="text-2xl font-bold">
-                            {contestCode == null ?
-                                <Link
-                                    to={`/problem/${submission.problemName}`}
-                                    className="text-blue-600 hover:underline"
-                                >
-                                    {submission.problemName}
-                                </Link>
-                                :
-                                <Link
-                                    to={`/problem/${submission.problemName}?contestCode=${contestCode}`}
-                                    className="text-blue-600 hover:underline"
-                                >
-                                    {submission.problemName}
-                                </Link>
-                            }
-                        </CardTitle>
-                    ) : (
-                        <CardTitle className="text-2xl font-bold">
-                            Loading...
-                        </CardTitle>
-                    )}
-                </CardHeader>
-                <CardContent className="pt-6">
-                    {submission ? (
-                        <>
-                            {/* Basic Submission Info */}
-                            <div className="grid grid-cols-2 gap-4 mb-6">
-                                <div className="flex items-center">
-                                    <Code className="mr-2 text-gray-600" />
-                                    <span className="font-semibold">
-                                        Language:
-                                    </span>
-                                    <span className="ml-2">
-                                        {submission.languageName}
-                                    </span>
-                                </div>
-                                <div className="flex items-center">
-                                    <Clock className="mr-2 text-gray-600" />
-                                    <span className="font-semibold">
-                                        Submitted:
-                                    </span>
-                                    <span className="ml-2">
-                                        {formatDate(submission.submittedAt)}
-                                    </span>
-                                </div>
-                                <div className="flex items-center">
-                                    <User className="mr-2 text-gray-600" />
-                                    <span className="font-semibold">User:</span>
-                                    <span className="ml-2">
-                                        <Link
-                                            to={`/Profile/${submission.userName}`}
-                                            className="text-blue-600 hover:underline"
-                                        >
-                                            {submission.userName || "Anonymous"}
-                                        </Link>
-                                    </span>
-                                </div>
-                                <div className="flex items-center">
-                                    <Badge
-                                        className={`${getStatusColor(submission.status)} text-white`}
+            {isRegistered &&
+                < div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
+                    <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
+                </div >
+            }
+            <div className="container mx-auto py-8 bg-gray-100 min-h-screen">
+                <Helmet>
+                    <title>Submission of {submission.problemName}</title>
+                    <meta name="description" content="Submission" />
+                </Helmet>
+
+                <Card className="w-full max-w-4xl mx-auto bg-white text-black">
+                    <CardHeader className="border-b border-gray-200">
+                        {submission ? (
+                            <CardTitle className="text-2xl font-bold">
+                                {contestCode == null ?
+                                    <Link
+                                        to={`/problem/${submission.problemName}`}
+                                        className="text-blue-600 hover:underline"
                                     >
-                                        {submission.status}
-                                    </Badge>
+                                        {submission.problemName}
+                                    </Link>
+                                    :
+                                    <Link
+                                        to={`/problem/${submission.problemName}?contestCode=${contestCode}`}
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {submission.problemName}
+                                    </Link>
+                                }
+                            </CardTitle>
+                        ) : (
+                            <CardTitle className="text-2xl font-bold">
+                                Loading...
+                            </CardTitle>
+                        )}
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        {submission ? (
+                            <>
+                                {/* Basic Submission Info */}
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div className="flex items-center">
+                                        <Code className="mr-2 text-gray-600" />
+                                        <span className="font-semibold">
+                                            Language:
+                                        </span>
+                                        <span className="ml-2">
+                                            {submission.languageName}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <Clock className="mr-2 text-gray-600" />
+                                        <span className="font-semibold">
+                                            Submitted:
+                                        </span>
+                                        <span className="ml-2">
+                                            {formatDate(submission.submittedAt)}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <User className="mr-2 text-gray-600" />
+                                        <span className="font-semibold">User:</span>
+                                        <span className="ml-2">
+                                            <Link
+                                                to={`/Profile/${submission.userName}`}
+                                                className="text-blue-600 hover:underline"
+                                            >
+                                                {submission.userName || "Anonymous"}
+                                            </Link>
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <Badge
+                                            className={`${getStatusColor(submission.status)} text-white`}
+                                        >
+                                            {submission.status}
+                                        </Badge>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Source Code Display with Syntax Highlighting */}
-                            <div className="mb-6">
-                                <h3 className="text-lg font-semibold mb-2">
-                                    Submitted Code:
-                                </h3>
-                                <SyntaxHighlighter
-                                    language={submission.languageName.toLowerCase()}
-                                    style={vs}
-                                >
-                                    {submission.sourceCode ?? "Bạn phải vượt qua bài này để xem được code của mọi người"}
-                                </SyntaxHighlighter>
-                            </div>
+                                {/* Source Code Display with Syntax Highlighting */}
+                                <div className="mb-6">
+                                    <h3 className="text-lg font-semibold mb-2">
+                                        Submitted Code:
+                                    </h3>
+                                    <SyntaxHighlighter
+                                        language={submission.languageName.toLowerCase()}
+                                        style={vs}
+                                    >
+                                        {submission.sourceCode ?? "Bạn phải vượt qua bài này để xem được code của mọi người"}
+                                    </SyntaxHighlighter>
+                                </div>
 
-                            {/* Test Results Table */}
-                            <div>
-                                <h3 className="text-lg font-semibold mb-2">
-                                    Test Results:
-                                </h3>
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead className="w-[100px]">
-                                                Test Case
-                                            </TableHead>
-                                            <TableHead>Status</TableHead>
-                                            <TableHead>Time</TableHead>
-                                            <TableHead>Memory</TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {submission.results.map(
-                                            (result, index) => (
-                                                <TableRow>
-                                                    <TableCell className="font-medium">
-                                                        Test {index + 1}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Badge
-                                                            className={`${getStatusColor(result.statusDescription)} text-white`}
-                                                        >
-                                                            {
-                                                                result.statusDescription
-                                                            }
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {result.time == null
-                                                            ? "0"
-                                                            : result.time}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {result.memory} KB
-                                                    </TableCell>
-                                                </TableRow>
-                                            ),
-                                        )}
-                                    </TableBody>
-                                </Table>
-                            </div>
-                        </>
-                    ) : (
-                        <p>Loading submission details...</p>
-                    )}
-                </CardContent>
-            </Card>
+                                {/* Test Results Table */}
+                                <div>
+                                    <h3 className="text-lg font-semibold mb-2">
+                                        Test Results:
+                                    </h3>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead className="w-[100px]">
+                                                    Test Case
+                                                </TableHead>
+                                                <TableHead>Status</TableHead>
+                                                <TableHead>Time</TableHead>
+                                                <TableHead>Memory</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {submission.results.map(
+                                                (result, index) => (
+                                                    <TableRow>
+                                                        <TableCell className="font-medium">
+                                                            Test {index + 1}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Badge
+                                                                className={`${getStatusColor(result.statusDescription)} text-white`}
+                                                            >
+                                                                {
+                                                                    result.statusDescription
+                                                                }
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {result.time == null
+                                                                ? "0"
+                                                                : result.time}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {result.memory} KB
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ),
+                                            )}
+                                        </TableBody>
+                                    </Table>
+                                </div>
+                            </>
+                        ) : (
+                            <p>Loading submission details...</p>
+                        )}
+                    </CardContent>
+                </Card>
             </div>
         </>
     );

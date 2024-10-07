@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { resetPassword } from '../../api/auth';
 import { Eye, EyeOff } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Helmet } from 'react-helmet-async';
 
 const ResetPassword: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -80,72 +81,77 @@ const ResetPassword: React.FC = () => {
     };
 
     return (
-        <Card className="w-[350px] mx-auto mt-20">
-            <CardHeader>
-                <CardTitle>Reset Password</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                        <label htmlFor="email" className="text-sm font-medium">Email</label>
-                        <Input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            disabled
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label htmlFor="newPassword" className="text-sm font-medium">New Password</label>
-                        <div className="relative">
+        <>
+            <Helmet>
+                <title> Forgot Password </title>
+            </Helmet>
+            <Card className="w-[350px] mx-auto mt-20">
+                <CardHeader>
+                    <CardTitle>Reset Password</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="space-y-2">
+                            <label htmlFor="email" className="text-sm font-medium">Email</label>
                             <Input
-                                id="newPassword"
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Enter new password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                disabled
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="newPassword" className="text-sm font-medium">New Password</label>
+                            <div className="relative">
+                                <Input
+                                    id="newPassword"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Enter new password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    required
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute right-0 top-0 h-full"
+                                    onClick={togglePasswordVisibility}
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</label>
+                            <Input
+                                id="confirmPassword"
+                                type="password"
+                                placeholder="Confirm new password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
                                 required
                             />
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="absolute right-0 top-0 h-full"
-                                onClick={togglePasswordVisibility}
-                            >
-                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </Button>
                         </div>
-                    </div>
-                    <div className="space-y-2">
-                        <label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</label>
-                        <Input
-                            id="confirmPassword"
-                            type="password"
-                            placeholder="Confirm new password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    {passwordError && (
-                        <Alert variant="destructive">
-                            <AlertDescription>{passwordError}</AlertDescription>
-                        </Alert>
-                    )}
-                    {updateError && (
-                        <Alert variant="destructive">
-                            <AlertDescription>{updateError}</AlertDescription>
-                        </Alert>
-                    )}
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? 'Resetting...' : 'Reset Password'}
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
+                        {passwordError && (
+                            <Alert variant="destructive">
+                                <AlertDescription>{passwordError}</AlertDescription>
+                            </Alert>
+                        )}
+                        {updateError && (
+                            <Alert variant="destructive">
+                                <AlertDescription>{updateError}</AlertDescription>
+                            </Alert>
+                        )}
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                            {isLoading ? 'Resetting...' : 'Reset Password'}
+                        </Button>
+                    </form>
+                </CardContent>
+            </Card>
+        </>
     );
 };
 
