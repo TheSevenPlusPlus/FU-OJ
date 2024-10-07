@@ -13,14 +13,13 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
         {
             try
             {
-                return Ok(await _submissionService.CreateAsync(UserHeader.UserId, request, false, true));
+                return Ok(await _submissionService.CreateAsync(UserHeader.UserId, request, null, false, true));
             }
             catch (Exception ex)
             {
                 return HandleException(ex);
             }
-        }
-        [AllowAnonymous]        [HttpGet(SubmissionRoute.Action.Get)]
+        }        [HttpGet(SubmissionRoute.Action.Get)]
         public async Task<IActionResult> GetSubmissionDetails([FromRoute] string id)
         {
             try
@@ -34,12 +33,12 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
             }
         }
         [AllowAnonymous]        [HttpGet(SubmissionRoute.Action.GetAll)]
-        public async Task<IActionResult> GetAllSubmissions([FromQuery] Paging query, [FromQuery] string? problemCode, [FromQuery] bool? isMine = false)
+        public async Task<IActionResult> GetAllSubmissions([FromQuery] Paging query, string? problemCode = null, string? isMine = "false", string? contestCode = null)
         {
             try
             {
                 // Gọi dịch vụ để lấy danh sách submissions và tổng số trang
-                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsAsync(query, problemCode, UserHeader.UserId, isMine);
+                var (submissions, totalPages) = await _submissionService.GetAllSubmissionsAsync(query, problemCode, UserHeader.UserId, isMine, contestCode);
                 // Trả về kết quả dưới dạng JSON
                 return Ok(new { submissions, totalPages });
             }

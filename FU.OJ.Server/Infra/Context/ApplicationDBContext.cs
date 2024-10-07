@@ -17,6 +17,7 @@ namespace FU.OJ.Server.Infra.Context{    public class ApplicationDbContext : I
         public DbSet<BlogComment> BlogComments { get; set; }
         public DbSet<ProblemUser> ProblemUsers { get; set; }
         public DbSet<ContestProblem> ContestProblems { get; set; }
+        public DbSet<ContestRank> contestRanks { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

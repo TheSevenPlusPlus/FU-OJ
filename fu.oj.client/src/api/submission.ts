@@ -16,10 +16,14 @@ export const submitCode = async (data: {
 export const getAllSubmissions = async (
     pageIndex: number,
     pageSize: number,
-    isMine: boolean | false
+    isMine: string | null,
+    problemCode: string | null,
+    contestCode: string | null
 ) => {
+    //console.log("problemCode: ", problemCode, " contestCode: ", contestCode);
+    //console.log("isMine in here: ", isMine);
     return await apiClient.get(`/submissions/all`, {
-        params: { pageIndex, pageSize, isMine },
+        params: { pageIndex, pageSize, isMine, problemCode, contestCode },
     });
 };
 
