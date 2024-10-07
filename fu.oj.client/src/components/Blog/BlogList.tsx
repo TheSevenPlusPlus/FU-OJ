@@ -10,8 +10,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { getAllBlogs } from "../../api/blog";
-import Pagination from '../Pagination/Pagination'; // Adjust the path as needed
-import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector'; // Import the new component
+import Pagination from '../Pagination/Pagination';
+import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { UserView } from "../../models/UserDTO";
 import { getProfile } from "../../api/profile";
 import { Helmet } from "react-helmet-async";
@@ -31,7 +31,7 @@ export default function BlogList() {
     const [error, setError] = useState<string | null>(null);
     const [totalPages, setTotalPages] = useState<number>(0);
     const [pageIndex, setPageIndex] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(10); // Define page size
+    const [pageSize, setPageSize] = useState<number>(10);
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
@@ -41,13 +41,12 @@ export default function BlogList() {
         if (size) setPageSize(Number(size));
     }, [searchParams]);
 
-    // Fetch blogs with pagination
     useEffect(() => {
         const fetchBlogs = async () => {
             setLoading(true);
             try {
                 const response = await getAllBlogs(pageIndex, pageSize);
-                setBlogs(response.data.blogs); // Assuming API returns { blogs, totalPages }
+                setBlogs(response.data.blogs);
                 setTotalPages(response.data.totalPages);
                 setLoading(false);
             } catch (error) {
@@ -68,15 +67,15 @@ export default function BlogList() {
 
     const handleItemsPerPageChange = (newSize: number) => {
         setPageSize(newSize);
-        setPageIndex(1); // Reset to first page when changing items per page
-        navigate(`/blog?pageIndex=1&pageSize=${newSize}`); // Update URL for new page size
+        setPageIndex(1);
+        navigate(`/blog?pageIndex=1&pageSize=${newSize}`);
     };
 
     if (loading) {
         return (
             <div className="flex flex-col items-center justify-center h-full">
-                <div className="spinner"></div>
-                <p className="text-center text-lg mt-2">Loading blogs...</p>
+                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+                <p className="text-center text-lg mt-4">Loading blogs...</p>
             </div>
         );
     }
@@ -86,89 +85,82 @@ export default function BlogList() {
     }
 
     return (
-        <div className="container mx-auto py-8 px-4">
+        <div className="container mx-auto py-8 px-4 max-w-4xl">
             <Helmet>
-                <title> Blogs </title>
-                <meta name="description" content="Blog for everone" />
+                <title>Blogs</title>
+                <meta name="description" content="Blog for everyone" />
             </Helmet>
 
-            <h1 className="text-4xl font-bold mb-8 text-center text-black dark:text-white">
+            <h1 className="text-4xl font-bold mb-8 text-center">
                 Latest Blog Posts
             </h1>
-            <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-8">
                 {blogs.map((blog) => (
                     <BlogCard key={blog.id} blog={blog} userName={blog.userName} />
                 ))}
             </div>
 
-            {/* Pagination Component */}
-            <Pagination
-                currentPage={pageIndex}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-            />
+            <br/>
+            <div className="mb-6">
+                <ItemsPerPageSelector itemsPerPage={pageSize} onItemsPerPageChange={handleItemsPerPageChange} />
+            </div>
+
+            <div className="mt-8">
+                <Pagination
+                    currentPage={pageIndex}
+                    totalPages={totalPages}
+                    onPageChange={handlePageChange}
+                />
+            </div>
         </div>
     );
 }
 
-function BlogCard({ blog, userName }: { blog: Blog, userName: string }) {
+function BlogCard({ blog, userName }: { blog: Blog; userName: string }) {
     const navigate = useNavigate();
-    const [user, setUser] = useState<UserView | null>(null); // Khởi tạo state để lưu thông tin user
-    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState<UserView | null>(null);
 
     useEffect(() => {
         const fetchUser = async () => {
-            const fetchedUser = await getProfile(userName); // Gọi hàm fetchProfileData
-            setUser(fetchedUser); // Lưu thông tin user vào state
+            const fetchedUser = await getProfile(userName);
+            setUser(fetchedUser);
         };
 
         fetchUser();
-    }, [userName]); // Chỉ gọi khi userName thay đổi
+    }, [userName]);
 
     const handleClick = () => {
         navigate(`/blog/${blog.id}`);
     };
 
     return (
-        <Card className="flex flex-col h-full border-2 border-gray-300 dark:border-gray-700 bg-white dark:bg-black overflow-hidden">
-            <CardHeader className="bg-gray-100 dark:bg-gray-900 border-b border-gray-300 dark:border-gray-700">
-                <CardTitle className="text-xl font-bold text-black dark:text-white">
-                    {blog.title}
-                </CardTitle>
+        <Card className="w-full border-2 border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+            <CardHeader className="bg-gray-100 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+                <CardTitle className="text-2xl font-bold">{blog.title}</CardTitle>
             </CardHeader>
-            <CardContent className="flex-grow py-4">
-                <p className="text-gray-700 dark:text-gray-300 line-clamp-4">
+            <CardContent className="py-6">
+                <p className="text-gray-700 dark:text-gray-300 line-clamp-3">
                     {blog.content}
                 </p>
             </CardContent>
-            <CardFooter className="flex items-center justify-between bg-gray-200 dark:bg-gray-800 px-4 py-3">
-                <div className="flex items-center space-x-2">
-                    <Avatar className="border-2 border-gray-300 dark:border-gray-700">
+            <CardFooter className="flex items-center justify-between bg-gray-50 dark:bg-gray-900 px-6 py-4">
+                <div className="flex items-center space-x-3">
+                    <Avatar className="h-10 w-10 border-2 border-gray-300 dark:border-gray-700">
                         <AvatarImage
-                            src={
-                                user?.avatarUrl ||
-                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
-                            }
+                            src={user?.avatarUrl || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"}
                             alt={userName}
                         />
-                        <AvatarFallback>
-                            {userName.charAt(0).toUpperCase()}
-                        </AvatarFallback>
+                        <AvatarFallback>{userName.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
-                    <span className="text-sm font-medium text-black dark:text-white">
-                        {user ? user.userName : userName} {/* Hiển thị userName nếu user chưa được tải */}
-                    </span>
+                    <div>
+                        <p className="text-sm font-medium">{user ? user.userName : userName}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{new Date(blog.createdAt).toLocaleDateString()}</p>
+                    </div>
                 </div>
-                <button
-                    onClick={handleClick}
-                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md shadow-md hover:bg-gray-200 hover:text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all"
-                >
+                <Button onClick={handleClick} variant="outline">
                     Read More
-                </button>
+                </Button>
             </CardFooter>
         </Card>
     );
 }
-
-
