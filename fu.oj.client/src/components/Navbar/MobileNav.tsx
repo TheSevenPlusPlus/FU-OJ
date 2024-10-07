@@ -67,7 +67,7 @@ const MobileNav: React.FC<MobileNavProps> = ({
                         className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"
                         onClick={onToggle}
                     >
-                        Rank
+                        Leaderboard
                     </Link>
                     <Link
                         to="/blog"
