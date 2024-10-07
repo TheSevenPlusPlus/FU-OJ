@@ -30,6 +30,7 @@ import ContestManagement from "./components/Management/Contest/ContestManagement
 import ContestList from "./components/Contest/ContestList";
 import ContestProblem from "./components/Contest/ContestProblem";
 import CreateContest from "./components/Management/Contest/CreateContest";
+import UpdateContest from "./components/Management/Contest/UpdateContest";
 import { ContestRank } from "./components/Contest/ContestRank";
 import { ContestHome } from "./components/Contest/ContestHome";
 import { ToastContainer } from "react-toastify";
@@ -158,6 +159,10 @@ const App: React.FC = () => {
                         <Route
                             path="/manager/users/update/:userName"
                             element={<UpdateUser />}
+                        />
+                        <Route
+                            path="/manager/contests/update/:contestCode"
+                            element={<UpdateContest />}
                         />
 
                         {/* Blog Management Routes */}

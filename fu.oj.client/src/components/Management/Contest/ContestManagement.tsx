@@ -139,7 +139,7 @@ const ContestManagement: React.FC = () => {
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
-                                            <Link to={`/manager/contests/update/${contest.id}`}>
+                                            <Link to={`/manager/contests/update/${contest.code}`}>
                                                 <Button variant="outline" size="sm" className="mr-2">
                                                     <Pencil className="h-4 w-4" />
                                                 </Button>
@@ -155,7 +155,7 @@ const ContestManagement: React.FC = () => {
                                                 variant="outline"
                                                 size="sm"
                                                 className="mr-2"
-                                                onClick={() => handleDelete(contest.id)}
+                                                onClick={() => handleDelete(contest.code)}
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>

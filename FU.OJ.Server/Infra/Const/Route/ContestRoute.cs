@@ -14,6 +14,8 @@
             public const string RegisterContest = "register/{contestCode}";
             public const string IsRegistered = "is-registered/{contestCode}";
             public const string Rank = "rank/{contestCode}";
+            public const string Delete = "delete/{contestCode}";
+            public const string Update = "update/{contestCode}";
         }
     }
 }
