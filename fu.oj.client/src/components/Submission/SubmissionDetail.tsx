@@ -24,7 +24,7 @@ import { Helmet } from "react-helmet-async";
 const SubmissionDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const [submission, setSubmission] = useState<Submission | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [searchParams] = useSearchParams();
     const [contestCode, setContestCode] = useState<string | null>(null);
@@ -34,6 +34,7 @@ const SubmissionDetail: React.FC = () => {
     useEffect(() => {
         const fetchSubmission = async () => {
             try {
+                setLoading(true);
                 const response = await getSubmissionById(id);
                 const contestCode = searchParams.get("contestCode");
                 if (contestCode != null) {

@@ -4,9 +4,9 @@ using System.Text.Json;
 namespace FU.OJ.Server.Service{
     public interface ISubmissionService
     {
-        Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool? base64Encoded = false, bool? wait = true); //
+        Task<string> CreateAsync(string userId, CreateSubmissionRequest request, string? contestCode = null, bool? base64Encoded = false, bool? wait = true); //
         Task<SubmissionView> GetByIdAsync(string userId, string id);//
-        Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, bool? isMine = false);//
+        Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, string? isMine = "false", string? contestCode = "null");//
     }
     public class SubmissionService : ISubmissionService
     {
@@ -27,7 +27,7 @@ namespace FU.OJ.Server.Service{
             _userService = userService;
             _generalService = generalService;
         }
-        public async Task<string> CreateAsync(string userId, CreateSubmissionRequest request, bool? base64Encoded = false, bool? wait = true)
+        public async Task<string> CreateAsync(string userId, CreateSubmissionRequest request, string? contestCode = null, bool? base64Encoded = false, bool? wait = true)
         {
             var problem = await _context.Problems.AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == request.ProblemId);
@@ -45,6 +45,7 @@ namespace FU.OJ.Server.Service{
                 SubmittedAt = DateTime.UtcNow,
                 UserId = userId,
                 UserName = user.UserName,
+                ContestCode = contestCode,
             };
             _context.Submissions.Add(submission);
             var tokenList = new List<string>();
@@ -194,19 +195,22 @@ namespace FU.OJ.Server.Service{
                 }).ToList()
             };
         }
-        public async Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, bool? isMine = false)
+        public async Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, string? isMine = "false", string? contestCode = null)
         {
             // Đếm tổng số submissions
             int totalItems = await _context.Submissions
-                .Where(submission => (isMine == false || submission.UserId == userId) &&
-                    (problemCode == null || submission.ProblemCode == problemCode))
+                .Where(submission => (isMine == "false" || submission.UserId == userId) &&
+                    (problemCode == null || submission.ProblemCode == problemCode) &&
+                    (contestCode == null || submission.ContestCode == contestCode))
+                .AsNoTracking()
                 .CountAsync();
             // Tính toán tổng số trang
             int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
             // Lấy danh sách submissions đã phân trang
             var submissions = await _context.Submissions.AsNoTracking()
-                .Where(submission => (isMine == false || submission.UserId == userId) &&
-                    (problemCode == null || submission.ProblemCode == problemCode))
+                .Where(submission => (isMine == "false" || submission.UserId == userId) &&
+                    (problemCode == null || submission.ProblemCode == problemCode) &&
+                    (contestCode == null || submission.ContestCode == contestCode))
                 .Select(submission => new SubmissionView
                 {
                     Id = submission.Id,

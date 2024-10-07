@@ -200,7 +200,7 @@ namespace FU.OJ.Server.Service
                 .FirstOrDefaultAsync(pu => pu.UserId == userId && pu.ProblemId == problemId);
 
             if (problemUser == null)
-                throw new Exception(ErrorMessage.NotFound);
+                return false;
 
             return problemUser.Status == "Accepted";
         }

@@ -6,6 +6,7 @@ namespace FU.OJ.Server.Infra.Models{    public class ContestParticipant : Cont
     {
         public User User { get; set; } = null!;
         public Contest Contest { get; set; } = null!;
+        public ICollection<ContestRank> ContestRank { get; set; } = new List<ContestRank>();
     }
     public class ContestParticipantProperties
     {

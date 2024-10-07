@@ -45,6 +45,7 @@ export default function ProblemDetail() {
                     setIsRegistered(registeredResponse.data);  // Assuming API returns { isRegistered: boolean }
                 }
 
+                //console.log("problem code here: ", problemCode);
                 const response = await getProblemByCode(problemCode);
                 setProblem(response.data);
             } catch (err) {
@@ -202,7 +203,7 @@ export default function ProblemDetail() {
                             {/* View All Submissions Button */}
                             {contestCode == null ?
                                 <Link to={`/submissions/all?problemCode=${problemCode}`}>
-                                    <Button variant="secondary">View all submissions</Button>
+                                    <Button variant="secondary">View all submissions </Button>
                                 </Link>
                                 :
                                 <Link to={`/submissions/all?problemCode=${problemCode}&contestCode=${contestCode}`}>
