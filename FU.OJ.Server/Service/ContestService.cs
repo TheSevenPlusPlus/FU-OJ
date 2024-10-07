@@ -25,6 +25,8 @@ namespace FU.OJ.Server.Service
         public Task<List<ContestParticipantView>> GetContestParticipantInfoByCodeAsync(string contestCode);
         public Task<bool> IsRegistered(string contestCode, string userId);
         public Task<List<ContestParticipantView>> GetRank(string contestCode);
+        public Task<string> UpdateContestAsync(string userId, string contestCode, UpdateContestRequest request);
+        public Task<bool> DeleteAsync(string userId, string id);
     }
     public class ContestService : IContestService
     {
@@ -114,6 +116,69 @@ namespace FU.OJ.Server.Service
             await _context.SaveChangesAsync();
             return contest.Code;
         }
+
+        public async Task<bool> DeleteAsync(string userId, string id)
+        {
+            var contest = await _context.Contests.FirstOrDefaultAsync(p => p.Id == id && p.OrganizationId == userId);
+
+            if (contest == null)
+                throw new Exception(ErrorMessage.NotFound);
+
+            _context.Contests.Remove(contest);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        public async Task<string> UpdateContestAsync(string userId, string contestCode, UpdateContestRequest request)
+        {
+            var contest = await _context.Contests.FirstOrDefaultAsync(c => c.Code == contestCode && c.OrganizationId == userId);
+            if (contest == null)
+                throw new NotFoundException(ErrorMessage.NotFound);
+
+            if (request.StartTime > request.EndTime)
+                throw new BadException(ErrorMessage.StartTimeGreaterThanEndTime);
+
+            contest.Name = request.Name;
+            contest.Description = request.Description;
+            contest.StartTime = request.StartTime;
+            contest.EndTime = request.EndTime;
+            contest.Rules = request.Rules;
+
+            // Update contest problems if needed
+            foreach (var contestProblem in request.Problems)
+            {
+                var problem = await _problemService.GetByCodeAsync(contest.OrganizationId, contestProblem.ProblemCode);
+                if (problem == null)
+                    throw new NotFoundException(ErrorMessage.NotFound);
+
+                var existingContestProblem = await _context.ContestProblems
+                    .FirstOrDefaultAsync(cp => cp.ContestId == contest.Id && cp.ProblemCode == contestProblem.ProblemCode);
+
+                if (existingContestProblem != null)
+                {
+                    existingContestProblem.Order = contestProblem.Order;
+                    existingContestProblem.Point = contestProblem.Point;
+                }
+                else
+                {
+                    var newContestProblem = new ContestProblem
+                    {
+                        ContestId = contest.Id,
+                        ContestCode = contest.Code,
+                        ProblemId = problem.Id,
+                        ProblemCode = problem.Code,
+                        Order = contestProblem.Order,
+                        Point = contestProblem.Point
+                    };
+                    _context.ContestProblems.Add(newContestProblem);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return contest.Id;
+        }
+
 
         public async Task<ContestView> GetContestInfoAsync(string contestCode)
         {

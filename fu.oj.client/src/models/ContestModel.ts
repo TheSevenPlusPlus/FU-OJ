@@ -45,6 +45,15 @@ export interface CreateContestRequest {
     problems: CreateContestProblemRequest[]; // List of problems for the contest
 }
 
+export interface UpdateContestRequest {
+    name: string;             // Contest name
+    description?: string;     // Contest description (optional)
+    startTime: string;          // Contest start time
+    endTime: string;            // Contest end time
+    rules?: string;           // Contest rules (optional)
+    problems: CreateContestProblemRequest[]; // List of problems for the contest
+}
+
 export interface CreateContestProblemRequest {
     problemCode: string;      // Problem code
     order: number;            // Problem order in the contest

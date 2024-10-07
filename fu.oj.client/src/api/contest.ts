@@ -1,4 +1,4 @@
-﻿import { CreateContestRequest, SubmitCodeContestProblemRequest } from "../models/ContestModel";
+﻿import { CreateContestRequest, SubmitCodeContestProblemRequest, UpdateContestRequest } from "../models/ContestModel";
 import apiClient from "./client";
 
 // Lấy tất cả contests
@@ -25,6 +25,11 @@ export const getContestByCode = async (code: string) => {
 export const deleteContest = async (id: string) => {
     return await apiClient.delete(`/contests/delete/${id}`);
 };
+
+export const updateContest = async (contestCode: string, data: UpdateContestRequest) => {
+    var response = await apiClient.put(`/contests/update/${contestCode}`, data);
+    return response;
+}
 
 // Đăng ký contest
 export const registerContest = async (code: string) => {

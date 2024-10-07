@@ -149,4 +149,32 @@ public class ContestController : AuthorizeController
             return HandleException(ex);
         }
     }
+
+    [HttpDelete(ContestRoute.Action.Delete)]
+    public async Task<IActionResult> Delete([FromRoute] string contestCode)
+    {
+        try
+        {
+            var result = await _contestService.DeleteAsync(UserHeader.UserId, contestCode);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return HandleException(ex);
+        }
+    }
+
+    [HttpPut(ContestRoute.Action.Update)]
+    public async Task<IActionResult> Update([FromRoute] string contestCode, [FromBody] UpdateContestRequest request)
+    {
+        try
+        {
+            var result = await _contestService.UpdateContestAsync(UserHeader.UserId, contestCode, request);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            return HandleException(ex);
+        }
+    }
 }

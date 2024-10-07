@@ -95,7 +95,12 @@ export function ContestRank() {
                                 {rankings.map((ranking, index) => (
                                     <tr key={ranking.userId} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
-                                            {ranking.userName}
+                                            <Link
+                                                to={`/Profile/${ranking.userName}`}
+                                                className="text-blue-600 hover:underline"
+                                            >
+                                                {ranking.userName || "Anonymous"}
+                                            </Link>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r border-gray-200">
                                             {ranking.score}
