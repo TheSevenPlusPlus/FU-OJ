@@ -1,4 +1,4 @@
-using FU.OJ.Server.DTOs;
+﻿using FU.OJ.Server.DTOs;
 using FU.OJ.Server.DTOs.Problem.Request;
 using FU.OJ.Server.DTOs.Problem.Respond;
 using FU.OJ.Server.Infra.Const;
@@ -40,14 +40,17 @@ namespace FU.OJ.Server.Service
                 .Select(p => new
                 {
                     Problem = p,
-                    ProblemUser = p.ProblemUsers.FirstOrDefault(c => c.UserId == userId && c.ProblemId == p.Id)
+                    ProblemUser = p.ProblemUsers.FirstOrDefault(c => c.UserId == userId && c.ProblemId == p.Id),
+                    Examples = p.Examples.Select(e => new ExampleInputOutputView
+                    {
+                        Input = e.Input,
+                        Output = e.Output
+                    }).ToList()
                 })
                 .FirstOrDefaultAsync();
 
             if (problemData == null)
-                //throw new Exception(ErrorMessage.NotFound);
                 return null;
-
 
             var problemView = new ProblemView
             {
@@ -56,8 +59,7 @@ namespace FU.OJ.Server.Service
                 Title = problemData.Problem.Title,
                 Description = problemData.Problem.Description,
                 Constraints = problemData.Problem.Constraints,
-                ExampleInput = problemData.Problem.ExampleInput,
-                ExampleOutput = problemData.Problem.ExampleOutput,
+                Examples = problemData.Examples, // Đổ dữ liệu Examples vào ProblemView
                 Input = problemData.Problem.Input,
                 Output = problemData.Problem.Output,
                 TimeLimit = problemData.Problem.TimeLimit,
@@ -75,6 +77,7 @@ namespace FU.OJ.Server.Service
 
             return problemView;
         }
+
 
         public async Task<string> CreateAsync(string userId, CreateProblemRequest request)
         {
@@ -94,8 +97,6 @@ namespace FU.OJ.Server.Service
                 Constraints = request.Constraints,
                 Input = request.Input,
                 Output = request.Output,
-                ExampleInput = request.ExampleInput,
-                ExampleOutput = request.ExampleOutput,
                 TimeLimit = request.TimeLimit,
                 MemoryLimit = request.MemoryLimit,
                 CreatedAt = DateTime.UtcNow,
@@ -103,6 +104,21 @@ namespace FU.OJ.Server.Service
                 Difficulty = request.Difficulty
             };
 
+            var exampleIO = new List<ExampleInputOutput>();
+            foreach (var example in request.Examples)
+            {
+                var io = new ExampleInputOutput
+                {
+                    Input = example.Input,
+                    Output = example.Output,
+                    ProblemId = newProblem.Id
+                };
+
+                _context.ExampleInputOutputs.Add(io);
+                exampleIO.Add(io);
+            }
+
+            newProblem.Examples = exampleIO;
             _context.Problems.Add(newProblem);
             await _context.SaveChangesAsync();
 
@@ -117,10 +133,16 @@ namespace FU.OJ.Server.Service
             var problems = await _context.Problems.AsNoTracking()
                 .Where(p => !isMine.Value || p.UserId == userId)
                 .Include(p => p.ProblemUsers)
+                .Include(p => p.Examples) // Bao gồm Examples
                 .Select(p => new
                 {
                     Problem = p,
-                    ProblemUser = p.ProblemUsers.FirstOrDefault(c => c.UserId == userId && c.ProblemId == p.Id)
+                    ProblemUser = p.ProblemUsers.FirstOrDefault(c => c.UserId == userId && c.ProblemId == p.Id),
+                    Examples = p.Examples.Select(e => new ExampleInputOutputView
+                    {
+                        Input = e.Input,
+                        Output = e.Output
+                    }).ToList() // Ánh xạ Examples
                 })
                 .OrderByDescending(p => p.Problem.CreatedAt)
                 .Skip((query.pageIndex - 1) * query.pageSize)
@@ -134,8 +156,7 @@ namespace FU.OJ.Server.Service
                 Title = p.Problem.Title,
                 Description = p.Problem.Description,
                 Constraints = p.Problem.Constraints,
-                ExampleInput = p.Problem.ExampleInput,
-                ExampleOutput = p.Problem.ExampleOutput,
+                Examples = p.Examples, // Đổ dữ liệu Examples vào ProblemView
                 Input = p.Problem.Input,
                 Output = p.Problem.Output,
                 TimeLimit = p.Problem.TimeLimit,
@@ -154,32 +175,53 @@ namespace FU.OJ.Server.Service
             return (problemViews, totalPages);
         }
 
+
         public async Task<bool> UpdateAsync(string userId, UpdateProblemRequest request)
         {
             if (string.IsNullOrEmpty(request.Code))
                 throw new ArgumentException(ErrorMessage.InvalidInput);
 
-            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Code == request.Code);
+            var problem = await _context.Problems
+                .Include(p => p.Examples)
+                .FirstOrDefaultAsync(p => p.Code == request.Code);
 
             if (problem == null || problem.UserId != userId)
                 throw new Exception(ErrorMessage.NotFound);
 
+            // Update problem details
             problem.Title = request.Title;
             problem.Description = request.Description;
             problem.Constraints = request.Constraints;
             problem.Input = request.Input;
             problem.Output = request.Output;
-            problem.ExampleInput = request.ExampleInput;
-            problem.ExampleOutput = request.ExampleOutput;
             problem.TimeLimit = request.TimeLimit;
             problem.MemoryLimit = request.MemoryLimit;
             problem.Difficulty = request.Difficulty;
+
+            // Update examples
+            _context.ExampleInputOutputs.RemoveRange(problem.Examples); // Remove old examples
+            var updatedExamples = new List<ExampleInputOutput>();
+
+            foreach (var example in request.Examples)
+            {
+                var io = new ExampleInputOutput
+                {
+                    Input = example.Input,
+                    Output = example.Output,
+                    ProblemId = problem.Id
+                };
+                _context.ExampleInputOutputs.Add(io);
+                updatedExamples.Add(io);
+            }
+
+            problem.Examples = updatedExamples; // Assign new examples to the problem
 
             _context.Problems.Update(problem);
             await _context.SaveChangesAsync();
 
             return true;
         }
+
 
         public async Task<bool> DeleteAsync(string userId, string id)
         {

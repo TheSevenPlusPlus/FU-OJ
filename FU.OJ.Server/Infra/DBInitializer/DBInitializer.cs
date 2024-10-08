@@ -56,63 +56,6 @@ namespace FU.OJ.Server.Infra.DBInitializer{    public interface IDbInitializer
             {
                 CreateUser("user", "user@gmail.com", "User", "1122334455", "City", RoleStatic.RoleUser, userGuid, commonPassword);
             }
-            // Add problems to the database if none exist
-            if (!_db.Problems.Any())
-            {
-                var problems = new List<Problem>
-                {                    new Problem                    {                        Code = "P001",                        Title = "Sum of Two Numbers",                        Description = "Write a program that takes two integers and returns their sum.",
-                        Constraints = "Both integers should be between -10^9 and 10^9.",                        Input = "Two integers separated by a space.",
-                        Output = "A single integer which is the sum of the two input integers.",
-                        ExampleInput = "3 5",                        ExampleOutput = "8",                        TimeLimit = 1.0,                        MemoryLimit = 128.0,                        CreatedAt = DateTime.UtcNow,                        UserId = adminGuid,                        Difficulty = "Easy",                        HasSolution = "Yes",
-                    },                    new Problem                    {                        Code = "P002",                        Title = "Prime Numbers",                        Description = "Write a program that checks if a number is prime.",                        Constraints = "The number should be a positive integer less than 10^6.",                        Input = "A single integer representing the number to check.",
-                        Output = "Yes if the number is prime, otherwise No.",
-                        ExampleInput = "7",                        ExampleOutput = "Yes",                        TimeLimit = 1.0,                        MemoryLimit = 128.0,                        CreatedAt = DateTime.UtcNow,                        UserId = adminGuid,                        Difficulty = "Medium",                        HasSolution = "Yes",
-                    },                    new Problem                    {                        Code = "P003",                        Title = "Factorial",                        Description = "Write a program to calculate the factorial of a given number.",
-                        Constraints = "The number should be a non-negative integer less than or equal to 20.",
-                        Input = "A single integer representing the number.",
-                        Output = "The factorial of the given number.",
-                        ExampleInput = "5",                        ExampleOutput = "120",                        TimeLimit = 1.0,                        MemoryLimit = 128.0,                        CreatedAt = DateTime.UtcNow,                        UserId = adminGuid,                        Difficulty = "Easy",                        HasSolution = "Yes",
-                    },
-                };                _db.Problems.AddRange(problems);
-                _db.SaveChanges();
-            }
-            // Add blog posts about algorithms if none exist
-            if (!_db.Blogs.Any())
-            {
-                var blogs = new List<Blog>
-                {                    new Blog
-                    {
-                        Title = "Introduction to Algorithms",
-                        Content = "This blog discusses the basics of algorithms.",
-                        UserId = adminGuid,
-                    },
-                    new Blog
-                    {
-                        Title = "Sorting Algorithms",
-                        Content = "An overview of various sorting algorithms.",
-                        UserId = adminGuid,
-                    },
-                    new Blog
-                    {
-                        Title = "Dynamic Programming",
-                        Content = "Understanding dynamic programming and its applications.",
-                        UserId = adminGuid,
-                    },
-                    new Blog
-                    {
-                        Title = "Graph Algorithms",
-                        Content = "Exploring common graph algorithms.",
-                        UserId = adminGuid,
-                    },
-                    new Blog
-                    {
-                        Title = "Complexity Analysis",
-                        Content = "How to analyze the complexity of algorithms.",
-                        UserId = adminGuid,
-                    },
-                };                _db.Blogs.AddRange(blogs);
-                _db.SaveChanges();
-            }
         }
 
         private void CreateUser(string userName, string email, string fullName, string phoneNumber, string city, string role, string userId, string password)

@@ -18,6 +18,7 @@ namespace FU.OJ.Server.Infra.Context{    public class ApplicationDbContext : I
         public DbSet<ProblemUser> ProblemUsers { get; set; }
         public DbSet<ContestProblem> ContestProblems { get; set; }
         public DbSet<ContestRank> contestRanks { get; set; }
+        public DbSet<ExampleInputOutput> ExampleInputOutputs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -31,6 +32,7 @@ namespace FU.OJ.Server.Infra.Context{    public class ApplicationDbContext : I
             modelBuilder.ApplyConfiguration(new BlogCommentConfiguration());
             modelBuilder.ApplyConfiguration(new ContestProblemConfiguration());
             modelBuilder.ApplyConfiguration(new ProblemUserConfiguration());
+            modelBuilder.ApplyConfiguration(new ExampleInputOutputConfiguration());
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

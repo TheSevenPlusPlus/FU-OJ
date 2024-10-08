@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperties
@@ -7,6 +6,7 @@ namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperti
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
         public ICollection<ProblemUser> ProblemUsers { get; set; } = new List<ProblemUser>();
         public ICollection<ContestProblem> ContestProblems { get; set; } = new List<ContestProblem>();
+        public ICollection<ExampleInputOutput> Examples { get; set; } = new List<ExampleInputOutput>();
         public User User { get; set; } = null!;
     }
     public class ProblemProperties
@@ -19,8 +19,6 @@ namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperti
         public string? Constraints { get; set; }
         public string? Input { get; set; }
         public string? Output { get; set; }
-        public string? ExampleInput { get; set; }
-        public string? ExampleOutput { get; set; }
         public double? TimeLimit { get; set; }
         public double? MemoryLimit { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -52,6 +50,11 @@ namespace FU.OJ.Server.Infra.Models{    public class Problem : ProblemProperti
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(p => p.ProblemUsers)
+                   .WithOne(cp => cp.Problem)
+                   .HasForeignKey(cp => cp.ProblemId)
+                   .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(p => p.Examples)
                    .WithOne(cp => cp.Problem)
                    .HasForeignKey(cp => cp.ProblemId)
                    .OnDelete(DeleteBehavior.Cascade);

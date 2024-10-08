@@ -45,6 +45,7 @@ const SubmissionDetail: React.FC = () => {
                     setIsRegistered(registeredResponse.data);  // Assuming API returns { isRegistered: boolean }
                 }
 
+                console.log("submission: ", response.data);
                 setSubmission(response.data);
             } catch (err) {
                 setError("Failed to fetch problem details");
@@ -92,7 +93,7 @@ const SubmissionDetail: React.FC = () => {
             }
             <div className="container mx-auto py-8 bg-gray-100 min-h-screen">
                 <Helmet>
-                    <title>Submission of {submission.problemName}</title>
+                    <title>Submission of {submission?.problemName == null ? "problem" : submission?.problemName}</title>
                     <meta name="description" content="Submission" />
                 </Helmet>
 

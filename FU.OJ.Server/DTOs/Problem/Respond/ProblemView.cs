@@ -1,4 +1,6 @@
-﻿namespace FU.OJ.Server.DTOs.Problem.Respond
+﻿using FU.OJ.Server.Infra.Models;
+
+namespace FU.OJ.Server.DTOs.Problem.Respond
 {
     public class ProblemView
     {
@@ -9,8 +11,7 @@
         public string? Constraints { get; set; }
         public string? Input { get; set; }
         public string? Output { get; set; }
-        public string? ExampleInput { get; set; }
-        public string? ExampleOutput { get; set; }
+        public ICollection<ExampleInputOutputView> Examples { get; set; } = new List<ExampleInputOutputView>();
         public double? TimeLimit { get; set; }
         public double? MemoryLimit { get; set; }
         public DateTime CreatedAt { get; set; }

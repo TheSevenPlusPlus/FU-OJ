@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Upload, X, AlertCircle } from "lucide-react";
+import { Upload, X, AlertCircle, Plus } from "lucide-react";
 import { updateProblem, getProblemByCode } from "../../../api/problem";
-import { createTestCase, updateTestCase } from "../../../api/testcase";
-import { Problem, UpdateProblemModel } from "../../../models/ProblemModel";
+import { createTestCase } from "../../../api/testcase";
+import { Problem, UpdateProblemModel, ExampleInputOutput } from "../../../models/ProblemModel";
 import { Helmet } from "react-helmet-async";
 
 const UpdateProblem: React.FC = () => {
@@ -29,8 +29,7 @@ const UpdateProblem: React.FC = () => {
         constraints: "",
         input: "",
         output: "",
-        exampleInput: "",
-        exampleOutput: "",
+        examples: [{ input: "", output: "" }], // Initialize with one example
         timeLimit: "",
         memoryLimit: "",
         difficulty: "Easy",
@@ -52,8 +51,7 @@ const UpdateProblem: React.FC = () => {
                         constraints: problem.constraints,
                         input: problem.input,
                         output: problem.output,
-                        exampleInput: problem.exampleInput,
-                        exampleOutput: problem.exampleOutput,
+                        examples: problem.examples || [{ input: "", output: "" }],
                         timeLimit: problem.timeLimit.toString(),
                         memoryLimit: problem.memoryLimit.toString(),
                         difficulty: problem.difficulty,
@@ -89,34 +87,35 @@ const UpdateProblem: React.FC = () => {
         setTestCaseFile(null);
     };
 
-    interface User {
-        userName: string;
-        email: string;
-        token: string;
-        avatarUrl: string;
-        role?: string;
-    }
+    const handleExampleChange = (index: number, field: keyof ExampleInputOutput, value: string) => {
+        const updatedExamples = [...formState.examples];
+        updatedExamples[index][field] = value;
+        setFormState((prev) => ({ ...prev, examples: updatedExamples }));
+    };
+
+    const handleAddExample = () => {
+        setFormState((prev) => ({
+            ...prev,
+            examples: [...prev.examples, { input: "", output: "" }],
+        }));
+    };
+
+    const handleRemoveExample = (index: number) => {
+        const updatedExamples = formState.examples.filter((_, i) => i !== index);
+        setFormState((prev) => ({ ...prev, examples: updatedExamples }));
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const userInfo: User = JSON.parse(
-                localStorage.getItem("user") || "{}",
-            );
-            const updatedFormState = {
-                ...formState,
-                userName: userInfo.userName,
-            };
             // Update problem
-
             const problemResponse = await updateProblem(formState);
-            const problemCode: string = updatedFormState.code;
 
             // Update test case if a new file is selected
             if (testCaseFile) {
                 const formData = new FormData();
                 formData.append("TestcaseFile", testCaseFile);
-                formData.append("ProblemCode", problemCode);
+                formData.append("ProblemCode", formState.code);
                 await createTestCase(formData);
             }
 
@@ -132,8 +131,7 @@ const UpdateProblem: React.FC = () => {
     return (
         <div className="container mx-auto p-4">
             <Helmet>
-                <title> Update problem </title>
-                <meta name="description" content="" />
+                <title>Update Problem</title>
             </Helmet>
             <h1 className="text-2xl font-bold mb-4">Update Problem</h1>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -208,30 +206,55 @@ const UpdateProblem: React.FC = () => {
                         required
                     />
                 </div>
+
+                {/* Example Inputs/Outputs Section */}
                 <div>
-                    <Label htmlFor="exampleInput">Example Input</Label>
-                    <Textarea
-                        id="exampleInput"
-                        name="exampleInput"
-                        value={formState.exampleInput}
-                        onChange={handleInputChange}
-                        placeholder="Enter example input"
-                        rows={2}
-                        required
-                    />
+                    <Label>Examples</Label>
+                    {formState.examples.map((example, index) => (
+                        <div key={index} className="space-y-2">
+                            <div className="flex items-center space-x-2">
+                                <Textarea
+                                    name={`exampleInput-${index}`}
+                                    value={example.input}
+                                    onChange={(e) =>
+                                        handleExampleChange(index, "input", e.target.value)
+                                    }
+                                    placeholder="Example Input"
+                                    rows={2}
+                                    required
+                                />
+                                <Textarea
+                                    name={`exampleOutput-${index}`}
+                                    value={example.output}
+                                    onChange={(e) =>
+                                        handleExampleChange(index, "output", e.target.value)
+                                    }
+                                    placeholder="Example Output"
+                                    rows={2}
+                                    required
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleRemoveExample(index)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={handleAddExample}
+                        className="flex items-center space-x-2"
+                    >
+                        <Plus className="h-4 w-4" />
+                        <span>Add Example</span>
+                    </Button>
                 </div>
-                <div>
-                    <Label htmlFor="exampleOutput">Example Output</Label>
-                    <Textarea
-                        id="exampleOutput"
-                        name="exampleOutput"
-                        value={formState.exampleOutput}
-                        onChange={handleInputChange}
-                        placeholder="Enter example output"
-                        rows={2}
-                        required
-                    />
-                </div>
+
                 <div>
                     <Label htmlFor="timeLimit">Time Limit (seconds)</Label>
                     <Input
@@ -257,7 +280,7 @@ const UpdateProblem: React.FC = () => {
                     />
                 </div>
                 <div>
-                    <Label htmlFor="difficulty">Difficulty</Label>
+                    <Label>Difficulty</Label>
                     <Select
                         onValueChange={handleDifficultyChange}
                         value={formState.difficulty}
@@ -272,59 +295,40 @@ const UpdateProblem: React.FC = () => {
                         </SelectContent>
                     </Select>
                 </div>
+
+                {/* Test Case File Upload */}
                 <div>
-                    <Label htmlFor="testCase">Test Case File</Label>
-                    <Card className="mt-2">
-                        <CardContent className="p-4">
-                            {testCaseFile ? (
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">
-                                        {testCaseFile.name}
-                                    </span>
-                                    <Button
-                                        type="button"
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={handleRemoveFile}
-                                    >
-                                        <X className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            ) : (
-                                <label
-                                    htmlFor="testCase"
-                                    className="flex flex-col items-center justify-center cursor-pointer"
-                                >
-                                    <Upload className="h-8 w-8 text-gray-400" />
-                                    <span className="mt-2 text-sm text-gray-500">
-                                        Click to upload new test case file
-                                    </span>
-                                    <Input
-                                        id="testCase"
-                                        name="testCase"
-                                        type="file"
-                                        onChange={handleFileChange}
-                                        className="hidden"
-                                    />
-                                </label>
-                            )}
-                        </CardContent>
-                    </Card>
-                    <Alert className="mt-2 bg-blue-50 border-blue-200">
-                        <AlertCircle className="h-4 w-4 text-blue-600" />
-                        <AlertDescription className="text-blue-800">
-                            Please submit the test case as ProblemCode.zip,
-                            which is a compressed file of the ProblemCode
-                            folder. <br />
-                            Inside contains folders in the form Test1, Test2,
-                            Test3, ... TestN-th. <br />
-                            Inside each folder of each test case contains two
-                            files ProblemCode.inp, ProblemCode.out, which are
-                            input and output files.
-                        </AlertDescription>
-                    </Alert>
+                    <Label>Test Case File (Optional)</Label>
+                    <div className="flex items-center space-x-2">
+                        <Input
+                            id="testCaseFile"
+                            type="file"
+                            onChange={handleFileChange}
+                            accept=".zip"
+                        />
+                        {testCaseFile && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleRemoveFile}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        )}
+                    </div>
                 </div>
-                <Button type="submit">Update Problem</Button>
+
+                {error && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
+
+                <Button type="submit" className="w-full">
+                    Update Problem
+                </Button>
             </form>
         </div>
     );
