@@ -1,13 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FU.OJ.Server.DTOs.Auth.Request{    public class RegisterRequest
+namespace FU.OJ.Server.DTOs.Auth.Request
+{
+    public class RegisterRequest
     {
         [Required]
         public string UserName { get; set; } = null!;
-        [Required]
+
+        [Required]
         [EmailAddress]
         public string Email { get; set; } = null!;
-        [Required]
+
+        [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; } = null!;
         [Required]
@@ -16,4 +20,4 @@ namespace FU.OJ.Server.DTOs.Auth.Request{    public class RegisterRequest
         //public string PhoneNumber { get; set; } = null!;
 
     }
-}
+}

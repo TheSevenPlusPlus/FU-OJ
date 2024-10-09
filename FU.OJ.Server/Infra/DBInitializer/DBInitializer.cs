@@ -1,27 +1,37 @@
-using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Identity;using Microsoft.EntityFrameworkCore;
+using FU.OJ.Server.Infra.Const.Authorize;
+using FU.OJ.Server.Infra.Context;
+using FU.OJ.Server.Infra.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-namespace FU.OJ.Server.Infra.DBInitializer{    public interface IDbInitializer
+namespace FU.OJ.Server.Infra.DBInitializer
+{
+    public interface IDbInitializer
     {
         void Initialize();
     }
-    public class DbInitializer : IDbInitializer
+
+    public class DbInitializer : IDbInitializer
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _db;
-        public DbInitializer(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext db)
+
+        public DbInitializer(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, ApplicationDbContext db)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _db = db;
         }
-        public void Initialize()
+
+        public void Initialize()
         {
             string adminGuid = Guid.NewGuid().ToString();
             string managerGuid = Guid.NewGuid().ToString();
             string userGuid = Guid.NewGuid().ToString();
             const string commonPassword = "Abcd1234@@";
-            // Migrate the database
+
+            // Migrate the database
             try
             {
                 if (_db.Database.GetPendingMigrations().Any())
@@ -33,19 +43,22 @@ namespace FU.OJ.Server.Infra.DBInitializer{    public interface IDbInitializer
             {
                 Console.WriteLine(ex.ToString());
             }
-            // Create roles if they don't exist
+
+            // Create roles if they don't exist
             if (!_roleManager.RoleExistsAsync(RoleStatic.RoleAdmin).GetAwaiter().GetResult())
             {
                 _roleManager.CreateAsync(new IdentityRole(RoleStatic.RoleAdmin)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(RoleStatic.RoleManager)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(RoleStatic.RoleUser)).GetAwaiter().GetResult();
             }
-            // Create admin user if it doesn't exist
+
+            // Create admin user if it doesn't exist
             if (_db.Users.FirstOrDefault(u => u.UserName == "admin") == null)
             {
                 CreateUser("admin", "admin@gmail.com", "Admin", "1234567890", "City", RoleStatic.RoleAdmin, adminGuid, commonPassword);
             }
-            // Create manager user if it doesn't exist
+
+            // Create manager user if it doesn't exist
             if (_db.Users.FirstOrDefault(u => u.UserName == "manager") == null)
             {
                 CreateUser("manager", "manager@gmail.com", "Manager", "0987654321", "City", RoleStatic.RoleManager, managerGuid, commonPassword);
@@ -77,4 +90,5 @@ namespace FU.OJ.Server.Infra.DBInitializer{    public interface IDbInitializer
                 _userManager.AddToRoleAsync(user, role).GetAwaiter().GetResult();
             }
         }
-    }}
+    }
+}

@@ -77,6 +77,7 @@ export default function ProfileEdit() {
             await updateProfile(updateData);
             setSuccess("Profile updated successfully!");
             navigate("/profile");
+            window.location.reload();
         } catch (error) {
             console.error("Failed to update profile:", error);
             setError("Failed to update profile. Please try again.");

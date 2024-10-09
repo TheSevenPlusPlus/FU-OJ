@@ -32,26 +32,12 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, submitErro
 
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
-        const passwordRegex = {
-            lowerCase: /[a-z]/,
-            upperCase: /[A-Z]/,
-            number: /\d/,
-            specialChar: /[!@#$%^&*(),.?":{}|<>]/,
-        };
 
         if (!formData.username.trim()) newErrors.username = "Username is required";
         if (!formData.email.trim()) newErrors.email = "Email is required";
         if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
         if (!formData.password) newErrors.password = "Password is required";
         if (formData.password.length < 8) newErrors.password = "Password must be at least 8 characters";
-        if (!passwordRegex.lowerCase.test(formData.password))
-            newErrors.password = "Password must include at least one lowercase letter";
-        if (!passwordRegex.upperCase.test(formData.password))
-            newErrors.password = "Password must include at least one uppercase letter";
-        if (!passwordRegex.number.test(formData.password))
-            newErrors.password = "Password must include at least one number";
-        if (!passwordRegex.specialChar.test(formData.password))
-            newErrors.password = "Password must include at least one special character";
         if (!formData.fullName.trim()) newErrors.fullName = "Full Name is required";
         if (formData.password !== formData.confirmPassword) {
             newErrors.confirmPassword = "Passwords do not match";
@@ -166,15 +152,6 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, submitErro
                             </span>
                         </Button>
                     </div>
-                    <FormInput
-                        id="register-full-name"
-                        name="fullName"
-                        label="Full Name"
-                        type="text"
-                        value={formData.fullName}
-                        onChange={handleInputChange}
-                        error={errors.fullName}
-                    />
                     {additionalFields.map((field) => (
                         <FormInput
                             key={field.name}
@@ -188,8 +165,8 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, submitErro
                         />
                     ))}
                 </CardContent>
-                <CardFooter>
-                    <SubmitButton>Register</SubmitButton>
+                <CardFooter className="flex justify-between">
+                    <SubmitButton > Register </SubmitButton>
                 </CardFooter>
             </form>
         </Card>

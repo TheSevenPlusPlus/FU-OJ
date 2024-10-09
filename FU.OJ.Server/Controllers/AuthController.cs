@@ -1,4 +1,4 @@
-using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
+using Exceptions;using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
 using System.Web;
 
 namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
@@ -26,14 +26,13 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
         {
             try
             {
-                if (!ModelState.IsValid) return BadRequest(ModelState);
+                if (!ModelState.IsValid)
+                    throw new BadException("Validate fail");
 
                 // Kiểm tra xem email đã tồn tại chưa
                 var existingUser = await _userManager.FindByEmailAsync(registerRequest.Email);
                 if (existingUser != null)
-                {
-                    return BadRequest("Email is already in use.");
-                }
+                    throw new BadException("Email already exist");
 
                 var user = new User()
                 {
@@ -58,18 +57,17 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
                             AvatarUrl = user.AvatarUrl
                         });
                     }
-                    else return StatusCode(500, roleResult.Errors);
+                    else throw new BadException("Something error");
                 }
-                else return StatusCode(500, createUser.Errors);
+                else throw new BadException("Username already exist");
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "Error during registration");
-                return StatusCode(500, "Internal server error");
+                return HandleException(exception);
             }
         }
         [HttpPost(AuthRoute.Action.Login)]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest) 
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.Identifier || u.Email == loginRequest.Identifier);
