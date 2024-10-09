@@ -18,6 +18,7 @@ import { getContestByCode, registerContest, isRegisteredContest, getContestProbl
 import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
 import { Helmet } from "react-helmet-async";
+import { date } from "yup";
 
 export default function ProblemDetail() {
     const { problemCode } = useParams<{ problemCode: string }>();
@@ -201,7 +202,7 @@ export default function ProblemDetail() {
 
                         <div className="space-x-2">
                             {/* View All Submissions Button */}
-                            {contestCode == null ?
+                            {contestCode == null || new Date(contest.endTime).getTime() < Date.now() ?
                                 <Link to={`/submissions/all?problemCode=${problemCode}`}>
                                     <Button variant="secondary">View all submissions </Button>
                                 </Link>
@@ -212,7 +213,7 @@ export default function ProblemDetail() {
                             }
 
                             {/* View My Submissions Button */}
-                            {contestCode == null ?
+                            {contestCode == null || new Date(contest.endTime).getTime() < Date.now() ?
                                 <Link to={`/submissions/all?isMine=${true}&problemCode=${problemCode}`}>
                                     <Button variant="secondary">View my submissions</Button>
                                 </Link>
