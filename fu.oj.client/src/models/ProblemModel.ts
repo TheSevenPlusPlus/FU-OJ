@@ -5,8 +5,7 @@ export interface CreateProblemModel {
     constraints: string;
     input: string;
     output: string;
-    exampleInput: string;
-    exampleOutput: string;
+    examples: ExampleInputOutput[];
     timeLimit: string;
     memoryLimit: string;
     difficulty: string;
@@ -18,13 +17,16 @@ export interface UpdateProblemModel {
     constraints: string;
     input: string;
     output: string;
-    exampleInput: string;
-    exampleOutput: string;
+    examples: ExampleInputOutput[];
     timeLimit: string;
     memoryLimit: string;
     difficulty: string;
 }
 
+export interface ExampleInputOutput {
+    input: string;
+    output: string;
+}
 export interface Problem {
     id: string;
     code: string;
@@ -33,8 +35,7 @@ export interface Problem {
     constraints: string;
     input: string;
     output: string;
-    exampleInput: string;
-    exampleOutput: string;
+    examples: ExampleInputOutput[];
     timeLimit: number;
     memoryLimit: number;
     createdAt: string;

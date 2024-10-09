@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,18 +14,10 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, Upload, X } from "lucide-react";
 import { createProblem } from "../../../api/problem";
-import { CreateProblemModel } from "../../../models/ProblemModel";
+import { CreateProblemModel, ExampleInputOutput } from "../../../models/ProblemModel";
 import { createTestCase } from "../../../api/testcase";
 import { Alert, AlertDescription } from "../../ui/alert";
 import { Helmet } from "react-helmet-async";
-
-interface User {
-    userName: string;
-    email: string;
-    token: string;
-    avatarUrl: string;
-    role?: string;
-}
 
 const CreateProblem: React.FC = () => {
     const navigate = useNavigate();
@@ -36,8 +28,7 @@ const CreateProblem: React.FC = () => {
         constraints: "",
         input: "",
         output: "",
-        exampleInput: "",
-        exampleOutput: "",
+        examples: [{ input: "", output: "" }], // Start with one example
         timeLimit: "",
         memoryLimit: "",
         difficulty: "Easy",
@@ -52,8 +43,30 @@ const CreateProblem: React.FC = () => {
         setFormState((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleDifficultyChange = (value: string) => {
-        setFormState((prev) => ({ ...prev, difficulty: value }));
+    const handleExampleChange = (index: number, field: string, value: string) => {
+        const updatedExamples = formState.examples.map((example, i) =>
+            i === index ? { ...example, [field]: value } : example
+        );
+        setFormState((prev) => ({ ...prev, examples: updatedExamples }));
+    };
+
+    const handleAddExample = () => {
+        setFormState((prev) => ({
+            ...prev,
+            examples: [
+                ...prev.examples,
+                {
+                    input: "",         // Ensure the input and output fields are present
+                    output: ""
+                }
+            ]
+        }));
+    };
+
+
+    const handleRemoveExample = (index: number) => {
+        const updatedExamples = formState.examples.filter((_, i) => i !== index);
+        setFormState((prev) => ({ ...prev, examples: updatedExamples }));
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,6 +77,10 @@ const CreateProblem: React.FC = () => {
 
     const handleRemoveFile = () => {
         setTestCaseFile(null);
+    };
+
+    const handleDifficultyChange = (value: string) => {
+        setFormState((prev) => ({ ...prev, difficulty: value }));
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -165,29 +182,43 @@ const CreateProblem: React.FC = () => {
                     />
                 </div>
                 <div>
-                    <Label htmlFor="exampleInput">Example Input</Label>
-                    <Textarea
-                        id="exampleInput"
-                        name="exampleInput"
-                        value={formState.exampleInput}
-                        onChange={handleInputChange}
-                        placeholder="Enter example input"
-                        rows={2}
-                        required
-                    />
+                    <Label htmlFor="exampleInput">Example Input/Output</Label>
+                    {formState.examples.map((example, index) => (
+                        <div key={index} className="example-container space-y-2 mb-4 p-4 border border-gray-300 rounded-md">
+                            <div>
+                                <Label>Example Input {index + 1}</Label>
+                                <Textarea
+                                    value={example.input}
+                                    onChange={(e) => handleExampleChange(index, 'exampleInput', e.target.value)}
+                                    placeholder="Enter example input"
+                                    rows={2}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <Label>Example Output {index + 1}</Label>
+                                <Textarea
+                                    value={example.output}
+                                    onChange={(e) => handleExampleChange(index, 'exampleOutput', e.target.value)}
+                                    placeholder="Enter example output"
+                                    rows={2}
+                                    required
+                                />
+                            </div>
+                            <Button
+                                type="button"
+                                onClick={() => handleRemoveExample(index)}
+                                variant="destructive"
+                            >
+                                Remove Example
+                            </Button>
+                        </div>
+                    ))}
+                    <Button type="button" onClick={handleAddExample}>
+                        Add Another Example
+                    </Button>
                 </div>
-                <div>
-                    <Label htmlFor="exampleOutput">Example Output</Label>
-                    <Textarea
-                        id="exampleOutput"
-                        name="exampleOutput"
-                        value={formState.exampleOutput}
-                        onChange={handleInputChange}
-                        placeholder="Enter example output"
-                        rows={2}
-                        required
-                    />
-                </div>
+
                 <div>
                     <Label htmlFor="timeLimit">Time Limit (seconds)</Label>
                     <Input
@@ -269,14 +300,9 @@ const CreateProblem: React.FC = () => {
                     <Alert className="mt-2 bg-blue-50 border-blue-200">
                         <AlertCircle className="h-4 w-4 text-blue-600" />
                         <AlertDescription className="text-blue-800">
-                            Please submit the test case as ProblemCode.zip,
-                            which is a compressed file of the ProblemCode
-                            folder. <br />
-                            Inside contains folders in the form Test1, Test2,
-                            Test3, ... TestN-th. <br />
-                            Inside each folder of each test case contains two
-                            files ProblemCode.inp, ProblemCode.out, which are
-                            input and output files.
+                            Vui lòng nộp bài kiểm tra dưới dạng tệp nén ProblemCode.zip, là tệp nén của thư mục ProblemCode.
+                            Bên trong chứa các thư mục theo dạng Test1, Test2, Test3, ... TestN-th.
+                            Trong mỗi thư mục của từng test case sẽ có hai tệp ProblemCode.inp và ProblemCode.out, đây là các tệp đầu vào và đầu ra tương ứng.
                         </AlertDescription>
                     </Alert>
                 </div>

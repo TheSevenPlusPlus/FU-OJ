@@ -1,4 +1,9 @@
-using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Blog.Request;using FU.OJ.Server.DTOs.Blog.Response;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Identity;
+using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Blog.Request;
+using FU.OJ.Server.DTOs.Blog.Response;
+using FU.OJ.Server.Infra.Context;
+using FU.OJ.Server.Infra.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 public interface IBlogService
 {
@@ -12,12 +17,14 @@ public class BlogService : IBlogService
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<User> _userManager;
-    public BlogService(ApplicationDbContext context, UserManager<User> userManager)
+
+    public BlogService(ApplicationDbContext context, UserManager<User> userManager)
     {
         _context = context;
         _userManager = userManager;
     }
-    // Create a new blog
+
+    // Create a new blog
     public async Task<string> CreateAsync(CreateBlogRequest request)
     {
         // Validate input
@@ -38,11 +45,14 @@ public class BlogService : IBlogService
             UserId = user.Id,
             CreatedAt = DateTime.UtcNow
         };
-        _context.Blogs.Add(blog);
+
+        _context.Blogs.Add(blog);
         await _context.SaveChangesAsync();
-        return blog.Id; // Return the generated blog ID
+
+        return blog.Id; // Return the generated blog ID
     }
-
+
+
     // Get a blog by ID
     public async Task<BlogView?> GetByIdAsync(string id)
     {
@@ -60,15 +70,18 @@ public class BlogService : IBlogService
                 UserName = blog.User.UserName
             }).FirstOrDefaultAsync();
     }
-
+
+
     public async Task<(List<BlogView> blogs, int totalPages)> GetAllBlogsAsync(Paging query)
     {
         if (query.pageIndex < 1)
             throw new ArgumentException("Page index must be greater than 0.");
-        if (query.pageSize < 1 || query.pageSize > 100)
+
+        if (query.pageSize < 1 || query.pageSize > 100)
             throw new ArgumentException("Page size must be between 1 and 100.");
 
-        var totalItems = await _context.Blogs.CountAsync();            int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
+        var totalItems = await _context.Blogs.CountAsync();
+            int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
             var blogs = await _context.Blogs.Select(blog => new BlogView
             {
                 Id = blog.Id,
@@ -82,9 +95,11 @@ public class BlogService : IBlogService
             .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
                                                                                           .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
                                                                                                     .ToListAsync();
-        return (blogs, totalPages);
+
+        return (blogs, totalPages);
     }
-
+
+
     // Update a blog
     public async Task<bool> UpdateAsync(UpdateBlogRequest request)
     {
@@ -105,12 +120,14 @@ public class BlogService : IBlogService
 
         blog.Title = request.Title;
         blog.Content = request.Content;
-        _context.Blogs.Update(blog);
+
+        _context.Blogs.Update(blog);
         await _context.SaveChangesAsync();
 
         return true; // Trả về true nếu cập nhật thành công
     }
-
+
+
     // Delete a blog
     public async Task<bool> DeleteAsync(string id)
     {
@@ -129,4 +146,5 @@ public class BlogService : IBlogService
         return true; // Trả về true nếu xóa thành công
     }
 
-}
+}
+

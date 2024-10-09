@@ -76,7 +76,7 @@ const CodeSubmission: React.FC = () => {
         setLoading(true);
         setError(null);
         try {
-            if (contestCode == null) {
+            if (contestCode == null || Date.now() > new Date(contest.endTime).getTime()) {
                 const response = await submitCode({
                     problemCode: problemCode,
                     sourceCode: code,

@@ -1,15 +1,23 @@
-using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
+using FU.OJ.Server.DTOs.User.Respond;
+using FU.OJ.Server.Infra.Const.Route;
+using FU.OJ.Server.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace FU.OJ.Server.Controllers{    [Route("Profile")]
+namespace FU.OJ.Server.Controllers
+{
+    [Route("Profile")]
     [ApiController]
     public class ProfileController : AuthorizeController
     {
         private readonly IUserService _userService;
-        public ProfileController(IUserService userService, ILogger<ProfileController> logger) : base(logger)
+
+        public ProfileController(IUserService userService, ILogger<ProfileController> logger) : base(logger)
         {
             _userService = userService;
         }
-        [AllowAnonymous]        [HttpGet(UserRoute.Action.GetByUsername)]
+        [AllowAnonymous]
+        [HttpGet(UserRoute.Action.GetByUsername)]
         public async Task<IActionResult> GetUserByUsername([FromRoute] string username)
         {
             try
@@ -40,7 +48,8 @@ namespace FU.OJ.Server.Controllers{    [Route("Profile")]
                 return HandleException(ex);
             }
         }
-        [Authorize]        [HttpPut(UserRoute.Action.Update)]
+        [Authorize]
+        [HttpPut(UserRoute.Action.Update)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
         {
             if (!ModelState.IsValid)
@@ -49,7 +58,8 @@ namespace FU.OJ.Server.Controllers{    [Route("Profile")]
             var updatedUser = await _userService.UpdateUserAsync(updateUserRequest);
             if (updatedUser == null)
                 throw new Exception("User not found.");
-            var userResponse = new UserView
+
+            var userResponse = new UserView
             {
                 UserName = updatedUser.UserName,
                 Email = updatedUser.Email,
@@ -62,7 +72,8 @@ namespace FU.OJ.Server.Controllers{    [Route("Profile")]
                 School = updatedUser.School,
                 AvatarUrl = updatedUser.AvatarUrl,
             };
-            return Ok(userResponse);
+
+            return Ok(userResponse);
         }
     }
-}
+}

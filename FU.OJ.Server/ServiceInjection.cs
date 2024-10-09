@@ -32,6 +32,12 @@ namespace FU.OJ.Server
             {
                 // Thay đổi thời gian hết hạn của reset token
                 options.Tokens.PasswordResetTokenProvider = TokenOptions.DefaultEmailProvider; // Sử dụng EmailProvider cho Password Reset
+                options.Password.RequireDigit = false; // Yêu cầu phải có số
+                options.Password.RequiredLength = 8;   // Độ dài tối thiểu của mật khẩu
+                options.Password.RequireNonAlphanumeric = false; // Yêu cầu có ký tự đặc biệt
+                options.Password.RequireUppercase = false; // Yêu cầu chữ in hoa
+                options.Password.RequireLowercase = false; // Yêu cầu chữ thường
+                options.Password.RequiredUniqueChars = 0;  // Yêu cầu số ký tự độc nhất
             })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();

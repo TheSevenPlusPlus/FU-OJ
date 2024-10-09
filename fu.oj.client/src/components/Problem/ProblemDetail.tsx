@@ -146,7 +146,6 @@ export default function ProblemDetail() {
                                 <TextWithNewLines text={problem.output} />
                             </div>
 
-                            {/* Example Input/Output */}
                             <div>
                                 <h2 className="text-xl font-semibold mb-2">Example</h2>
                                 <table className="min-w-full table-auto">
@@ -157,17 +156,28 @@ export default function ProblemDetail() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td className="px-4 py-2 border">
-                                                {problem.exampleInput}
-                                            </td>
-                                            <td className="px-4 py-2 border">
-                                                {problem.exampleOutput}
-                                            </td>
-                                        </tr>
+                                        {problem.examples && problem.examples.length > 0 ? (
+                                            problem.examples.map((example, index) => (
+                                                <tr key={index}>
+                                                    <td className="px-4 py-2 border">
+                                                        <TextWithNewLines text={example.input} />
+                                                    </td>
+                                                    <td className="px-4 py-2 border">
+                                                        <TextWithNewLines text={example.output} />
+                                                    </td>
+                                                </tr>
+                                            ))
+                                        ) : (
+                                            <tr>
+                                                <td className="px-4 py-2 border" colSpan={2}>
+                                                    No examples provided.
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
+
 
                             {/* Constraints */}
                             <div>

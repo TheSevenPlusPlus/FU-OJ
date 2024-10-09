@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
 import { loginUser, registerUser } from "../../api/auth";
-import { Helmet } from "react-helmet-async"; // Nhập Helmet ở đây
+import { Helmet } from "react-helmet-async";
 
 interface RegisterProps {
     additionalFields?: { name: string; label: string }[];
@@ -18,15 +18,6 @@ interface FormErrors {
 
 export default function AuthForm({ additionalFields = [] }: RegisterProps) {
     const [activeTab, setActiveTab] = useState<string>("login");
-    const [formData, setFormData] = useState({
-        username: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        fullName: "",
-        phoneNumber: "",
-    });
-    const [errors, setErrors] = useState<FormErrors>({});
     const [submitError, setSubmitError] = useState<string | null>(null);
 
     const navigate = useNavigate();
@@ -82,8 +73,13 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
             navigate("/profile");
             navigate(0); // Reload
         } catch (error: any) {
-            console.error("Registration failed:", error.response?.data || error.message);
-            setSubmitError("Registration failed. Please try again later.");
+            // Handle 400 error and other errors
+            //console.log("Errorrrrrrrrrrrr here: ", error);
+            if (error.response && error.response.status === 400) {
+                setSubmitError(error.response.data || "Registration failed. Please check your input.");
+            } else {
+                setSubmitError("Registration failed. Please try again later.");
+            }
         }
     };
 

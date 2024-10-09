@@ -8,7 +8,7 @@ namespace FU.OJ.Server.DTOs.Contest.Request
 {
     public class CreateContestRequest
     {
-        [Required, StringLength(15, MinimumLength = 1), RegularExpression(RegexPatterns.NoVietnameseAlphabetNoWhiteSpace, ErrorMessage = ErrorMessage.NoVietnameseNoWhiteSpace)]
+        [Required, StringLength(30, MinimumLength = 1), RegularExpression(RegexPatterns.NoVietnameseAlphabetNoWhiteSpace, ErrorMessage = ErrorMessage.NoVietnameseNoWhiteSpace)]
         public string Code { get; set; } = null!;
         [Required]
         public string Name { get; set; } = null!;
