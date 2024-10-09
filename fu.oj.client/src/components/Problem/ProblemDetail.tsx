@@ -211,7 +211,7 @@ export default function ProblemDetail() {
 
                         <div className="space-x-2">
                             {/* View All Submissions Button */}
-                            {contestCode == null ?
+                            {contestCode == null || new Date(contest.endTime).getTime() < Date.now() ?
                                 <Link to={`/submissions/all?problemCode=${problemCode}`}>
                                     <Button variant="secondary">View all submissions </Button>
                                 </Link>
@@ -222,7 +222,7 @@ export default function ProblemDetail() {
                             }
 
                             {/* View My Submissions Button */}
-                            {contestCode == null ?
+                            {contestCode == null || new Date(contest.endTime).getTime() < Date.now() ?
                                 <Link to={`/submissions/all?isMine=${true}&problemCode=${problemCode}`}>
                                     <Button variant="secondary">View my submissions</Button>
                                 </Link>
