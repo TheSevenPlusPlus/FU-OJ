@@ -1,9 +1,15 @@
 ﻿using FU.OJ.Server.DTOs;
-using FU.OJ.Server.DTOs.User.Request;using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const;
+using FU.OJ.Server.DTOs.User.Request;
+using FU.OJ.Server.DTOs.User.Respond;
+using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Const.Authorize;
-using FU.OJ.Server.Infra.Models;using Microsoft.AspNetCore.Identity;using Microsoft.EntityFrameworkCore;
+using FU.OJ.Server.Infra.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-namespace FU.OJ.Server.Service{    public interface IUserService
+namespace FU.OJ.Server.Service
+{
+    public interface IUserService
     {
         Task<User> CreateUserAsync(CreateUserRequest userRequest);
         Task<(List<UserView> users, int totalPages)> GetAllUsersAsync(Paging query);
@@ -17,14 +23,17 @@ namespace FU.OJ.Server.Service{    public interface IUserService
         Task<bool> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest);
     }
 
-    public class UserService : IUserService
+
+    public class UserService : IUserService
     {
         private readonly UserManager<User> _userManager;
-        public UserService(UserManager<User> userManager)
+
+        public UserService(UserManager<User> userManager)
         {
             _userManager = userManager;
         }
-        public async Task<User> CreateUserAsync(CreateUserRequest userRequest)
+
+        public async Task<User> CreateUserAsync(CreateUserRequest userRequest)
         {
             var user = new User
             {
@@ -40,12 +49,14 @@ namespace FU.OJ.Server.Service{    public interface IUserService
                 AvatarUrl = userRequest.AvatarUrl,
                 School = userRequest.School,
             };
-            var result = await _userManager.CreateAsync(user, userRequest.Password);
+
+            var result = await _userManager.CreateAsync(user, userRequest.Password);
             if (result.Succeeded) return user;
             var errors = string.Join("; ", result.Errors.Select(e => e.Description));
             throw new InvalidOperationException($"User creation failed: {errors}");
         }
-        public async Task<(List<UserView> users, int totalPages)> GetAllUsersAsync(Paging query)
+
+        public async Task<(List<UserView> users, int totalPages)> GetAllUsersAsync(Paging query)
         {
             int totalItems = await _userManager.Users.CountAsync();
 
@@ -73,7 +84,8 @@ namespace FU.OJ.Server.Service{    public interface IUserService
 
             return (users, totalPages);
         }
-
+
+
         public async Task<User> GetUserByIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -91,12 +103,14 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
             return user;
         }
-        public async Task<User> GetUserByUsernameAsync(string userName) // Added Async suffix for consistency
+
+        public async Task<User> GetUserByUsernameAsync(string userName) // Added Async suffix for consistency
         {
             var user = await _userManager.FindByNameAsync(userName);
             return user;
         }
-        //Don't allow change UserName
+
+        //Don't allow change UserName
         public async Task<User> UpdateUserAsync(UpdateUserRequest updatedUser)
         {
             var user = await _userManager.FindByNameAsync(updatedUser.UserName);
@@ -111,12 +125,15 @@ namespace FU.OJ.Server.Service{    public interface IUserService
                 user.PhoneNumber = updatedUser.PhoneNumber;
                 user.School = updatedUser.School;
                 user.AvatarUrl = updatedUser.AvatarUrl;
-                var result = await _userManager.UpdateAsync(user);
+
+                var result = await _userManager.UpdateAsync(user);
                 if (result.Succeeded) return user;
             }
-            throw new Exception("User isn't exist");
+
+            throw new Exception("User isn't exist");
         }
-        public async Task<bool> DeleteUserAsync(string userName)
+
+        public async Task<bool> DeleteUserAsync(string userName)
         {
             var user = await _userManager.FindByNameAsync(userName);
             if (user != null)
@@ -124,7 +141,8 @@ namespace FU.OJ.Server.Service{    public interface IUserService
                 var result = await _userManager.DeleteAsync(user);
                 return result.Succeeded;
             }
-            throw new Exception(ErrorMessage.UserNotFound);
+
+            throw new Exception(ErrorMessage.UserNotFound);
 
         }
 
@@ -177,4 +195,4 @@ namespace FU.OJ.Server.Service{    public interface IUserService
             throw new Exception($"Failed to change password: {errors}");
         }
     }
-}
+}
