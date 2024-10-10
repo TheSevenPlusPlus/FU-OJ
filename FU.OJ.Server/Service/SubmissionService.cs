@@ -1,14 +1,24 @@
-using Exceptions;using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Submission.Request;using FU.OJ.Server.DTOs.Submission.Response;using FU.OJ.Server.Infra.Const;using FU.OJ.Server.Infra.Context;using FU.OJ.Server.Infra.Models;using Microsoft.EntityFrameworkCore;using System.Text;
+using Exceptions;
+using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Submission.Request;
+using FU.OJ.Server.DTOs.Submission.Response;
+using FU.OJ.Server.Infra.Const;
+using FU.OJ.Server.Infra.Context;
+using FU.OJ.Server.Infra.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Text;
 using System.Text.Json;
 
-namespace FU.OJ.Server.Service{
+namespace FU.OJ.Server.Service
+{
     public interface ISubmissionService
     {
         Task<string> CreateAsync(string userId, CreateSubmissionRequest request, string? contestCode = null, bool? base64Encoded = false, bool? wait = true); //
         Task<SubmissionView> GetByIdAsync(string userId, string id);//
         Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, string? isMine = "false", string? contestCode = "null");//
     }
-    public class SubmissionService : ISubmissionService
+
+    public class SubmissionService : ISubmissionService
     {
         private readonly string _judgeServerUrl;
         private readonly HttpClient _httpClient;
@@ -17,7 +27,8 @@ namespace FU.OJ.Server.Service{
         private readonly IUserService _userService;
         private readonly IGeneralService _generalService;
         private readonly ApplicationDbContext _context;
-        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDbContext context, IConfiguration configuration, IUserService userService, IGeneralService generalService)
+
+        public SubmissionService(HttpClient httpClient, IProblemService problemService, ITestcaseService testcaseService, ApplicationDbContext context, IConfiguration configuration, IUserService userService, IGeneralService generalService)
         {
             _judgeServerUrl = configuration.GetValue<string>("JudgeServerUrl")!;
             _httpClient = httpClient;
@@ -27,16 +38,23 @@ namespace FU.OJ.Server.Service{
             _userService = userService;
             _generalService = generalService;
         }
-        public async Task<string> CreateAsync(string userId, CreateSubmissionRequest request, string? contestCode = null, bool? base64Encoded = false, bool? wait = true)
+
+        public async Task<string> CreateAsync(string userId, CreateSubmissionRequest request, string? contestCode = null, bool? base64Encoded = false, bool? wait = true)
         {
             var problem = await _context.Problems.AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == request.ProblemId);
 
             if (problem == null)
                 throw new NotFoundException(ErrorMessage.NotFound);
-            if (problem.TestCasePath == null)
+
+            if (problem.TestCasePath == null)
                 throw new NotFoundException(ErrorMessage.NotHaveTest);
-            var user = await _userService.GetUserByIdAsync(userId);            if (user == null)                throw new NotFoundException(ErrorMessage.NotFound);            var submission = new Submission
+
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+                throw new NotFoundException(ErrorMessage.NotFound);
+
+            var submission = new Submission
             {
                 ProblemId = request.ProblemId,
                 ProblemCode = request.ProblemCode,
@@ -47,19 +65,24 @@ namespace FU.OJ.Server.Service{
                 UserName = user.UserName,
                 ContestCode = contestCode,
             };
-            _context.Submissions.Add(submission);
-            var tokenList = new List<string>();
+
+            _context.Submissions.Add(submission);
+
+            var tokenList = new List<string>();
             var testFolders = Directory.GetDirectories(problem.TestCasePath);
             string url = $"{_judgeServerUrl}/submissions/?base64_encoded={base64Encoded.ToString().ToLower()}&wait={wait.ToString().ToLower()}";
-            foreach (var testFolder in testFolders)
+
+            foreach (var testFolder in testFolders)
             {
                 var inputFilePath = Path.Combine(testFolder, $"{problem.Code}.inp");
                 var outputFilePath = Path.Combine(testFolder, $"{problem.Code}.out");
-                if (File.Exists(inputFilePath) && File.Exists(outputFilePath))
+
+                if (File.Exists(inputFilePath) && File.Exists(outputFilePath))
                 {
                     string inputContent = await File.ReadAllTextAsync(inputFilePath);
                     string outputContent = await File.ReadAllTextAsync(outputFilePath);
-                    var submissionRequest = new SubmissionRequest
+
+                    var submissionRequest = new SubmissionRequest
                     {
                         source_code = request.SourceCode,
                         language_id = request.LanguageId,
@@ -68,17 +91,22 @@ namespace FU.OJ.Server.Service{
                         cpu_time_limit = problem.TimeLimit,
                         memory_limit = problem.MemoryLimit > 256000 ? problem.MemoryLimit : 256000
                     };
-                    var jsonContent = new StringContent(JsonSerializer.Serialize(submissionRequest), Encoding.UTF8, "application/json");
+
+                    var jsonContent = new StringContent(JsonSerializer.Serialize(submissionRequest), Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await _httpClient.PostAsync(url, jsonContent);
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
                     Console.WriteLine(jsonResponse);
                     var token = JsonDocument.Parse(jsonResponse).RootElement.GetProperty("token").GetString();
-                    tokenList.Add(token!);
+
+                    tokenList.Add(token!);
                 }
             }
-            string status = "Accepted";
+
+            string status = "Accepted";
             int passedTestCount = 0;
-            foreach (var token in tokenList)
+
+            foreach (var token in tokenList)
             {
                 var tokenResult = await GetByTokenAsync(token);
                 if (tokenResult == "Compilation Error" || JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString() == "Compilation Error")
@@ -90,11 +118,14 @@ namespace FU.OJ.Server.Service{
                         Time = "0.001s",
                         Memory = 0.0
                     };
-                    status = "Compilation Error";
+
+                    status = "Compilation Error";
                     _context.Results.Add(_newResult);
-                    continue;
+
+                    continue;
                 }
-                var newResult = new Result
+
+                var newResult = new Result
                 {
                     SubmissionId = submission.Id,
                     StatusDescription = JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString(),
@@ -103,15 +134,18 @@ namespace FU.OJ.Server.Service{
                         ? memoryElement.GetDouble()
                         : 262144
                 };
-                if (JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString() != "Accepted")
+
+                if (JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString() != "Accepted")
                 {
                     if (status == "Accepted")
                         status = JsonDocument.Parse(tokenResult).RootElement.GetProperty("status").GetProperty("description").GetString()!;
                 }
                 else passedTestCount++;
-                _context.Results.Add(newResult);
+
+                _context.Results.Add(newResult);
             }
-            submission.Status = status;
+
+            submission.Status = status;
             var result = await _context.ProblemUsers.AsNoTracking()
                 .FirstOrDefaultAsync(pu => pu.ProblemId == request.ProblemId && pu.UserId == userId);
 
@@ -141,43 +175,61 @@ namespace FU.OJ.Server.Service{
                         _context.Problems.Update(problem);
                     }
                 }
-            }            await _context.SaveChangesAsync();
+            }
+
+            await _context.SaveChangesAsync();
             return submission.Id;
         }
-        public async Task<string> GetByTokenAsync(string token, bool base64Encoded = false, string fields = "stdout,time,memory,stderr,token,compile_output,message,status")
+
+        public async Task<string> GetByTokenAsync(string token, bool base64Encoded = false, string fields = "stdout,time,memory,stderr,token,compile_output,message,status")
         {
             string url = $"{_judgeServerUrl}/submissions/{token}?base64_encoded={base64Encoded.ToString().ToLower()}&fields={fields}";
             HttpResponseMessage response;
             string responseContent;
-            while (true)
+
+            while (true)
             {
                 response = await _httpClient.GetAsync(url);
                 if (response.ReasonPhrase == "Bad Request")
                     return "Compilation Error";
-                responseContent = await response.Content.ReadAsStringAsync();
-                var tokenResult = JsonDocument.Parse(responseContent).RootElement;
+
+                responseContent = await response.Content.ReadAsStringAsync();
+
+                var tokenResult = JsonDocument.Parse(responseContent).RootElement;
                 var statusDescription = tokenResult.GetProperty("status").GetProperty("description").GetString();
-                if (statusDescription != "In Queue" && statusDescription != "Processing") break;
-                await Task.Delay(100);
+
+                if (statusDescription != "In Queue" && statusDescription != "Processing") break;
+
+                await Task.Delay(100);
             }
-            return responseContent;
+
+            return responseContent;
         }
-        public async Task<Submission?> getById(string id)
+
+        public async Task<Submission?> getById(string id)
         {
             var submission = await _context.Submissions.AsNoTracking()
                 .Include(s => s.Results)
                 .FirstOrDefaultAsync(s => s.Id == id);
-            return submission;
+
+            return submission;
         }
-        public async Task<SubmissionView> GetByIdAsync(string userId, string id)
+
+        public async Task<SubmissionView> GetByIdAsync(string userId, string id)
         {
             var submission = await _context.Submissions
                 .Where(s => s.Id == id)
                 .Include(s => s.Results)
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
-            if (submission == null)
-                throw new Exception(ErrorMessage.NotFound);            bool isAc = await _problemService.IsAccepted(userId, submission.ProblemId);            var (userName, role) = await _generalService.GetUserRoleAsync(userId);            return new SubmissionView
+
+            if (submission == null)
+                throw new Exception(ErrorMessage.NotFound);
+
+            bool isAc = await _problemService.IsAccepted(userId, submission.ProblemId);
+            var (userName, role) = await _generalService.GetUserRoleByUserIdAsync(userId);
+
+            return new SubmissionView
             {
                 Id = submission.Id,
                 ProblemId = submission.ProblemId,
@@ -195,7 +247,8 @@ namespace FU.OJ.Server.Service{
                 }).ToList()
             };
         }
-        public async Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, string? isMine = "false", string? contestCode = null)
+
+        public async Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, string? isMine = "false", string? contestCode = null)
         {
             // Đếm tổng số submissions
             int totalItems = await _context.Submissions
@@ -204,9 +257,11 @@ namespace FU.OJ.Server.Service{
                     (contestCode == null || submission.ContestCode == contestCode))
                 .AsNoTracking()
                 .CountAsync();
-            // Tính toán tổng số trang
+
+            // Tính toán tổng số trang
             int totalPages = (int)Math.Ceiling((double)totalItems / query.pageSize);
-            // Lấy danh sách submissions đã phân trang
+
+            // Lấy danh sách submissions đã phân trang
             var submissions = await _context.Submissions.AsNoTracking()
                 .Where(submission => (isMine == "false" || submission.UserId == userId) &&
                     (problemCode == null || submission.ProblemCode == problemCode) &&
@@ -226,8 +281,9 @@ namespace FU.OJ.Server.Service{
                 .Skip((query.pageIndex - 1) * query.pageSize) // Bỏ qua các phần tử của trang trước
                 .Take(query.pageSize) // Lấy số lượng phần tử của trang hiện tại
                 .ToListAsync();
-            // Trả về cả danh sách submissions và tổng số trang
+
+            // Trả về cả danh sách submissions và tổng số trang
             return (submissions, totalPages);
         }
     }
-}
+}

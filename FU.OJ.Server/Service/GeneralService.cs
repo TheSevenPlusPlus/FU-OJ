@@ -3,7 +3,9 @@
 namespace FU.OJ.Server.Service{    public interface IGeneralService
     {
         Task<PaginatedResponse<UserRankResponse>> GetUserRankingsAsync(int page, int pageSize);
-        Task<(string UserName, string Role)> GetUserRoleAsync(string userId);
+        Task<string> GetUserRoleAByUserNameAsync(string userName);
+        Task<(string UserName, string Role)> GetUserRoleByUserIdAsync(string userId);
+
 
     }
     public class GeneralService : IGeneralService
@@ -49,7 +51,21 @@ namespace FU.OJ.Server.Service{    public interface IGeneralService
             };
         }
 
-        public async Task<(string UserName, string Role)> GetUserRoleAsync(string userId)
+        public async Task<string> GetUserRoleAByUserNameAsync(string userName)
+        {
+            // Tìm user dựa vào username
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null) throw new Exception("User not found");
+
+            // Lấy vai trò duy nhất của user
+            var roles = await _userManager.GetRolesAsync(user);
+            if (roles.Count == 0) return "No Role";
+            if (roles.Count > 1) throw new InvalidOperationException("User has multiple roles, but only one role is allowed.");
+
+            return roles.FirstOrDefault();
+        }
+
+        public async Task<(string UserName, string Role)> GetUserRoleByUserIdAsync(string userId)
         {
             // Tìm user dựa vào username
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);

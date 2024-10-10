@@ -16,7 +16,7 @@ interface User {
     role?: string;
 }
 
-const Navbar: React.FC = () => {
+export default function Navbar() {
     const [user, setUser] = useState<User | null>(null);
     const [isOpen, setIsOpen] = useState(false);
     const navigate = useNavigate();
@@ -28,13 +28,9 @@ const Navbar: React.FC = () => {
                 const parsedUser: User = JSON.parse(storedUser);
                 if (parsedUser.userName) {
                     try {
-                        await fetchUserProfile(
-                            parsedUser.userName,
-                            parsedUser.token,
-                        );
+                        await fetchUserProfile(parsedUser.userName, parsedUser.token);
                     } catch (error) {
                         console.error("Error fetching user profile:", error);
-                        // Clear localStorage if we encounter an error
                         localStorage.removeItem("user");
                         setUser(null);
                     }
@@ -50,7 +46,7 @@ const Navbar: React.FC = () => {
     const fetchUserProfile = async (userName: string, token: string) => {
         try {
             const response = await getProfile(userName);
-            const userRole = await getRole();
+            const userRole = await getRole(userName);
             if (response) {
                 const updatedUser: User = {
                     userName: response.userName,
@@ -66,7 +62,6 @@ const Navbar: React.FC = () => {
             }
         } catch (error) {
             console.error("Error in fetchUserProfile:", error);
-            // Clear localStorage and throw the error to be handled in the effect
             localStorage.removeItem("user");
             throw error;
         }
@@ -81,7 +76,7 @@ const Navbar: React.FC = () => {
     const toggleMenu = () => setIsOpen(!isOpen);
 
     return (
-        <nav className="bg-black text-white">
+        <nav className="bg-black text-white shadow-lg">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
@@ -97,11 +92,11 @@ const Navbar: React.FC = () => {
                                     <Button
                                         variant="outline"
                                         asChild
-                                        className="mr-2 text-black"
+                                        className="mr-2 bg-white text-black hover:bg-gray-200"
                                     >
                                         <Link to="/login">Log in</Link>
                                     </Button>
-                                    <Button asChild>
+                                        <Button asChild className="bg-white text-black hover:bg-gray-200">
                                         <Link to="/register">Register</Link>
                                     </Button>
                                 </>
@@ -118,6 +113,4 @@ const Navbar: React.FC = () => {
             </div>
         </nav>
     );
-};
-
-export default Navbar;
+}

@@ -69,7 +69,8 @@ export default function ProfileView() {
                         setLoading(false);
                         return;
                     }
-                    const userRole = await getRole();
+                    //console.log(fetchedProfile);
+                    const userRole = await getRole(fetchedProfile.userName);
 
                     // Merge userRole into profile
                     const updatedProfile = {

@@ -18,6 +18,7 @@ import { getContestByCode, registerContest, isRegisteredContest, getContestProbl
 import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
 import { Helmet } from "react-helmet-async";
+import { date } from "yup";
 
 export default function ProblemDetail() {
     const { problemCode } = useParams<{ problemCode: string }>();

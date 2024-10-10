@@ -1,8 +1,17 @@
-﻿using FU.OJ.Server.Controllers;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
+﻿using FU.OJ.Server.Controllers;
+using FU.OJ.Server.Infra.Const.Route;
+using FU.OJ.Server.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-[Route(GeneralRoute.INDEX)][ApiController]
-[AllowAnonymous]public class GeneralController : AuthorizeController{    private readonly IGeneralService _generalService;
-    public GeneralController(IGeneralService generalService, ILogger<GeneralController> logger) : base(logger)
+[Route(GeneralRoute.INDEX)]
+[ApiController]
+[AllowAnonymous]
+public class GeneralController : AuthorizeController
+{
+    private readonly IGeneralService _generalService;
+
+    public GeneralController(IGeneralService generalService, ILogger<GeneralController> logger) : base(logger)
     {
         _generalService = generalService;
     }
@@ -13,16 +22,17 @@
         {
             return BadRequest("Page and pageSize must be greater than 0.");
         }
-        var result = await _generalService.GetUserRankingsAsync(page, pageSize);
+
+        var result = await _generalService.GetUserRankingsAsync(page, pageSize);
         return Ok(result);
     }
     [HttpGet(GeneralRoute.Action.GetRole)]
-    public async Task<IActionResult> GetUserRoleAsync()
+    public async Task<IActionResult> GetUserRoleAsync(string userName)
     {
         try
         {
-            var (userName, role) = await _generalService.GetUserRoleAsync(UserHeader.UserId);
-            return Ok(new { UserName = userName, Role = role });
+            var role = await _generalService.GetUserRoleAByUserNameAsync(userName);
+            return Ok(new { Role = role });
         }
         catch (Exception ex)
         {
@@ -36,4 +46,4 @@
         var claims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
         return Ok(claims); // Trả về tất cả các claims từ token
     }
-}
+}

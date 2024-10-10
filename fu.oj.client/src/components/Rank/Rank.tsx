@@ -1,15 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, Medal, Award } from "lucide-react";
-import { getRank } from "../../api/general"; // Assuming the api file is in the same directory
+import { getRank } from "../../api/general";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom"; 
-
+import Pagination from "../Pagination/Pagination";
 
 type Participant = {
     rank: number;
@@ -55,78 +53,75 @@ export default function Rank() {
     const totalPages = rankData ? Math.ceil(rankData.totalItems / pageSize) : 0;
 
     const getRankIcon = (rank: number): React.ReactNode => {
-        if (rank === 1) return <Trophy className="w-6 h-6" />;
-        if (rank === 2) return <Medal className="w-6 h-6" />;
-        if (rank === 3) return <Award className="w-6 h-6" />;
+        if (rank === 1) return <Trophy className="w-4 h-4 text-yellow-500" />;
+        if (rank === 2) return <Medal className="w-4 h-4 text-gray-400" />;
+        if (rank === 3) return <Award className="w-4 h-4 text-amber-600" />;
         return null;
     };
 
     const getRowStyle = (rank: number): string => {
-        if (rank <= 3) return "font-bold";
-        if (rank <= 10) return "font-semibold";
+        if (rank <= 3) return "font-semibold";
         return "";
     };
 
-    const handlePageChange = (newPage: number) => {
-        navigate(`/rank/${newPage}`);
+    const handlePageChange = (newPageIndex: number) => {
+        if (newPageIndex > 0 && newPageIndex <= totalPages) {
+            setCurrentPage(newPageIndex);
+            navigate(`/rank/${newPageIndex}`);
+        }
     };
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <div className="flex justify-center items-center h-screen">Loading...</div>;
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return <div className="text-center text-red-500 mt-8">{error}</div>;
     }
 
     return (
-        <div className="container mx-auto py-10">
+        <div className="container mx-auto py-10 px-4">
             <Helmet>
-                <title> Rank of users</title>
-                <meta name="description" content="This is a scoreboard of AC problem." />
+                <title>Rank of Users</title>
+                <meta name="description" content="Scoreboard of AC problems." />
             </Helmet>
 
-            <Card className="border-2 border-black">
+            <Card className="shadow-md">
                 <CardContent className="p-0">
                     <div className="overflow-x-auto">
                         <table className="w-full">
                             <thead>
-                                <tr className="bg-gray-100 border-b-2 border-black">
-                                    <th className="px-4 py-2 text-left">
+                                <tr className="bg-black text-white">
+                                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                         Rank
                                     </th>
-                                    <th className="px-4 py-2 text-left">
+                                    <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
                                         Username
                                     </th>
-                                    <th className="px-4 py-2 text-right">
+                                    <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider">
                                         AC Problems
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="bg-white divide-y divide-gray-200">
                                 {rankData?.items.map((participant) => (
                                     <tr
                                         key={participant.userName}
-                                        className={`${getRowStyle(participant.rank)} border-b border-gray-200 hover:bg-gray-50`}
+                                        className={`${getRowStyle(participant.rank)} hover:bg-gray-50`}
                                     >
-                                        <td className="px-4 py-2">
+                                        <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center space-x-2">
                                                 {getRankIcon(participant.rank)}
-                                                <span className="text-lg">
-                                                    {participant.rank}
-                                                </span>
+                                                <span className="text-sm text-gray-900">{participant.rank}</span>
                                             </div>
                                         </td>
-                                        <td className="px-4 py-2">
-                                            <Link to={`/profile/${participant.userName}`} className="text-blue-600 hover:underline">
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <Link to={`/profile/${participant.userName}`} className="text-sm text-blue-600 hover:underline">
                                                 {participant.userName}
                                             </Link>
                                         </td>
-                                        <td className="px-4 py-2 text-right">
-                                            <Badge
-                                                variant="outline"
-                                                className="text-lg font-semibold border-black"
-                                            >
+                                        <td className="px-6 py-4 whitespace-nowrap text-right">
+                                            <Badge variant="secondary" className="text-sm font-medium">
                                                 {participant.acProblems}
                                             </Badge>
                                         </td>
@@ -135,29 +130,14 @@ export default function Rank() {
                             </tbody>
                         </table>
                     </div>
-                    <div className="flex justify-between items-center p-4 bg-gray-100 border-t-2 border-black">
-                        <Button
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                            variant="outline"
-                            className="font-semibold border-black"
-                        >
-                            Previous
-                        </Button>
-                        <span className="text-lg font-semibold">
-                            Page {currentPage} of {totalPages}
-                        </span>
-                        <Button
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                            variant="outline"
-                            className="font-semibold border-black"
-                        >
-                            Next
-                        </Button>
-                    </div>
                 </CardContent>
             </Card>
+
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
         </div>
     );
 }
