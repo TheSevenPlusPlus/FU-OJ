@@ -1,19 +1,29 @@
-using FU.OJ.Server.DTOs;using FU.OJ.Server.DTOs.Problem.Request;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Mvc;
+using FU.OJ.Server.DTOs;
+using FU.OJ.Server.DTOs.Problem.Request;
+using FU.OJ.Server.Infra.Const.Authorize;
+using FU.OJ.Server.Infra.Const.Route;
+using FU.OJ.Server.Service;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
-namespace FU.OJ.Server.Controllers{    [ApiController]
+namespace FU.OJ.Server.Controllers
+{
+    [ApiController]
     [Route(ProblemRoute.INDEX)]
     public class ProblemController : AuthorizeController
     {
         private readonly IProblemService _service;
         private readonly ITestcaseService _testcaseService;
-
+
+
         public ProblemController(IProblemService service, ILogger<ProblemController> logger, ITestcaseService testcaseService) : base(logger)
         {
             _service = service;
             _testcaseService = testcaseService;
 
         }
-        [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpPost(ProblemRoute.Action.Create)]
+        [Authorize(Roles = RoleAuthorize.AdminManager)]
+        [HttpPost(ProblemRoute.Action.Create)]
         public async Task<IActionResult> CreateProblemAsync([FromBody] CreateProblemRequest request)
         {
             try
@@ -26,22 +36,26 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [AllowAnonymous]        [HttpGet(ProblemRoute.Action.GetProblemByCodeAsync)]
+        [AllowAnonymous]
+        [HttpGet(ProblemRoute.Action.GetProblemByCodeAsync)]
         public async Task<IActionResult> GetProblemByCodeAsync(string code)
         {
             try
             {
                 var problem = await _service.GetByCodeAsync(UserHeader.UserId, code);
-                if (problem == null)
+
+                if (problem == null)
                     return NotFound();
-                return Ok(problem);
+
+                return Ok(problem);
             }
             catch (Exception ex)
             {
                 return HandleException(ex);
             }
         }
-        [AllowAnonymous]        [HttpGet(ProblemRoute.Action.GetAllProblemsAsync)]
+        [AllowAnonymous]
+        [HttpGet(ProblemRoute.Action.GetAllProblemsAsync)]
         public async Task<IActionResult> GetAllProblemsAsync([FromQuery] Paging query, bool? isMine = false)
         {
             try
@@ -54,29 +68,34 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
                 return HandleException(ex);
             }
         }
-        [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpPut(ProblemRoute.Action.Update)]
+        [Authorize(Roles = RoleAuthorize.AdminManager)]
+        [HttpPut(ProblemRoute.Action.Update)]
         public async Task<IActionResult> UpdateProblemAsync([FromBody] UpdateProblemRequest request)
         {
             try
             {
                 var updated = await _service.UpdateAsync(UserHeader.UserId, request);
-                if (!updated)
+
+                if (!updated)
                     return NotFound();
-                return NoContent();
+
+                return NoContent();
             }
             catch (Exception ex)
             {
                 return HandleException(ex);
             }
         }
-        [Authorize(Roles = RoleAuthorize.AdminManager)]        [HttpDelete(ProblemRoute.Action.Delete)]
+        [Authorize(Roles = RoleAuthorize.AdminManager)]
+        [HttpDelete(ProblemRoute.Action.Delete)]
         public async Task<IActionResult> DeleteProblemAsync(string id)
         {
             try
             {
                 await _testcaseService.DeleteAsync(UserHeader.UserId, id);
                 await _service.DeleteAsync(UserHeader.UserId, id);
-                return NoContent();
+
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -84,4 +103,4 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
             }
         }
     }
-}
+}

@@ -6,7 +6,7 @@ namespace FU.OJ.Server.Infra.Const.Route
         public static class Action
         {
             public const string Rank = "rank";
-            public const string GetRole = "getrole";
+            public const string GetRole = "getrole/{userName}";
         }
     }
 }
