@@ -15,11 +15,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install OpenSSH Client
-        run: sudo apt-get install -y openssh-client
+
+      - name: Prepare OpenSSH Client
+        shell: bash
+        run: |
+          sudo apt-get install -y openssh-client
+          mdkir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/private_key
+          chmod 600 ~/.ssh/private_key
+          echo "$SSH_HOST" > ~/.ssh/known_hosts
+
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no -i $SSH_KEY $SSH_USER@$SSH_HOST << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/private_key $SSH_USER@$SSH_HOST << 'EOF'
             cd /home/fuoj/FU-OJ
             git stash
             git pull
