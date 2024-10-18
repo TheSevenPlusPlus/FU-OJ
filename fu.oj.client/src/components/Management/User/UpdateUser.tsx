@@ -44,7 +44,7 @@ export default function UpdateUser() {
 
     const fetchRole = async (): Promise<void> => {
         try {
-            const role = await getRole();
+            const role = await getRole(userName);
             setInitialRole(role);
         } catch (err) {
             showToast("Failed to fetch user role. Please try again.", "error");
