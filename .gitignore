@@ -366,3 +366,6 @@ FodyWeavers.xsd
 *.config
 *.conf
 *.cfg
+
+# TSBuildInfo
+*.tsbuildinfo
