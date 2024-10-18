@@ -5,6 +5,8 @@ import child_process from "node:child_process";
 import { defineConfig } from "vite";
 import vitePluginReactSWC from "@vitejs/plugin-react-swc";
 
+const isDevelopment = process.env.NODE_ENV === "development";
+
 const baseFolder =
     process.env.APPDATA !== undefined && process.env.APPDATA !== ""
         ? `${process.env.APPDATA}/ASP.NET/https`
@@ -14,7 +16,10 @@ const certificateName = "FU.OJ.Client";
 const certFilePath = path.join(baseFolder, `${certificateName}.pem`);
 const keyFilePath = path.join(baseFolder, `${certificateName}.key`);
 
-if (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath)) {
+if (
+    isDevelopment &&
+    (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath))
+) {
     if (
         0 !==
         child_process.spawnSync(
@@ -44,12 +49,14 @@ export default defineConfig({
         },
     },
     server: {
-        host: '0.0.0.0',
+        host: "0.0.0.0",
         port: 5173,
         strictPort: true,
-        https: {
-            key: fs.readFileSync(keyFilePath),
-            cert: fs.readFileSync(certFilePath),
-        },
+        ...(isDevelopment && {
+            https: {
+                key: fs.readFileSync(keyFilePath),
+                cert: fs.readFileSync(certFilePath),
+            },
+        }),
     },
 });
