@@ -1,0 +1,19 @@
+[Unit]
+Description=FU-OJ Server
+Wants=network-online.target
+After=network.target
+
+[Service]
+User=fuoj
+Group=fuoj
+WorkingDirectory=/var/www/fuoj
+ExecStart=/usr/bin/dotnet /var/www/fuoj/FU.OJ.Server.dll
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
+EnvironmentFile=/etc/fuoj/fuoj.env
+Restart=always
+RestartSec=10
+SyslogIdentifier=fuoj
+
+[Install]
+WantedBy=multi-user.target
