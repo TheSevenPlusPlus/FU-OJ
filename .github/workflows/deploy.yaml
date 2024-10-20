@@ -28,7 +28,9 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/private_key $SSH_USER@$SSH_HOST << 'EOF'
-            cd /home/fuoj/FU-OJ
+            SRCROOT="/usr/src/fuoj"
+
+            cd $SRCROOT
             git stash
             git pull
           EOF
