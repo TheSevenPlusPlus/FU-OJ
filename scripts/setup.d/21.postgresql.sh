@@ -4,7 +4,7 @@
 sudo apt-get install -y postgresql-common
 sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh -i -p -v 16
 
-load_env /etc/fuoj/secrets.conf
+load_env /etc/fuoj/default/secerts.conf
 
 sudo -u postgres psql -c "ALTER USER postgres PASSWORD '$POSTGRES_PASSWORD';"
 sudo -u postgres psql -c "CREATE USER fuoj WITH PASSWORD '$POSTGRES_USER_PASSWORD';"

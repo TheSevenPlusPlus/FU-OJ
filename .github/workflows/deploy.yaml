@@ -28,9 +28,30 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/private_key $SSH_USER@$SSH_HOST << 'EOF'
-            SRCROOT="/usr/src/fuoj"
+            SRCROOT=/usr/src/fuoj
+            OUTDIR=/var/www/fuoj
+            ENVFILE=/etc/fuoj/fuoj.env
+
+            if [ -f "$ENVFILE" ]; then
+                while IFS='=' read -r key value; do
+                    if [[ ! "$key" =~ ^# && -n "$key" ]]; then
+                        export "$key=$value"
+                    fi
+                done <"$ENVFILE"
+            fi
 
             cd $SRCROOT
             git stash
             git pull
+
+            cd $SRCROOT/fu.oj.client/
+            npm install
+            npm run build
+
+            cd $SRCROOT/FU.OJ.Server/
+            cp -r $SRCROOT/fu.oj.client/dist $SRCROOT/FU.OJ.Server/wwwroot
+            dotnet publish -c Release -o $OUTDIR
+            dotnet ef database update
+            
+            sudo systemctl restart fuoj
           EOF

@@ -8,7 +8,7 @@ echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://pack
 sudo apt-get update
 sudo apt-get install -y redis
 
-load_env /etc/fuoj/secrets.conf
+load_env /etc/fuoj/default/secrets.conf
 
 sudo -u redis mkdir -p /etc/redis/redis.conf.d
 echo "include /etc/redis/redis.conf.d/*.conf" | sudo -u redis tee -a /etc/redis/redis.conf
