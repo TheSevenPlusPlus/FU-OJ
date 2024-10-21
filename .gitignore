@@ -367,3 +367,6 @@ FodyWeavers.xsd
 
 # Client build output
 wwwroot/
+
+# DEBUG
+package.g.props
