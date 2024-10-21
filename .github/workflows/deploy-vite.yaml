@@ -41,8 +41,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          working-directory: ./fu.oj.client
-          path: ./dist
+          path: ./fu.oj.client/dist
       - name: Deploy to Pages
         id: deployment
         uses: actions/deploy-pages@v4
