@@ -22,8 +22,7 @@ tee /etc/fuoj/fuoj.env >/dev/null <<EOF
 
 ClientUrl=${FUOJ_CLIENT_URL}
 JudgeServerUrl=${JUDGE0_SERVER_URL}
-ConnectionStrings__PostgreSQL=Host=${POSTGRES_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSRGRES_PASSWORD};
-ConnectionStrings__Redis=${REDIS_HOST}:${REDIS_PORT},password=${REDIS_PASSWORD}
+ConnectionStrings__PostgreSQL=Host=${POSTGRES_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
 JWT__Issuer=${FUOJ_CLIENT_URL}
 JWT__Audience=${FUOJ_CLIENT_URL}
 JWT__SigningKey=${JWT_SECRET}
