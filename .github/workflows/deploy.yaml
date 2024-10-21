@@ -28,9 +28,22 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/private_key $SSH_USER@$SSH_HOST << 'EOF'
-            SRCROOT="/usr/src/fuoj"
-
+            SRCROOT=/home/fuoj/FU-OJ
             cd $SRCROOT
             git stash
             git pull
+
+            cd $SRCROOT/fu.oj.client/
+            npm install
+            npm run build
+
+            cd $SRCROOT/FU.OJ.Server/
+            dotnet restore
+            dotnet tool restore
+            dotnet ef migrations add InitialCreate -o Data/Migrations
+            dotnet ef database update
+            cp -r $SRCROOT/fu.oj.client/dist $SRCROOT/FU.OJ.Server/wwwroot
+            dotnet publish -c Release -o /var/www/fu-oj
+
+            sudo systemctl restart fuoj
           EOF
