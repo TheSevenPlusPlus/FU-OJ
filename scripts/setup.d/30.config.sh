@@ -4,8 +4,8 @@
 # merge 'secrets.conf and default.conf' to fuoj.conf (overwrite the default value)
 
 SOURCES=(
-    /etc/fuoj/secrets.conf
-    /etc/fuoj/default.conf
+    /etc/fuoj/default/secrets.conf
+    /etc/fuoj/default/fuoj.conf
 )
 
 DESTINATION=/etc/fuoj/fuoj.conf
