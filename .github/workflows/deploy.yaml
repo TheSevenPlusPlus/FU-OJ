@@ -30,6 +30,15 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i ~/.ssh/private_key $SSH_USER@$SSH_HOST << 'EOF'
             SRCROOT=/usr/src/fuoj
             OUTDIR=/var/www/fuoj
+            ENVFILE=/etc/fuoj/fuoj.env
+
+            if [ -f "$ENVFILE" ]; then
+                while IFS='=' read -r key value; do
+                    if [[ ! "$key" =~ ^# && -n "$key" ]]; then
+                        export "$key=$value"
+                    fi
+                done <"$ENVFILE"
+            fi
 
             cd $SRCROOT
             git stash
