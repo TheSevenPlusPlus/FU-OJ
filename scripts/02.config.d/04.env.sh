@@ -1,23 +1,28 @@
 #!/usr/bin/env bash
-# This script is used to generate the environment variables file for FU-OJ
 
-load_env() {
-    local env_file="$1"
-    if [ -f "$env_file" ]; then
-        while IFS='=' read -r key value; do
-            if [[ ! "$key" =~ ^# && -n "$key" ]]; then
-                export "$key=$value"
-            fi
-        done <"$env_file"
-    fi
-}
+CONFIG_DIR=${1:-"/etc/fuoj"}
 
-# read `fuoj.conf`
-load_env /etc/fuoj/fuoj.conf
+if [ ! -d "$CONFIG_DIR" ]; then
+    echo "Directory $CONFIG_DIR does not exist."
+    exit 1
+fi
 
-# write to `fuoj.env`
-tee /etc/fuoj/fuoj.env >/dev/null <<EOF
-# FU-OJ Auto-generated Environment Variables
+FUOJ_CONFIG_FILE="$CONFIG_DIR/fuoj.conf"
+FUOJ_ENV_FILE="$CONFIG_DIR/fuoj.env"
+
+if [ ! -f "$FUOJ_CONFIG_FILE" ]; then
+    echo "File $FUOJ_CONFIG_FILE does not exist."
+    exit 1
+else
+    while IFS='=' read -r key value; do
+        if [[ ! "$key" =~ ^# && -n "$key" ]]; then
+            export "$key=$value"
+        fi
+    done <"$FUOJ_CONFIG_FILE"
+fi
+
+tee "$FUOJ_ENV_FILE" >/dev/null <<EOF
+# FU-OJ Environment Variables
 # DO NOT MODIFY THIS FILE MANUALLY
 
 ClientUrl=${FUOJ_CLIENT_URL}
@@ -32,6 +37,5 @@ EmailSettings__SmtpServer=${EMAIL_SMTP_HOST}
 EmailSettings__SmtpPort=${EMAIL_SMTP_PORT}
 EmailSettings__SmtpUsername=${EMAIL_SMTP_USERNAME}
 EmailSettings__SmtpPassword=${EMAIL_SMTP_PASSWORD}
-EOF
 
-chmod 660 /etc/fuoj/fuoj.env
+EOF
