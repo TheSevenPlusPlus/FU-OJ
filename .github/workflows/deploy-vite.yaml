@@ -31,13 +31,16 @@ jobs:
           cache: "npm"
       - name: Install dependencies
         run: npm install
+        working-directory: ./fu.oj.client
       - name: Build
         run: npm run build
+        working-directory: ./fu.oj.client
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          working-directory: ./fu.oj.client
           path: ./dist
       - name: Deploy to Pages
         id: deployment
