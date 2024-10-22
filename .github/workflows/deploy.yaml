@@ -27,7 +27,7 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/private_key $SSH_USER@$SSH_HOST << 'EOF'
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/private_key $SSH_USER@$SSH_HOST <<EOF
             SOURCE_DIR="/usr/src/fuoj"
 
             cd "$SOURCE_DIR" || exit 1
