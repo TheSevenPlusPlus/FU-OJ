@@ -11,3 +11,7 @@ done
 for script in "$SCRIPT_ROOT/02.config.d"/*; do
     bash "$script"
 done
+
+for script in "$SCRIPT_ROOT/03.build.d"/*; do
+    bash "$script"
+done
