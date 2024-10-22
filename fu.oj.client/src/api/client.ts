@@ -2,7 +2,7 @@
 
 // Tạo axios instance
 const apiClient = axios.create({
-    baseURL: "https://localhost:7242/", // Thay đổi theo URL API của bạn
+    baseURL: "https://fuoj.tech/api/",
     headers: {
         "Content-Type": "application/json",
     },
@@ -24,7 +24,7 @@ apiClient.interceptors.request.use(
     (error) => {
         // Xử lý lỗi
         return Promise.reject(error);
-    }
+    },
 );
 
 export default apiClient;
