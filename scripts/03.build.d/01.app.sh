@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SOURCE_DIR=/usr/src/fuoj/FU.OJ.Server
+SOURCE_DIR=/usr/src/fuoj
 OUT_DIR=/var/www/fuoj
 ENV_FILE=/etc/fuoj/fuoj.env
 
@@ -27,8 +27,17 @@ if [ ! -d "$OUT_DIR" ]; then
     sudo chown -R fuoj:fuoj "$OUT_DIR"
 fi
 
-dotnet publish -c Release -o "$OUT_DIR" -r linux-x64 --self-contained
+cd "$SOURCE_DIR/fu.oj.client" || exit 1
+
+npm ci
+npm run build
+
+cd "$SOURCE_DIR/FU.OJ.Server" || exit 1
+
+mv -f "$SOURCE_DIR/fu.oj.client/dist" "$SOURCE_DIR/FU.OJ.Server/wwwroot"
+
+dotnet publish -c Release -o "$OUT_DIR"
 
 dotnet ef database update
 
-sudo systemctl restart fuoj-server
+sudo systemctl restart fuoj

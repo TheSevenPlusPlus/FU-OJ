@@ -2,6 +2,7 @@ using FU.OJ.Server;
 using FU.OJ.Server.Infra.Context;
 using FU.OJ.Server.Infra.DBInitializer;
 using FU.OJ.Server.Middleware;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 );
 
 var app = builder.Build();
+
+app.UseForwardedHeaders(
+    new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    }
+);
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
 

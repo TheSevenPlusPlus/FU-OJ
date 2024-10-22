@@ -32,7 +32,7 @@ jobs:
 
             cd "$SOURCE_DIR" || exit 1
 
-            SCRIPT_DIR="$SOURCE_DIR/scripts/03.build.d"
+            SCRIPT_DIR="$SOURCE_DIR/scripts
 
             for script in "$SCRIPT_ROOT/03.config.d"/*; do
               bash "$script"
