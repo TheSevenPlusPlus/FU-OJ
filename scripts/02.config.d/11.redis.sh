@@ -19,11 +19,22 @@ while IFS='=' read -r key value; do
     fi
 done <"$FUOJ_CONFIG_FILE"
 
+redis_version=$(redis-server --version | awk '{print $3}' | cut -d'=' -f2 | cut -d'.' -f1-2)
+
 # Redis
+# remove current password
+if ! sudo systemctl is-active redis-server; then
+    sudo systemctl stop redis-server
+fi
+sudo -u redis curl -sL "https://raw.githubusercontent.com/redis/redis/$redis_version/redis.conf" -o /etc/redis/redis.conf
+
+sudo systemctl start redis-server
+
 sudo -u redis redis-cli config set requirepass "$REDIS_PASSWORD"
 sudo -u redis redis-cli config set include /etc/redis/redis.d/*.conf
 sudo -u redis mkdir -p /etc/redis/redis.d
 sudo -u redis ln -s /etc/fuoj/redis.conf /etc/redis/redis.d/fuoj.conf
+sudo -u redis redis-cli config rewrite
 
 if ! sudo systemctl is-enabled redis-server; then
     sudo systemctl enable redis-server

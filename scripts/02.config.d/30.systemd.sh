@@ -6,7 +6,7 @@ if [ ! -d "$CONFIG_DIR" ]; then
     exit 1
 fi
 
-SERIVCES_DIR=${2:-"/etc/fuoj/services"}
+SERIVCES_DIR=${2:-"/etc/fuoj/systemd"}
 SYSTEMD_SERVICES_DIR="/etc/systemd/system"
 
 if [ ! -d "$SERIVCES_DIR" ]; then

@@ -1,0 +1,18 @@
+[Unit]
+Description=FU-OJ Client
+Wants=network-online.target
+After=network.target
+
+[Service]
+User=fuoj
+Group=fuoj
+WorkingDirectory=/usr/src/fuoj/fu.oj.client
+ExecStart=/usr/bin/npm run dev
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/fuoj/fuoj.env
+Restart=always
+RestartSec=10
+SyslogIdentifier=fuoj
+
+[Install]
+WantedBy=multi-user.target
