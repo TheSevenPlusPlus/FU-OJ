@@ -34,7 +34,7 @@ jobs:
 
             SCRIPT_DIR="$SOURCE_DIR/scripts"
 
-            for script in "$SCRIPT_ROOT/03.config.d"/*; do
+            for script in "$SCRIPT_ROOT/03.build.d"/*; do
               bash "$script"
             done
           EOF
