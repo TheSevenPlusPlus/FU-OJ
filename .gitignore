@@ -369,4 +369,5 @@ FodyWeavers.xsd
 wwwroot/
 
 # DEBUG
+packages.g.props
 \\package.g.props
