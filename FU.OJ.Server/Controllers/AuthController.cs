@@ -110,7 +110,7 @@ namespace FU.OJ.Server.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetLink = $"{_clientUrl}/resetpassword?token={HttpUtility.UrlEncode(token)}&email={user.Email}"; // Sử dụng _clientUrl
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Infra", "Const", "ForgotPasswordEmail.txt");
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Infra", "Const", "ForgotPasswordEmail.html");
             if (!System.IO.File.Exists(filePath))
             {
                 return StatusCode(500, "Email template not found.");
