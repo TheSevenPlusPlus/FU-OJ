@@ -2,7 +2,7 @@
 
 // Tạo axios instance
 const apiClient = axios.create({
-    baseURL: "http://localhost:5230/",
+    baseURL: "https://api.fuoj.tech/",
     headers: {
         "Content-Type": "application/json",
     },

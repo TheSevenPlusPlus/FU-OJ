@@ -100,6 +100,7 @@ namespace FU.OJ.Server.Service
                     var token = JsonDocument.Parse(jsonResponse).RootElement.GetProperty("token").GetString();
 
                     tokenList.Add(token!);
+                    Console.WriteLine(token);
                 }
             }
 
