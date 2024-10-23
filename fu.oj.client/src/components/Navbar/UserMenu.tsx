@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { User, LogOut, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ManagerMenu from "./ManagerMenu";
 import { getProfileByToken } from "../../api/profile";
 import { getRole } from "../../api/general";
+import parseJwt from "../../api/parseJWT";
 
 interface UserMenuProps {
     onLogout: () => void;
@@ -29,24 +30,33 @@ const UserMenu: React.FC<UserMenuProps> = ({ onLogout }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const fetchUserData = async () => {
+        const fetchUserData = () => {
             try {
-                const profileResponse = await getProfileByToken();
-                if (profileResponse) {
-                    const roleResponse = await getRole(profileResponse.userName);
+                // Lấy token từ localStorage
+                const token = localStorage.getItem("token");
 
-                    const updatedUser: ExtendedUser = {
-                        userName: profileResponse.userName,
-                        email: profileResponse.email,
-                        avatarUrl: profileResponse.avatarUrl,
-                        role: roleResponse,
-                    };
-                    setExtendedUser(updatedUser);
-                    localStorage.setItem("user", JSON.stringify(updatedUser));
+                if (token) {
+                    // Parse token ra JSON payload
+                    const parsedToken = parseJwt(token);
+
+                    if (parsedToken) {
+                        // Tạo đối tượng user từ token payload
+                        const updatedUser: ExtendedUser = {
+                            userName: parsedToken.given_name, // Thông tin từ token
+                            email: parsedToken.email,
+                            avatarUrl: parsedToken.AvatarUrl || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s",
+                            role: parsedToken.role,
+                        };
+
+                        // Gán vào state
+                        setExtendedUser(updatedUser);
+
+                        // Lưu user vào localStorage (nếu cần thiết)
+                        localStorage.setItem("user", JSON.stringify(updatedUser));
+                    }
                 }
             } catch (error) {
-                console.error("Error fetching user data:", error);
-                // Handle error (e.g., redirect to login if token is invalid)
+                console.error("Error parsing token:", error);
             } finally {
                 setIsLoading(false);
             }
