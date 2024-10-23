@@ -1,19 +1,27 @@
 ﻿using FU.OJ.Server.DTOs;
-using FU.OJ.Server.DTOs.User.Request;using FU.OJ.Server.DTOs.User.Respond;using FU.OJ.Server.Infra.Const.Authorize;
-using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;
+using FU.OJ.Server.DTOs.User.Request;
+using FU.OJ.Server.DTOs.User.Respond;
+using FU.OJ.Server.Infra.Const.Authorize;
+using FU.OJ.Server.Infra.Const.Route;
+using FU.OJ.Server.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
+namespace FU.OJ.Server.Controllers
+{
+    [Route(UserRoute.INDEX)]
     [ApiController]
     [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
     public class UserController : AuthorizeController
     {
         private readonly IUserService _userService;
-        public UserController(IUserService userService, ILogger<UserController> logger) : base(logger)
+
+        public UserController(IUserService userService, ILogger<UserController> logger) : base(logger)
         {
             _userService = userService;
         }
-        [HttpPost(UserRoute.Action.Create)]
+
+        [HttpPost(UserRoute.Action.Create)]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest createUserRequest)
         {
             if (!ModelState.IsValid)
@@ -58,13 +66,15 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
             return Ok(userResponse);
         }
 
-        [HttpGet(UserRoute.Action.GetAll)]
+
+        [HttpGet(UserRoute.Action.GetAll)]
         public async Task<IActionResult> GetAllUsers([FromQuery] Paging query)
         {
             try
             {
                 var (users, totalPages) = await _userService.GetAllUsersAsync(query);
-                return Ok(new { users, totalPages });
+
+                return Ok(new { users, totalPages });
             }
             catch (Exception ex)
             {
@@ -77,7 +87,8 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
         {
             var user = await _userService.GetUserByIdAsync(UserHeader.UserId);
             if (user == null) return NotFound("Không tìm thấy người dùng");
-            var userResponse = new UserView
+
+            var userResponse = new UserView
             {
                 UserName = user.UserName,
                 Email = user.Email,
@@ -91,9 +102,11 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
                 AvatarUrl = user.AvatarUrl,
                 CreatedAt = user.CreatedAt,
             };
-            return Ok(userResponse);
+
+            return Ok(userResponse);
         }
-        [HttpPut(UserRoute.Action.Update)]
+
+        [HttpPut(UserRoute.Action.Update)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
         {
             if (!ModelState.IsValid)
@@ -132,12 +145,14 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
             return Ok(userResponse);
         }
 
-        [HttpDelete(UserRoute.Action.Delete)]
+
+        [HttpDelete(UserRoute.Action.Delete)]
         public async Task<IActionResult> DeleteUser(string userName)
         {
             var result = await _userService.DeleteUserAsync(userName);
             if (!result) return NotFound("User not found");
-            return NoContent();
+
+            return NoContent();
         }
 
         [HttpPut(UserRoute.Action.UpdateRole)]
@@ -176,4 +191,4 @@ namespace FU.OJ.Server.Controllers{    [Route(UserRoute.INDEX)]
             }
         }
     }
-}
+}

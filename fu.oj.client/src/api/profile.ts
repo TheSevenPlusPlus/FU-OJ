@@ -16,7 +16,7 @@ const sanitizeProfileData = (profileData: UpdateUserProfile) => {
 // Fetches profile based on userName
 export const getProfile = async (userName: string | null) => {
     try {
-        const response = await apiClient.get(`/Profile/get/${userName}`);
+        const response = await apiClient.get(`/profile/get/${userName}`);
         return response == null ? null : response.data;
     } catch (error) {
         console.error("Error fetching profile:", error);
@@ -31,7 +31,7 @@ export const updateProfile = async (profileData: UpdateUserProfile) => {
         const sanitizedData = sanitizeProfileData(profileData);
         console.log("Sanitized profile data being sent:", sanitizedData);
 
-        const response = await apiClient.put("/Profile/update", sanitizedData);
+        const response = await apiClient.put("/profile/update", sanitizedData);
         return response.data;
     } catch (error) {
         console.error("Error updating profile:", error);

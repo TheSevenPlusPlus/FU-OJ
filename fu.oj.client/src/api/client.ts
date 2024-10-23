@@ -6,6 +6,7 @@ const apiClient = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
+    //withCredentials: true,
 });
 
 // Sử dụng interceptor để thêm token vào mỗi request

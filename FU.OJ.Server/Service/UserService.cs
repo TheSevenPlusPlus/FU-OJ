@@ -18,6 +18,7 @@ namespace FU.OJ.Server.Service
         Task<User> GetUserByPhoneAsync(string phoneNumber);
         Task<User> GetUserByUsernameAsync(string userName);
         Task<User> UpdateUserAsync(UpdateUserRequest user);
+        Task<User> UpdateProfileAsync(string userName, UpdateProfileRequest user);
         Task<bool> DeleteUserAsync(string userName);
         Task<bool> EditUserRoleAsync(string userName, string role);
         Task<bool> ChangePasswordAsync(ChangePasswordRequest changePasswordRequest);
@@ -114,6 +115,28 @@ namespace FU.OJ.Server.Service
         public async Task<User> UpdateUserAsync(UpdateUserRequest updatedUser)
         {
             var user = await _userManager.FindByNameAsync(updatedUser.UserName);
+            if (user != null)
+            {
+                user.Email = updatedUser.Email;
+                user.FullName = updatedUser.FullName;
+                user.City = updatedUser.City;
+                user.Description = updatedUser.Description;
+                user.FacebookLink = updatedUser.FacebookLink;
+                user.GithubLink = updatedUser.GithubLink;
+                user.PhoneNumber = updatedUser.PhoneNumber;
+                user.School = updatedUser.School;
+                user.AvatarUrl = updatedUser.AvatarUrl;
+
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded) return user;
+            }
+
+            throw new Exception("User isn't exist");
+        }
+
+        public async Task<User> UpdateProfileAsync(string userName, UpdateProfileRequest updatedUser)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
             if (user != null)
             {
                 user.Email = updatedUser.Email;
