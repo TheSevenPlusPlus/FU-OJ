@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,21 @@ const ForgotPassword: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [resendEnabled, setResendEnabled] = useState(false);
+    const [resendTimer, setResendTimer] = useState(60); // Set thời gian đếm ngược (ví dụ: 60 giây)
     const navigate = useNavigate();
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (resendEnabled && resendTimer > 0) {
+            timer = setInterval(() => {
+                setResendTimer((prev) => prev - 1);
+            }, 1000);
+        } else if (resendTimer === 0) {
+            setResendEnabled(true);
+        }
+        return () => clearInterval(timer);
+    }, [resendEnabled, resendTimer]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -23,7 +37,29 @@ const ForgotPassword: React.FC = () => {
         try {
             await forgotPassword(email);
             setSuccessMessage("Password reset link has been sent to your email.");
-            setTimeout(() => navigate('/login'), 3000);
+            setResendEnabled(false);
+            setResendTimer(30); 
+        } catch (error) {
+            if (error.response && error.response.status === 400) {
+                setErrorMessage("The provided email is invalid or not registered.");
+            } else {
+                setErrorMessage("An error occurred. Please try again later.");
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleResend = async () => {
+        setIsLoading(true);
+        setSuccessMessage(null);
+        setErrorMessage(null);
+
+        try {
+            await forgotPassword(email);
+            setSuccessMessage("Password reset link has been resent to your email.");
+            setResendEnabled(false);
+            setResendTimer(30); 
         } catch (error) {
             if (error.response && error.response.status === 400) {
                 setErrorMessage("The provided email is invalid or not registered.");
@@ -71,6 +107,18 @@ const ForgotPassword: React.FC = () => {
                         {isLoading ? 'Sending...' : 'Send Reset Link'}
                     </Button>
                 </form>
+
+                {successMessage && (
+                    <div className="mt-4">
+                        <Button
+                            className="w-full"
+                            onClick={handleResend}
+                            disabled={isLoading || !resendEnabled}
+                        >
+                            {isLoading ? 'Resending...' : `Resend Link ${resendEnabled ? '' : `(${resendTimer}s)`}`}
+                        </Button>
+                    </div>
+                )}
             </CardContent>
         </Card>
     );

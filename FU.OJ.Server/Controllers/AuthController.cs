@@ -110,12 +110,20 @@ namespace FU.OJ.Server.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetLink = $"{_clientUrl}/resetpassword?token={HttpUtility.UrlEncode(token)}&email={user.Email}"; // Sử dụng _clientUrl
 
-            // Gửi email reset mật khẩu
-            await _emailSender.SendEmailAsync(model.Email, "Reset Password", $"Click <a href='{resetLink}'>here</a> to reset your password.");
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Infra", "Const", "ForgotPasswordEmail.txt");
+            if (!System.IO.File.Exists(filePath))
+            {
+                return StatusCode(500, "Email template not found.");
+            }
+
+            string emailTemplate = await System.IO.File.ReadAllTextAsync(filePath);
+
+            string emailBody = emailTemplate.Replace("{{resetLink}}", resetLink);
+
+            await _emailSender.SendEmailAsync(model.Email, "Reset Password", emailBody);
 
             return Ok("Password reset link has been sent to your email.");
         }
-
 
         [HttpPost(AuthRoute.Action.ResetPassword)]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest model)
