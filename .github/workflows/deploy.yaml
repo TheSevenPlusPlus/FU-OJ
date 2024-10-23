@@ -44,12 +44,7 @@ jobs:
             git stash
             git pull
 
-            cd $SRCROOT/fu.oj.client/
-            npm install
-            npm run build
-
             cd $SRCROOT/FU.OJ.Server/
-            # cp -r $SRCROOT/fu.oj.client/dist $SRCROOT/FU.OJ.Server/wwwroot
             dotnet publish -c Release -o $OUTDIR
             dotnet ef database update
             
