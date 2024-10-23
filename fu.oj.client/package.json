@@ -4,8 +4,9 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "cross-env NODE_ENV=development vite",
+        "dev": "vite",
         "build": "tsc -b && vite build",
+        "start": "tsc -b && vite build && vite preview",
         "preview": "vite preview",
         "lint": "eslint .",
         "format": "prettier --write ."

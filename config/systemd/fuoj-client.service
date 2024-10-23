@@ -7,7 +7,7 @@ After=network.target
 User=fuoj
 Group=fuoj
 WorkingDirectory=/usr/src/fuoj/fu.oj.client
-ExecStart=/usr/bin/npm run dev
+ExecStart=/usr/bin/npm run start
 Environment=NODE_ENV=production
 EnvironmentFile=/etc/fuoj/fuoj.env
 Restart=always
