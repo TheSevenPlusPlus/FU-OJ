@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -74,6 +74,15 @@ export default function ProfileEdit() {
         try {
             await updateProfile(updateData);
             setSuccess("Profile updated successfully!");
+            // Lấy dữ liệu user từ localStorage
+            const userData = JSON.parse(localStorage.getItem("user") || "{}");
+
+            // Cập nhật avatarUrl trong localStorage
+            const updatedUserData = {
+                ...userData,
+                avatarUrl: updateData.avatarUrl, // Cập nhật avatarUrl mới
+            };
+            localStorage.setItem("user", JSON.stringify(updatedUserData));
             navigate("/profile");
             window.location.reload();
         } catch (error) {

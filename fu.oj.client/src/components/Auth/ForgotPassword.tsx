@@ -12,54 +12,33 @@ const ForgotPassword: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [resendEnabled, setResendEnabled] = useState(false);
-    const [resendTimer, setResendTimer] = useState(60); // Set thời gian đếm ngược (ví dụ: 60 giây)
+    const [countdown, setCountdown] = useState(0);
     const navigate = useNavigate();
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
-        if (resendEnabled && resendTimer > 0) {
+        if (countdown > 0) {
             timer = setInterval(() => {
-                setResendTimer((prev) => prev - 1);
+                setCountdown((prev) => prev - 1);
             }, 1000);
-        } else if (resendTimer === 0) {
-            setResendEnabled(true);
         }
         return () => clearInterval(timer);
-    }, [resendEnabled, resendTimer]);
+    }, [countdown]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsLoading(true);
-        setSuccessMessage(null);
-        setErrorMessage(null);
-
-        try {
-            await forgotPassword(email);
-            setSuccessMessage("Password reset link has been sent to your email.");
-            setResendEnabled(false);
-            setResendTimer(30); 
-        } catch (error) {
-            if (error.response && error.response.status === 400) {
-                setErrorMessage("The provided email is invalid or not registered.");
-            } else {
-                setErrorMessage("An error occurred. Please try again later.");
-            }
-        } finally {
-            setIsLoading(false);
-        }
+        await sendResetLink();
     };
 
-    const handleResend = async () => {
+    const sendResetLink = async () => {
         setIsLoading(true);
         setSuccessMessage(null);
         setErrorMessage(null);
 
         try {
             await forgotPassword(email);
-            setSuccessMessage("Password reset link has been resent to your email.");
-            setResendEnabled(false);
-            setResendTimer(30); 
+            setSuccessMessage("Password reset link has been sent to your email. Please check your inbox and spam folder.");
+            setCountdown(60); // Start 60-second countdown
         } catch (error) {
             if (error.response && error.response.status === 400) {
                 setErrorMessage("The provided email is invalid or not registered.");
@@ -103,20 +82,19 @@ const ForgotPassword: React.FC = () => {
                             <AlertDescription>{errorMessage}</AlertDescription>
                         </Alert>
                     )}
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? 'Sending...' : 'Send Reset Link'}
+                    <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={isLoading || countdown > 0}
+                    >
+                        {isLoading ? 'Sending...' : countdown > 0 ? `Resend in ${countdown}s` : 'Send Reset Link'}
                     </Button>
                 </form>
 
                 {successMessage && (
-                    <div className="mt-4">
-                        <Button
-                            className="w-full"
-                            onClick={handleResend}
-                            disabled={isLoading || !resendEnabled}
-                        >
-                            {isLoading ? 'Resending...' : `Resend Link ${resendEnabled ? '' : `(${resendTimer}s)`}`}
-                        </Button>
+                    <div className="mt-4 text-sm text-gray-500 text-center">
+                        Please be patient as the email may take a few minutes to arrive.
+                        Check your spam folder if you don't see it in your inbox.
                     </div>
                 )}
             </CardContent>
