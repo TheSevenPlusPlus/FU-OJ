@@ -49,9 +49,11 @@ jobs:
             npm run build
 
             cd $SRCROOT/FU.OJ.Server/
-            cp -r $SRCROOT/fu.oj.client/dist $SRCROOT/FU.OJ.Server/wwwroot
+            # cp -r $SRCROOT/fu.oj.client/dist $SRCROOT/FU.OJ.Server/wwwroot
             dotnet publish -c Release -o $OUTDIR
             dotnet ef database update
             
             sudo systemctl restart fuoj
+            sudo systemctl restart fuoj-client
+
           EOF
