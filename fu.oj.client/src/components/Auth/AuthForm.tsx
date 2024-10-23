@@ -51,9 +51,9 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
         try {
             const data = await loginUser({ identifier, password });
             console.log("Login successful:", data);
-            localStorage.setItem("user", JSON.stringify(data));
+            localStorage.setItem("token", JSON.stringify(data.token));
             navigate("/problems");
-            navigate(0); // Reload
+            navigate(0);
         } catch (error: any) {
             console.error("Login failed:", error.response?.data || error.message);
             setSubmitError("Login failed. Please check your credentials and try again.");
@@ -69,12 +69,9 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
         try {
             const data = await registerUser(userData);
             console.log("Registration successful:", data);
-            localStorage.setItem("user", JSON.stringify(data));
-            navigate("/profile");
+            navigate("/login");
             navigate(0); // Reload
         } catch (error: any) {
-            // Handle 400 error and other errors
-            //console.log("Errorrrrrrrrrrrr here: ", error);
             if (error.response && error.response.status === 400) {
                 setSubmitError(error.response.data || "Registration failed. Please check your input.");
             } else {

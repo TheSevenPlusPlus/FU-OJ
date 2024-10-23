@@ -15,7 +15,6 @@ export default function ProfileEdit() {
     const navigate = useNavigate();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [updateData, setUpdateData] = useState<UpdateUserProfile>({
-        userName: "",
         email: "",
         phoneNumber: "",
         fullName: "",
@@ -39,7 +38,6 @@ export default function ProfileEdit() {
                 const profileData = await getProfile(userName);
                 setProfile(profileData);
                 setUpdateData({
-                    userName: profileData.userName,
                     email: profileData.email,
                     phoneNumber: profileData.phoneNumber,
                     fullName: profileData.fullName,
@@ -106,15 +104,6 @@ export default function ProfileEdit() {
                 <CardContent>
                     {error && <div className="text-red-500 mb-4">{error}</div>}
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="userName">Username</Label>
-                            <Input
-                                disabled
-                                id="userName"
-                                name="userName"
-                                value={profile.userName}
-                            />
-                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input
