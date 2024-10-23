@@ -2,7 +2,7 @@
 
 // Tạo axios instance
 const apiClient = axios.create({
-    baseURL: "https://api.fuoj.tech/",
+    baseURL: process.env.NODE_ENV === "production" ? "https://api.fuoj.tech/" : "https://localhost:7242/",
     headers: {
         "Content-Type": "application/json",
     },
@@ -13,11 +13,11 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
     (config) => {
         // Lấy token từ localStorage
-        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const token = JSON.parse(localStorage.getItem("token"));
 
-        if (storedUser && storedUser.token) {
+        if (token) {
             // Thêm token vào headers nếu tồn tại
-            config.headers.Authorization = `Bearer ${storedUser.token}`;
+            config.headers.Authorization = `Bearer ${token}`;
         }
 
         return config;

@@ -11,7 +11,7 @@ namespace FU.OJ.Server.Controllers
 {
     [Route(UserRoute.INDEX)]
     [ApiController]
-    [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
+    [Authorize]
     public class UserController : AuthorizeController
     {
         private readonly IUserService _userService;
@@ -20,7 +20,7 @@ namespace FU.OJ.Server.Controllers
         {
             _userService = userService;
         }
-
+        [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
         [HttpPost(UserRoute.Action.Create)]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest createUserRequest)
         {
@@ -66,7 +66,7 @@ namespace FU.OJ.Server.Controllers
             return Ok(userResponse);
         }
 
-
+        [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
         [HttpGet(UserRoute.Action.GetAll)]
         public async Task<IActionResult> GetAllUsers([FromQuery] Paging query)
         {
@@ -81,7 +81,7 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
-
+        [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
         [HttpGet(UserRoute.Action.GetDetail)]
         public async Task<IActionResult> GetUserByUserName()
         {
@@ -105,7 +105,7 @@ namespace FU.OJ.Server.Controllers
 
             return Ok(userResponse);
         }
-
+        [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
         [HttpPut(UserRoute.Action.Update)]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
         {
@@ -145,7 +145,7 @@ namespace FU.OJ.Server.Controllers
             return Ok(userResponse);
         }
 
-
+        [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
         [HttpDelete(UserRoute.Action.Delete)]
         public async Task<IActionResult> DeleteUser(string userName)
         {
@@ -154,7 +154,7 @@ namespace FU.OJ.Server.Controllers
 
             return NoContent();
         }
-
+        [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
         [HttpPut(UserRoute.Action.UpdateRole)]
         public async Task<IActionResult> EditUserRole(string userName, [FromBody] string role)
         {
@@ -170,7 +170,6 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
-
         [HttpPut(UserRoute.Action.ChangePassword)]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
         {

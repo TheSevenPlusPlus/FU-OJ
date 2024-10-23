@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { User, LogOut, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,19 +10,61 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ManagerMenu from "./ManagerMenu";
+import { getProfileByToken } from "../../api/profile";
+import { getRole } from "../../api/general";
 
 interface UserMenuProps {
-    user: {
-        userName: string;
-        avatarUrl: string;
-        role?: string;
-    };
     onLogout: () => void;
 }
 
-const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
-    const isManagerOrAdmin = user.role === "Admin" || user.role === "Manager";
-    const isManager = user.role === "Manager";
+interface ExtendedUser {
+    userName: string;
+    email: string;
+    avatarUrl: string;
+    role?: string;
+}
+
+const UserMenu: React.FC<UserMenuProps> = ({ onLogout }) => {
+    const [extendedUser, setExtendedUser] = useState<ExtendedUser | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const profileResponse = await getProfileByToken();
+                if (profileResponse) {
+                    const roleResponse = await getRole(profileResponse.userName);
+
+                    const updatedUser: ExtendedUser = {
+                        userName: profileResponse.userName,
+                        email: profileResponse.email,
+                        avatarUrl: profileResponse.avatarUrl,
+                        role: roleResponse,
+                    };
+                    setExtendedUser(updatedUser);
+                    localStorage.setItem("user", JSON.stringify(updatedUser));
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                // Handle error (e.g., redirect to login if token is invalid)
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+    if (isLoading) {
+        return <div>Loading...</div>; // Or a more sophisticated loading spinner
+    }
+
+    if (!extendedUser) {
+        return null; // Or handle this case differently (e.g., show login button)
+    }
+
+    const isManagerOrAdmin = extendedUser.role === "Admin" || extendedUser.role === "Manager";
+    const isManager = extendedUser.role === "Manager";
 
     return (
         <DropdownMenu>
@@ -32,16 +74,16 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
                         <AvatarImage
                             className="rounded-full"
                             src={
-                                user.avatarUrl ||
+                                extendedUser.avatarUrl ||
                                 "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
                             }
-                            alt={user.userName}
+                            alt={extendedUser.userName}
                         />
                         <AvatarFallback>
-                            {user.userName[0].toUpperCase()}
+                            {extendedUser.userName[0].toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
-                    <span>{user.userName}</span>
+                    <span>{extendedUser.userName}</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">

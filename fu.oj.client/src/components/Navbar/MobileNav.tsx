@@ -5,22 +5,21 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface MobileNavProps {
-    user: {
-        userName: string;
-        role?: string;
-    } | null;
+    isLoggedIn: boolean;
     isOpen: boolean;
     onToggle: () => void;
     onLogout: () => void;
 }
 
 const MobileNav: React.FC<MobileNavProps> = ({
-    user,
+    isLoggedIn,
     isOpen,
     onToggle,
     onLogout,
 }) => {
-    const isManagerOrAdmin = user?.role === "Admin" || user?.role === "Manager";
+    // We'll assume the user is not a manager or admin by default
+    // You might want to add this information to your auth context or user state
+    const isManagerOrAdmin = false;
 
     return (
         <Sheet open={isOpen} onOpenChange={onToggle}>
@@ -41,13 +40,6 @@ const MobileNav: React.FC<MobileNavProps> = ({
             </SheetTrigger>
             <SheetContent side="right" className="bg-black text-white">
                 <div className="flex flex-col space-y-4 mt-4">
-                    {/*<Link*/}
-                    {/*    to="/"*/}
-                    {/*    className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"*/}
-                    {/*    onClick={onToggle}*/}
-                    {/*>*/}
-                    {/*    Home*/}
-                    {/*</Link>*/}
                     <Link
                         to="/problems"
                         className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"
@@ -76,7 +68,7 @@ const MobileNav: React.FC<MobileNavProps> = ({
                     >
                         Blog
                     </Link>
-                    {user ? (
+                    {isLoggedIn ? (
                         <>
                             <Link
                                 to="/profile"

@@ -24,6 +24,16 @@ export const getProfile = async (userName: string | null) => {
     }
 };
 
+export const getProfileByToken = async () => {
+    try {
+        const response = await apiClient.get(`/profile/getbytoken`);
+        return response == null ? null : response.data;
+    } catch (error) {
+        console.error("Error fetching profile:", error);
+        throw error; // Rethrow so the caller can handle it
+    }
+};
+
 // Function to update the profile
 export const updateProfile = async (profileData: UpdateUserProfile) => {
     try {

@@ -4,6 +4,7 @@ using FU.OJ.Server.DTOs.User.Respond;
 using FU.OJ.Server.Infra.Const;
 using FU.OJ.Server.Infra.Const.Authorize;
 using FU.OJ.Server.Infra.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,7 +34,6 @@ namespace FU.OJ.Server.Service
         {
             _userManager = userManager;
         }
-
         public async Task<User> CreateUserAsync(CreateUserRequest userRequest)
         {
             var user = new User
@@ -56,7 +56,6 @@ namespace FU.OJ.Server.Service
             var errors = string.Join("; ", result.Errors.Select(e => e.Description));
             throw new InvalidOperationException($"User creation failed: {errors}");
         }
-
         public async Task<(List<UserView> users, int totalPages)> GetAllUsersAsync(Paging query)
         {
             int totalItems = await _userManager.Users.CountAsync();
@@ -86,31 +85,26 @@ namespace FU.OJ.Server.Service
             return (users, totalPages);
         }
 
-
         public async Task<User> GetUserByIdAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             return user;
         }
-
         public async Task<User> GetUserByEmailAsync(string email)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == email);
             return user;
         }
-
         public async Task<User> GetUserByPhoneAsync(string phoneNumber)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PhoneNumber == phoneNumber);
             return user;
         }
-
         public async Task<User> GetUserByUsernameAsync(string userName) // Added Async suffix for consistency
         {
             var user = await _userManager.FindByNameAsync(userName);
             return user;
         }
-
         //Don't allow change UserName
         public async Task<User> UpdateUserAsync(UpdateUserRequest updatedUser)
         {
@@ -133,7 +127,6 @@ namespace FU.OJ.Server.Service
 
             throw new Exception("User isn't exist");
         }
-
         public async Task<User> UpdateProfileAsync(string userName, UpdateProfileRequest updatedUser)
         {
             var user = await _userManager.FindByNameAsync(userName);

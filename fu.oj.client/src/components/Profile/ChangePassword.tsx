@@ -21,19 +21,9 @@ export default function ChangePassword() {
     const navigate = useNavigate();
 
     const validatePassword = (password: string) => {
-        const minLength = password.length >= 8;
-        const hasLowercase = /[a-z]/.test(password);
-        const hasUppercase = /[A-Z]/.test(password);
-        const hasNumber = /\d/.test(password);
-        const hasSpecialChar = /[!@#$%^&*]/.test(password);
+        const minLength = password.length >= 8;    
 
-        return (
-            minLength &&
-            hasLowercase &&
-            hasUppercase &&
-            hasNumber &&
-            hasSpecialChar
-        );
+        return ( minLength );
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -183,17 +173,10 @@ export default function ChangePassword() {
                         )}
                         <ul className="text-sm text-gray-600">
                             <li>At least 8 characters long</li>
-                            <li>Contains at least one lowercase letter</li>
-                            <li>Contains at least one uppercase letter</li>
-                            <li>Contains at least one number</li>
-                            <li>
-                                Contains at least one special character
-                                (!@#$%^&*)
-                            </li>
                         </ul>
                         <div className="flex justify-end space-x-2">
                             <Button
-                                type="button"
+                                type="button"   
                                 variant="outline"
                                 onClick={() => navigate("/profile")}
                             >
