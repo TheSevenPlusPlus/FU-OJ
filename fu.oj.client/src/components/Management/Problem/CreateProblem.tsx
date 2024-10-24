@@ -189,7 +189,7 @@ const CreateProblem: React.FC = () => {
                                 <Label>Example Input {index + 1}</Label>
                                 <Textarea
                                     value={example.input}
-                                    onChange={(e) => handleExampleChange(index, 'exampleInput', e.target.value)}
+                                    onChange={(e) => handleExampleChange(index, 'input', e.target.value)} // đổi 'exampleInput' thành 'input'
                                     placeholder="Enter example input"
                                     rows={2}
                                     required
@@ -199,7 +199,7 @@ const CreateProblem: React.FC = () => {
                                 <Label>Example Output {index + 1}</Label>
                                 <Textarea
                                     value={example.output}
-                                    onChange={(e) => handleExampleChange(index, 'exampleOutput', e.target.value)}
+                                    onChange={(e) => handleExampleChange(index, 'output', e.target.value)} // đổi 'exampleOutput' thành 'output'
                                     placeholder="Enter example output"
                                     rows={2}
                                     required

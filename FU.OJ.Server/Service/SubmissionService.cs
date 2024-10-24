@@ -14,7 +14,7 @@ namespace FU.OJ.Server.Service
     public interface ISubmissionService
     {
         Task<string> CreateAsync(string userId, CreateSubmissionRequest request, string? contestCode = null, bool? base64Encoded = false, bool? wait = true); //
-        Task<SubmissionView> GetByIdAsync(string userId, string id);//
+        Task<SubmissionView> GetByIdAsync(string userId, string userRole, string id);//
         Task<(List<SubmissionView> submissions, int totalPages)> GetAllSubmissionsAsync(Paging query, string? problemCode = null, string? userId = null, string? isMine = "false", string? contestCode = "null");//
     }
 
@@ -216,7 +216,7 @@ namespace FU.OJ.Server.Service
             return submission;
         }
 
-        public async Task<SubmissionView> GetByIdAsync(string userId, string id)
+        public async Task<SubmissionView> GetByIdAsync(string userId, string userRole, string id)
         {
             var submission = await _context.Submissions
                 .Where(s => s.Id == id)
@@ -228,14 +228,13 @@ namespace FU.OJ.Server.Service
                 throw new Exception(ErrorMessage.NotFound);
 
             bool isAc = await _problemService.IsAccepted(userId, submission.ProblemId);
-            var (userName, role) = await _generalService.GetUserRoleByUserIdAsync(userId);
 
             return new SubmissionView
             {
                 Id = submission.Id,
                 ProblemId = submission.ProblemId,
                 ProblemName = submission.ProblemCode,
-                SourceCode = (submission.UserId == userId || isAc == true || role == "Admin") ? submission.SourceCode : null,
+                SourceCode = (submission.UserId == userId || isAc == true || userRole == "Admin") ? submission.SourceCode : null,
                 LanguageName = submission.LanguageName,
                 SubmittedAt = submission.SubmittedAt,
                 UserName = submission.UserName,

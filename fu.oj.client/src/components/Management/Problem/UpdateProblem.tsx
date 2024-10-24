@@ -18,6 +18,7 @@ import { updateProblem, getProblemByCode } from "../../../api/problem";
 import { createTestCase } from "../../../api/testcase";
 import { Problem, UpdateProblemModel, ExampleInputOutput } from "../../../models/ProblemModel";
 import { Helmet } from "react-helmet-async";
+import Loading from "../../Loading"
 
 const UpdateProblem: React.FC = () => {
     const navigate = useNavigate();
@@ -125,7 +126,9 @@ const UpdateProblem: React.FC = () => {
         }
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) {
+        return < Loading />;
+    }
     if (error) return <div>Error: {error}</div>;
 
     return (
@@ -211,49 +214,60 @@ const UpdateProblem: React.FC = () => {
                 <div>
                     <Label>Examples</Label>
                     {formState.examples.map((example, index) => (
-                        <div key={index} className="space-y-2">
-                            <div className="flex items-center space-x-2">
-                                <Textarea
-                                    name={`exampleInput-${index}`}
-                                    value={example.input}
-                                    onChange={(e) =>
-                                        handleExampleChange(index, "input", e.target.value)
-                                    }
-                                    placeholder="Example Input"
-                                    rows={2}
-                                    required
-                                />
-                                <Textarea
-                                    name={`exampleOutput-${index}`}
-                                    value={example.output}
-                                    onChange={(e) =>
-                                        handleExampleChange(index, "output", e.target.value)
-                                    }
-                                    placeholder="Example Output"
-                                    rows={2}
-                                    required
-                                />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleRemoveExample(index)}
-                                >
-                                    <X className="h-4 w-4" />
-                                </Button>
+                        <div key={index} className="border p-4 rounded-lg my-2 bg-gray-50">
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                <div>
+                                    <Label htmlFor={`exampleInput-${index}`}>Example Input</Label>
+                                    <Textarea
+                                        id={`exampleInput-${index}`}
+                                        name={`exampleInput-${index}`}
+                                        value={example.input}
+                                        onChange={(e) =>
+                                            handleExampleChange(index, "input", e.target.value)
+                                        }
+                                        placeholder="Enter example input"
+                                        rows={2}
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <Label htmlFor={`exampleOutput-${index}`}>Example Output</Label>
+                                    <Textarea
+                                        id={`exampleOutput-${index}`}
+                                        name={`exampleOutput-${index}`}
+                                        value={example.output}
+                                        onChange={(e) =>
+                                            handleExampleChange(index, "output", e.target.value)
+                                        }
+                                        placeholder="Enter example output"
+                                        rows={2}
+                                        required
+                                    />
+                                </div>
                             </div>
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleRemoveExample(index)}
+                                className="mt-2 flex items-center space-x-2"
+                            >
+                                <X className="h-4 w-4" />
+                                <span>Remove Example</span>
+                            </Button>
                         </div>
                     ))}
                     <Button
                         type="button"
                         variant="ghost"
                         onClick={handleAddExample}
-                        className="flex items-center space-x-2"
+                        className="mt-4 flex items-center space-x-2"
                     >
                         <Plus className="h-4 w-4" />
                         <span>Add Example</span>
                     </Button>
                 </div>
+
 
                 <div>
                     <Label htmlFor="timeLimit">Time Limit (seconds)</Label>

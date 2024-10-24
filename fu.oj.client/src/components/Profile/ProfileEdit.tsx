@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { getProfile, updateProfile } from "../../api/profile";
 import { UpdateUserProfile, UserProfile } from "../../models/UserProfileModel";
 import { Helmet } from "react-helmet-async";
-
+import Loading from "../Loading"
 export default function ProfileEdit() {
     const navigate = useNavigate();
     const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -85,7 +85,7 @@ export default function ProfileEdit() {
     };
 
     if (loading) {
-        return <div className="container mx-auto p-4">Loading...</div>;
+        return < Loading />;
     }
 
     if (!profile) {

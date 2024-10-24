@@ -23,6 +23,7 @@ import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { Badge } from "@/components/ui/badge"; // Import Badge for status colors
 import { Search } from "lucide-react";
 import { Helmet } from "react-helmet-async";
+import Loading from "../Loading"
 
 const SubmissionList = () => {
     const navigate = useNavigate();
@@ -121,14 +122,28 @@ const SubmissionList = () => {
         if (newPageIndex > 0 && newPageIndex <= totalPages) {
             setPageIndex(newPageIndex);
             if (contestCode == null) {
-                navigate(
-                    `/submissions/all?pageIndex=${newPageIndex}&pageSize=${pageSize}&isMine=${isMine}`,
-                );
+                if (isMine == null) {
+                    navigate(
+                        `/submissions/all?pageIndex=${newPageIndex}&pageSize=${pageSize}`,
+                    );
+                }
+                else {
+                    navigate(
+                        `/submissions/all?pageIndex=${newPageIndex}&pageSize=${pageSize}&isMine=${isMine}`,
+                    );
+                }
             }
             else {
-                navigate(
-                    `/submissions/all?contestCode=${contestCode}&pageIndex=${newPageIndex}&pageSize=${pageSize}&isMine=${isMine}`,
-                );
+                if (isMine == null) {
+                    navigate(
+                        `/submissions/all?contestCode=${contestCode}&pageIndex=${newPageIndex}&pageSize=${pageSize}`,
+                    );
+                }
+                else {
+                    navigate(
+                        `/submissions/all?contestCode=${contestCode}&pageIndex=${newPageIndex}&pageSize=${pageSize}&isMine=${isMine}`,
+                    );
+                }
             }
         }
     };
@@ -137,20 +152,25 @@ const SubmissionList = () => {
         setPageSize(newSize);
         setPageIndex(1);
         if (contestCode == null) {
-            navigate(`/submissions/all?pageIndex=1&pageSize=${newSize}&isMine=${isMine}`);
+            if (isMine == null) {
+                navigate(`/submissions/all?pageIndex=1&pageSize=${newSize}`);
+            }
+            else {
+                navigate(`/submissions/all?pageIndex=1&pageSize=${newSize}&isMine=${isMine}`);
+            }
         }
         else {
-            navigate(`/submissions/all?contestCode=${contestCode}&pageIndex=1&pageSize=${newSize}&isMine=${isMine}`);
+            if (isMine == null) {
+                navigate(`/submissions/all?contestCode=${contestCode}&pageIndex=1&pageSize=${newSize}`);
+            }
+            else {
+                navigate(`/submissions/all?contestCode=${contestCode}&pageIndex=1&pageSize=${newSize}&isMine=${isMine}`);
+            }
         }
     };
 
     if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
-                <p className="text-center text-lg mt-2">Loading submissions...</p>
-            </div>
-        );
+        return < Loading />;
     }
 
     if (error) {

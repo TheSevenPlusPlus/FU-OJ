@@ -15,6 +15,7 @@ import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { UserView } from "../../models/UserDTO";
 import { getProfile } from "../../api/profile";
 import { Helmet } from "react-helmet-async";
+import Loading from "../Loading";
 
 interface Blog {
     id: number;
@@ -72,12 +73,7 @@ export default function BlogList() {
     };
 
     if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-                <p className="text-center text-lg mt-4">Loading blogs...</p>
-            </div>
-        );
+        return < Loading />;
     }
 
     if (error) {

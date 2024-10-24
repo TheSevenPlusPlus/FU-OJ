@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { ContestNavbar } from "./ContestNavbar";
 import { Helmet } from "react-helmet-async";
+import Loading from "../Loading"
 
 export function ContestHome() {
     const { contestCode } = useParams<{ contestCode: string }>();
@@ -53,7 +54,10 @@ export function ContestHome() {
         }
     };
 
-    if (loading) return <div>Loading contest...</div>;
+    if (loading) {
+        return < Loading />;
+    }
+
     if (error) return <div>{error}</div>;
     if (!contest) return <div>No contest found</div>;
 

@@ -17,6 +17,7 @@ import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { ContestNavbar } from "./ContestNavbar";
 import { ContestView } from "../../models/ContestModel";
 import { Helmet } from "react-helmet-async";
+import Loading from "../Loading"
 
 export default function ContestProblem() {
     const navigate = useNavigate();
@@ -89,12 +90,7 @@ export default function ContestProblem() {
     };
 
     if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-full">
-                <div className="spinner"></div>
-                <p className="text-center text-lg mt-2">Loading problems...</p>
-            </div>
-        );
+        return < Loading />;
     }
 
     if (error) {

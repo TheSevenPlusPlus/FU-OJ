@@ -20,6 +20,7 @@ import { getContestByCode, registerContest, isRegisteredContest, getContestProbl
 import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
 import { Helmet } from "react-helmet-async";
+import Loading from "../Loading"
 
 const SubmissionDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -45,7 +46,7 @@ const SubmissionDetail: React.FC = () => {
                     setIsRegistered(registeredResponse.data);  // Assuming API returns { isRegistered: boolean }
                 }
 
-                console.log("submission: ", response.data);
+                //console.log("submission: ", response.data);
                 setSubmission(response.data);
             } catch (err) {
                 setError("Failed to fetch problem details");
@@ -56,6 +57,10 @@ const SubmissionDetail: React.FC = () => {
 
         fetchSubmission();
     }, [id, searchParams]);
+
+    if (loading) {
+        return < Loading />;
+    }
 
     const getStatusColor = (status: string) => {
         switch (status.toLowerCase()) {

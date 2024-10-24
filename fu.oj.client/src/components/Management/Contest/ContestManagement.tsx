@@ -21,6 +21,7 @@ import ItemsPerPageSelector from '../../Pagination/ItemsPerPageSelector';
 import { getAllContests, deleteContest } from "../../../api/contest"; // Import API methods
 import { ContestView } from "../../../models/ContestModel"
 import { Helmet } from "react-helmet-async";
+import Loading from "../../Loading"
 
 const ContestManagement: React.FC = () => {
     const navigate = useNavigate();
@@ -83,7 +84,9 @@ const ContestManagement: React.FC = () => {
         });
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) {
+        return < Loading />;
+    }
     if (error) return <div>Error: {error}</div>;
 
     return (

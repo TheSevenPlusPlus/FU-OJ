@@ -15,7 +15,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import Pagination from '../Pagination/Pagination';
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import { Helmet } from "react-helmet-async";
-
+import Loading from "../Loading"
 export default function ProblemList() {
     const navigate = useNavigate();
     const [problems, setProblems] = useState<Problem[]>([]);
@@ -105,12 +105,7 @@ export default function ProblemList() {
     };
 
     if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-full">
-                <div className="spinner"></div>
-                <p className="text-center text-lg mt-2">Loading problems...</p>
-            </div>
-        );
+        return < Loading />;
     }
 
     if (error) {

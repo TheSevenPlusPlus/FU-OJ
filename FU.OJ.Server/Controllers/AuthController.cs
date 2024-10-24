@@ -128,7 +128,5 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
 
             return BadRequest(result.Errors);
         }
-
-
     }
 }

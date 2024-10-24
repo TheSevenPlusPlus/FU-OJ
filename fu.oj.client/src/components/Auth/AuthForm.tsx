@@ -50,7 +50,6 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
     const handleLogin = async (identifier: string, password: string) => {
         try {
             const data = await loginUser({ identifier, password });
-            console.log("Login successful:", data);
             localStorage.setItem("user", JSON.stringify(data));
             navigate("/problems");
             navigate(0); // Reload
@@ -68,9 +67,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
     }) => {
         try {
             const data = await registerUser(userData);
-            console.log("Registration successful:", data);
-            localStorage.setItem("user", JSON.stringify(data));
-            navigate("/profile");
+            navigate("/login");
             navigate(0); // Reload
         } catch (error: any) {
             // Handle 400 error and other errors

@@ -10,6 +10,7 @@ import { getContestByCode, isRegisteredContest } from "../../api/contest";
 import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
 import { Helmet } from "react-helmet-async";
+import Loading from "../Loading"
 
 // Define model for language
 interface Language {

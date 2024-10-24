@@ -7,7 +7,7 @@ import { BlogDetail, CreateBlogRequest, UpdateBlogRequest } from '../../../model
 import { createBlog, updateBlog, getBlogById } from '../../../api/blog';
 import { useToast } from '../../../hooks/use-toast';
 import { Helmet } from 'react-helmet-async';
-
+import Loading from "../../Loading"
 interface BlogFormProps {
     blog?: BlogDetail | null;
 }
@@ -116,7 +116,7 @@ export default function BlogForm({ blog: initialBlog }: BlogFormProps) {
     };
 
     if (isLoading) {
-        return <div className="mt-8 flex justify-center">Loading...</div>;
+        return < Loading />;
     }
 
     return (
