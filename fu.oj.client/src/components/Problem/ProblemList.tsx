@@ -100,10 +100,6 @@ export default function ProblemList() {
         }
     };
 
-    const getSolutionIcon = (hasSolution: string) => {
-        return hasSolution ? <i className="fas fa-check-circle text-green-500"></i> : null;
-    };
-
     if (loading) {
         return < Loading />;
     }
@@ -132,7 +128,6 @@ export default function ProblemList() {
                         <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Time Limit</TableHead>
                         <TableHead className="w-[120px] border border-gray-300 text-white font-bold">Memory (MB)</TableHead>
                         <TableHead className="w-[150px] border border-gray-300 text-white font-bold">Created at</TableHead>
-                        <TableHead className="w-[100px] border border-gray-300 text-white font-bold">Has Solution</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -172,9 +167,6 @@ export default function ProblemList() {
                             <TableCell className="font-medium border border-gray-300">{Math.floor(problem.memoryLimit / 1024)} MB</TableCell>
                             <TableCell className="font-medium border border-gray-300">
                                 {formatDate(problem.createdAt)}
-                            </TableCell>
-                            <TableCell className="flex items-center justify-center">
-                                {getSolutionIcon(problem.hasSolution)}
                             </TableCell>
                         </TableRow>
                     ))}

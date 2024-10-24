@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Text.Json.Serialization;
 
 namespace FU.OJ.Server.Infra.Models
 {
@@ -16,7 +17,6 @@ namespace FU.OJ.Server.Infra.Models
         public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
         public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
         public ICollection<Problem> Problems { get; set; } = new List<Problem>();
-        public ICollection<Blog> Blogs { get; set; } = new List<Blog>();
         public ICollection<ProblemUser> ProblemsUsers { get; set; } = new List<ProblemUser>();
         public ICollection<ContestParticipant> ContestParticipants { get; set; } = new List<ContestParticipant>();
         public ICollection<Contest> Contests { get; set; } = new List<Contest>();
@@ -34,11 +34,6 @@ namespace FU.OJ.Server.Infra.Models
             builder.HasMany(u => u.Problems)
                    .WithOne(p => p.User)
                    .HasForeignKey(p => p.UserId)
-                   .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(u => u.Blogs)
-                   .WithOne(b => b.User)
-                   .HasForeignKey(b => b.UserId)
                    .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(u => u.ProblemsUsers)

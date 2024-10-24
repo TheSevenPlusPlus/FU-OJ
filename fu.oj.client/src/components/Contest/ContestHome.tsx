@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { getContestByCode, registerContest, isRegisteredContest } from "../../api/contest";  // Import the isRegisteredContest API
 import { ContestView } from "../../models/ContestModel";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,9 @@ export function ContestHome() {
     const [error, setError] = useState<string | null>(null);
     const [isRegistered, setIsRegistered] = useState<boolean>(false);
     const [registerError, setRegisterError] = useState<string | null>(null);  // To handle registration error
+    const isLoggedIn = localStorage.getItem("token") !== null;
+    const location = useLocation();
+    const navigate = useNavigate(); // Hook for navigation
 
     useEffect(() => {
         const fetchContest = async () => {
@@ -46,6 +49,10 @@ export function ContestHome() {
         if (!contestCode) return;
 
         try {
+            if (!isLoggedIn) {
+                navigate(`/login?redirectTo=${encodeURIComponent(location.pathname)}`);
+            }
+
             setRegisterError(null);
             await registerContest(contestCode);  // Call the registerContest API
             setIsRegistered(true);  // Set as registered if API call is successful

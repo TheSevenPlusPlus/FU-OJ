@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FU.OJ.Server.Infra.Models{    public class Blog : BlogProperties
     {
         public User User { get; set; } = null!;
+        [JsonIgnore]
         public ICollection<BlogComment> Comments { get; set; } = new List<BlogComment>();
     }
     public class BlogProperties
@@ -23,12 +25,7 @@ namespace FU.OJ.Server.Infra.Models{    public class Blog : BlogProperties
     public class BlogConfiguration : IEntityTypeConfiguration<Blog>
     {
         public void Configure(EntityTypeBuilder<Blog> builder)
-        {
-            builder.HasOne(b => b.User)
-               .WithMany(u => u.Blogs)
-               .HasForeignKey(b => b.UserId)
-               .OnDelete(DeleteBehavior.Cascade);
-            builder.HasMany(b => b.Comments)
+        {            builder.HasMany(b => b.Comments)
                    .WithOne(c => c.Blog)
                    .HasForeignKey(c => c.BlogId)
                    .OnDelete(DeleteBehavior.Cascade);
