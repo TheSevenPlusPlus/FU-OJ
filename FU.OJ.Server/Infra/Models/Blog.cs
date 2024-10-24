@@ -1,15 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using Microsoft.EntityFrameworkCore;using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace FU.OJ.Server.Infra.Models{    public class Blog : BlogProperties
+namespace FU.OJ.Server.Infra.Models
+{
+    public class Blog : BlogProperties
     {
         public User User { get; set; } = null!;
-        [JsonIgnore]
         public ICollection<BlogComment> Comments { get; set; } = new List<BlogComment>();
     }
-    public class BlogProperties
+
+    public class BlogProperties
     {
         [Key]
         public string Id { get; set; } = Guid.NewGuid().ToString();
@@ -22,13 +24,15 @@ namespace FU.OJ.Server.Infra.Models{    public class Blog : BlogProperties
         [Comment("Người tạo")]
         public string UserId { get; set; } = null!;
     }
-    public class BlogConfiguration : IEntityTypeConfiguration<Blog>
+
+    public class BlogConfiguration : IEntityTypeConfiguration<Blog>
     {
         public void Configure(EntityTypeBuilder<Blog> builder)
-        {            builder.HasMany(b => b.Comments)
+        {
+            builder.HasMany(b => b.Comments)
                    .WithOne(c => c.Blog)
                    .HasForeignKey(c => c.BlogId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }
-}
+}
