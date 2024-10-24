@@ -1,19 +1,7 @@
-using Exceptions;
-using FU.OJ.Server.DTOs.Auth.Request;
-using FU.OJ.Server.DTOs.Auth.Respond;
-using FU.OJ.Server.Infra.Const.Authorize;
-using FU.OJ.Server.Infra.Const.Route;
-using FU.OJ.Server.Infra.Models;
-using FU.OJ.Server.Service;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Exceptions;using FU.OJ.Server.DTOs.Auth.Request;using FU.OJ.Server.DTOs.Auth.Respond;using FU.OJ.Server.Infra.Const.Authorize;using FU.OJ.Server.Infra.Const.Route;using FU.OJ.Server.Infra.Models;using FU.OJ.Server.Service;using Microsoft.AspNetCore.Authorization;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Microsoft.EntityFrameworkCore;
 using System.Web;
 
-namespace FU.OJ.Server.Controllers
-{
-    [Route(AuthRoute.INDEX)]
+namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
     [ApiController]
     [AllowAnonymous]
     public class AuthController : AuthorizeController
@@ -33,8 +21,7 @@ namespace FU.OJ.Server.Controllers
             _emailSender = emailSender;
             _clientUrl = configuration["ClientUrl"];
         }
-
-        [HttpPost(AuthRoute.Action.Register)]
+        [HttpPost(AuthRoute.Action.Register)]
         public async Task<IActionResult> Register([FromBody] RegisterRequest registerRequest)
         {
             try
@@ -76,19 +63,15 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(exception);
             }
         }
-
-
-        [HttpPost(AuthRoute.Action.Login)]
+        [HttpPost(AuthRoute.Action.Login)]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest) 
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.Identifier || u.Email == loginRequest.Identifier);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.Identifier || u.Email == loginRequest.Identifier);
             if (user == null) return Unauthorized("Username/Email không tồn tại");
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginRequest.Password, false);
             if (!result.Succeeded) return Unauthorized("Password không đúng");
-
-            var token = await _tokenService.CreateToken(user); // Sử dụng await cho phương thức không đồng bộ
+            var token = await _tokenService.CreateToken(user); // Sử dụng await cho phương thức không đồng bộ
 
             return Ok(
                new LoginRespond
@@ -264,7 +247,5 @@ namespace FU.OJ.Server.Controllers
 
             return BadRequest(result.Errors);
         }
-
-
     }
-}
+}

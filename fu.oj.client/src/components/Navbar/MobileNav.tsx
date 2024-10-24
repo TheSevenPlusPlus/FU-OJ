@@ -48,6 +48,13 @@ const MobileNav: React.FC<MobileNavProps> = ({
                         Problems
                     </Link>
                     <Link
+                        to="/submissions/all"
+                        className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"
+                        onClick={onToggle}
+                    >
+                        Submissions
+                    </Link>
+                    <Link
                         to="/contests"
                         className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-800"
                         onClick={onToggle}

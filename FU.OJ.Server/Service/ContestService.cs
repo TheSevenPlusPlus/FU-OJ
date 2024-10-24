@@ -437,6 +437,7 @@ namespace FU.OJ.Server.Service
                     ContestCode = participant.ContestCode,
                     Score = participant.Score
                 })
+                .OrderByDescending(participant => participant.Score)
                 .ToListAsync();
 
             // Step 2: Fetch contest problems for the contest code

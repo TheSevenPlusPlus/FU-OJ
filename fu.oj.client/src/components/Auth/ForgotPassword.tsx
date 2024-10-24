@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { forgotPassword } from "../../api/auth";
 import { Helmet } from 'react-helmet-async';
+import Loading from "../Loading"
 
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -49,6 +50,10 @@ const ForgotPassword: React.FC = () => {
             setIsLoading(false);
         }
     };
+
+    if (isLoading) {
+        return < Loading />;
+    }
 
     return (
         <Card className="w-[350px] mx-auto mt-20">

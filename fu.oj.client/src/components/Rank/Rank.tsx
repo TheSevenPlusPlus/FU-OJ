@@ -8,6 +8,7 @@ import { Trophy, Medal, Award } from "lucide-react";
 import { getRank } from "../../api/general";
 import { Helmet } from "react-helmet-async";
 import Pagination from "../Pagination/Pagination";
+import Loading from "../Loading"
 
 type Participant = {
     rank: number;
@@ -72,7 +73,7 @@ export default function Rank() {
     };
 
     if (isLoading) {
-        return <div className="flex justify-center items-center h-screen">Loading...</div>;
+        return < Loading />;
     }
 
     if (error) {

@@ -10,7 +10,7 @@ import { Toast } from "./Toast";
 import { getAllBlogs, deleteBlog } from "../../../api/blog";
 import { BlogDetail, GetAllBlogsResponse } from "../../../models/BlogDTO";
 import { Helmet } from "react-helmet-async";
-
+import Loading from "../../Loading"
 export default function BlogManagement() {
     const [blogs, setBlogs] = useState<BlogDetail[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -60,6 +60,10 @@ export default function BlogManagement() {
     const handleViewBlog = (id: string): void => {
         navigate(`/blog/${id}`);
     };
+
+    if (isLoading) {
+        return < Loading />;
+    }
 
     return (
         <Card className="w-full max-w-4xl mx-auto">

@@ -20,11 +20,12 @@ namespace FU.OJ.Server.Controllers{    [Route(SubmissionRoute.INDEX)]
                 return HandleException(ex);
             }
         }        [HttpGet(SubmissionRoute.Action.Get)]
+        [AllowAnonymous]
         public async Task<IActionResult> GetSubmissionDetails([FromRoute] string id)
         {
             try
             {
-                SubmissionView submission = await _submissionService.GetByIdAsync(UserHeader.UserId, id);
+                SubmissionView submission = await _submissionService.GetByIdAsync(UserHeader.UserId, UserHeader.Role, id);
                 return Ok(submission);
             }
             catch (Exception ex)
