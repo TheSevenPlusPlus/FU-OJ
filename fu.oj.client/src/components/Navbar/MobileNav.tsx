@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,11 @@ const MobileNav: React.FC<MobileNavProps> = ({
     // We'll assume the user is not a manager or admin by default
     // You might want to add this information to your auth context or user state
     const isManagerOrAdmin = false;
+
+    const handleClearLocalStorageAndNavigate = (path: string) => {
+        localStorage.clear(); // Xóa toàn bộ localStorage
+        window.location.href = path; // Điều hướng người dùng
+    };
 
     return (
         <Sheet open={isOpen} onOpenChange={onToggle}>
@@ -138,18 +143,16 @@ const MobileNav: React.FC<MobileNavProps> = ({
                         <>
                             <Button
                                 variant="outline"
-                                asChild
                                 className="text-black w-full"
-                                onClick={onToggle}
+                                onClick={() => handleClearLocalStorageAndNavigate("/login")}
                             >
-                                <Link to="/login">Log in</Link>
+                                Log in
                             </Button>
                             <Button
-                                asChild
                                 className="w-full"
-                                onClick={onToggle}
+                                onClick={() => handleClearLocalStorageAndNavigate("/register")}
                             >
-                                <Link to="/register">Register</Link>
+                                Register
                             </Button>
                         </>
                     )}
