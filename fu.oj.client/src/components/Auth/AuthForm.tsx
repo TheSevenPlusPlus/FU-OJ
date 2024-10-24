@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoginForm } from "./LoginForm";
 import { RegisterForm } from "./RegisterForm";
@@ -22,6 +22,7 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const [searchParams] = useSearchParams();
 
     useEffect(() => {
         const user = localStorage.getItem("user");
@@ -49,10 +50,12 @@ export default function AuthForm({ additionalFields = [] }: RegisterProps) {
 
     const handleLogin = async (identifier: string, password: string) => {
         try {
+            const redirectTo = searchParams.get('redirectTo') || '/problems'; // Nếu không có redirectTo, mặc định chuyển về trang chủ
+
             const data = await loginUser({ identifier, password });
             console.log("Login successful:", data);
             localStorage.setItem("token", JSON.stringify(data.token));
-            navigate("/problems");
+            navigate(redirectTo);
             navigate(0);
         } catch (error: any) {
             console.error("Login failed:", error.response?.data || error.message);

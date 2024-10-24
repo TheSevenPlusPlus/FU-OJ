@@ -27,6 +27,7 @@ export default function BlogPost() {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const isLoggedIn = localStorage.getItem("token") !== null;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -96,7 +97,7 @@ export default function BlogPost() {
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
                 />
-                <AddCommentForm blogId={blog_id} setComments={setComments} />
+                {isLoggedIn && <AddCommentForm blogId={blog_id} setComments={setComments} />}
             </div>
         </div>
     );

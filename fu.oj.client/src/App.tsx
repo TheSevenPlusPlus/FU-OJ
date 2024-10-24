@@ -45,6 +45,7 @@ const App: React.FC = () => {
 
     return (
         <Router>
+            <ToastContainer />
             <div className="flex flex-col min-h-screen bg-white">
                 <Navbar />
                 <main className="flex-grow">
