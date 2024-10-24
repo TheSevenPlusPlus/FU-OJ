@@ -51,10 +51,7 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
                         var token = await _tokenService.CreateToken(user);
                         return Ok(new RegisterRespond
                         {
-                            UserName = user.UserName,
-                            Email = user.Email,
                             Token = token,
-                            AvatarUrl = user.AvatarUrl
                         });
                     }
                     else throw new BadException("Something error");
@@ -79,10 +76,7 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
             return Ok(
                new LoginRespond
                {
-                   UserName = user.UserName,
-                   Email = user.Email,
                    Token = token,
-                   AvatarUrl = user.AvatarUrl
                }
            );
         }
@@ -99,8 +93,133 @@ namespace FU.OJ.Server.Controllers{    [Route(AuthRoute.INDEX)]
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var resetLink = $"{_clientUrl}/resetpassword?token={HttpUtility.UrlEncode(token)}&email={user.Email}"; // Sử dụng _clientUrl
 
-            // Gửi email reset mật khẩu
-            await _emailSender.SendEmailAsync(model.Email, "Reset Password", $"Click <a href='{resetLink}'>here</a> to reset your password.");
+            // Email template trực tiếp trong controller
+            string emailTemplate = @"
+                <!DOCTYPE html>
+            <html lang=""en"">
+            <head>
+                <meta charset=""UTF-8"">
+                <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+                <title>Reset Your Password</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f4f4f4;
+                    }
+                    .email-container {
+                        width: 100%;
+                        background: linear-gradient(to right, #1a237e, #3949ab);
+                        padding: 20px 0;
+                    }
+                    .email-content {
+                        max-width: 600px;
+                        margin: 0 auto;
+                        background-color: #ffffff;
+                        padding: 40px;
+                        border-radius: 8px;
+                        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                    }
+                    .email-header {
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+                    .email-header h1 {
+                        color: #ffffff;
+                        font-size: 32px;
+                        font-weight: 800;
+                        margin: 0;
+                        padding: 15px 0;
+                        background: linear-gradient(to right, #4CAF50, #45a049);
+                        -webkit-background-clip: text;
+                        background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        display: inline-block;
+                        text-transform: uppercase;
+                        letter-spacing: 2px;
+                        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+                    }
+                    .email-body {
+                        color: #333333;
+                    }
+                    h2 {
+                        color: #4CAF50;
+                        font-size: 24px;
+                        margin-bottom: 20px;
+                    }
+                    p {
+                        line-height: 1.6;
+                        margin-bottom: 15px;
+                    }
+                    .reset-button {
+                        display: inline-block;
+                        margin: 20px 0;
+                        padding: 12px 24px;
+                        color: white;
+                        background-color: #4CAF50;
+                        text-decoration: none;
+                        border-radius: 5px;
+                        font-size: 16px;
+                        font-weight: bold;
+                        text-align: center;
+                    }
+                    .reset-button:hover {
+                        background-color: #45a049;
+                    }
+                    .email-footer {
+                        font-size: 12px;
+                        color: #888888;
+                        text-align: center;
+                        margin-top: 30px;
+                        padding-top: 20px;
+                        border-top: 1px solid #dddddd;
+                    }
+                    .social-link {
+                        color: #4CAF50;
+                        text-decoration: none;
+                        display: inline-block;
+                        margin-top: 10px;
+                    }
+                    .social-icon {
+                        font-size: 16px;
+                        margin-right: 5px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class=""email-container"">
+                    <div class=""email-content"">
+                        <div class=""email-header"">
+                            <h1>FU Online Judge</h1>
+                        </div>
+                        <div class=""email-body"">
+                            <h2>Reset Your Password</h2>
+                            <p>Hello,</p>
+                            <p>We received a request to reset your password. Click the button below to reset your password:</p>
+                            <p style=""text-align: center;"">
+                                <a href=""{{resetLink}}"" class=""reset-button"">Reset Password</a>
+                            </p>
+                            <p>If you didn't request this, please ignore this email or let us know.</p>
+                            <p>Thank you!</p>
+                        </div>
+                        <div class=""email-footer"">
+                            <p>&copy; 2024 FU Online Judge. All rights reserved.</p>
+                            <a href=""https://www.facebook.com/profile.php?id=61566392623284"" class=""social-link"" target=""_blank"" rel=""noopener noreferrer"">
+                                <span class=""social-icon"">📘</span>
+                                Follow us on Facebook
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </body>
+            </html>";
+
+            // Thay thế {{resetLink}} bằng link reset thực tế
+            string emailBody = emailTemplate.Replace("{{resetLink}}", resetLink);
+
+            // Gửi email
+            await _emailSender.SendEmailAsync(model.Email, "Reset Password", emailBody);
 
             return Ok("Password reset link has been sent to your email.");
         }

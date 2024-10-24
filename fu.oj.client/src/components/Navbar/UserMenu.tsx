@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { User, LogOut, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,19 +10,78 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ManagerMenu from "./ManagerMenu";
+import parseJwt from "../../api/parseJWT";
 
 interface UserMenuProps {
-    user: {
-        userName: string;
-        avatarUrl: string;
-        role?: string;
-    };
     onLogout: () => void;
 }
 
-const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
-    const isManagerOrAdmin = user.role === "Admin" || user.role === "Manager";
-    const isManager = user.role === "Manager";
+interface ExtendedUser {
+    userName: string;
+    email: string;
+    avatarUrl: string;
+    role?: string;
+}
+
+const UserMenu: React.FC<UserMenuProps> = ({ onLogout }) => {
+    const [extendedUser, setExtendedUser] = useState<ExtendedUser | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    // Hàm lấy thông tin user từ token khi người dùng đăng nhập lần đầu
+    const fetchUserDataFromToken = () => {
+        console.log("Co fetch khong?");
+        const token = localStorage.getItem("token");
+        if (token) {
+            const parsedToken = parseJwt(token);
+            if (parsedToken) {
+                const updatedUser: ExtendedUser = {
+                    userName: parsedToken.given_name,
+                    email: parsedToken.email,
+                    avatarUrl: parsedToken.AvatarUrl || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s",
+                    role: parsedToken.role,
+                };
+                // Lưu user vào state và localStorage lần đầu
+                setExtendedUser(updatedUser);
+                localStorage.setItem("user", JSON.stringify(updatedUser));
+            }
+        }
+    };
+
+    // Hàm cập nhật user từ localStorage khi có thay đổi sau khi đăng nhập
+    const fetchUserDataFromLocalStorage = () => {
+        const user = localStorage.getItem("user");
+        if (user) {
+            setExtendedUser(JSON.parse(user));
+        }
+    };
+
+    useEffect(() => {
+        // Chạy lần đầu khi component mount để lấy từ token
+        fetchUserDataFromToken();
+        setIsLoading(false);
+
+        // Sau đó lắng nghe thay đổi của localStorage
+        const handleStorageChange = () => {
+            fetchUserDataFromLocalStorage();
+        };
+
+        window.addEventListener("storage", handleStorageChange);
+
+        return () => {
+            window.removeEventListener("storage", handleStorageChange);
+        };
+    }, []);
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!extendedUser) {
+        return null; // Hoặc xử lý khác nếu không có user
+    }
+
+    const isManagerOrAdmin = extendedUser.role === "Admin" || extendedUser.role === "Manager";
+    const isManager = extendedUser.role === "Manager";
 
     return (
         <DropdownMenu>
@@ -31,17 +90,14 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
                     <Avatar className="w-8 h-8 mr-2">
                         <AvatarImage
                             className="rounded-full"
-                            src={
-                                user.avatarUrl ||
-                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRD3OGZfe1nXAqGVpizYHrprvILILEvv1AyEA&s"
-                            }
-                            alt={user.userName}
+                            src={extendedUser.avatarUrl}
+                            alt={extendedUser.userName}
                         />
                         <AvatarFallback>
-                            {user.userName[0].toUpperCase()}
+                            {extendedUser.userName[0].toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
-                    <span>{user.userName}</span>
+                    <span>{extendedUser.userName}</span>
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
@@ -58,10 +114,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
                     </Link>
                 </DropdownMenuItem>
                 {isManagerOrAdmin && <ManagerMenu isManager={isManager} />}
-                <DropdownMenuItem
-                    onClick={onLogout}
-                    className="flex items-center"
-                >
+                <DropdownMenuItem onClick={onLogout} className="flex items-center">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Logout</span>
                 </DropdownMenuItem>

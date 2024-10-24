@@ -35,11 +35,9 @@ const ResetPassword: React.FC = () => {
         if (emailParam) setEmail(emailParam);
     }, [location]);
 
-
     const validatePassword = (password: string): boolean => {
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-        if (!passwordRegex.test(password)) {
-            setPasswordError('Password must contain at least 8 characters, including uppercase, lowercase, number, and special character.');
+        if (password.length < 8) {
+            setPasswordError('Password must be at least 8 characters long.');
             return false;
         }
         setPasswordError('');
@@ -69,13 +67,12 @@ const ResetPassword: React.FC = () => {
             });
             navigate('/login');
         } catch (error) {
-            console.error("Error during password reset:", error); // In ra lỗi để kiểm tra
+            console.error("Error during password reset:", error);
             setUpdateError(error.response?.data?.message || "Failed to reset password. Please try again.");
         } finally {
             setIsLoading(false);
         }
     };
-
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);

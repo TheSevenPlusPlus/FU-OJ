@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +15,6 @@ export default function ProfileEdit() {
     const navigate = useNavigate();
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [updateData, setUpdateData] = useState<UpdateUserProfile>({
-        userName: "",
         email: "",
         phoneNumber: "",
         fullName: "",
@@ -39,7 +38,6 @@ export default function ProfileEdit() {
                 const profileData = await getProfile(userName);
                 setProfile(profileData);
                 setUpdateData({
-                    userName: profileData.userName,
                     email: profileData.email,
                     phoneNumber: profileData.phoneNumber,
                     fullName: profileData.fullName,
@@ -76,6 +74,15 @@ export default function ProfileEdit() {
         try {
             await updateProfile(updateData);
             setSuccess("Profile updated successfully!");
+            // Lấy dữ liệu user từ localStorage
+            const userData = JSON.parse(localStorage.getItem("user") || "{}");
+
+            // Cập nhật avatarUrl trong localStorage
+            const updatedUserData = {
+                ...userData,
+                avatarUrl: updateData.avatarUrl, // Cập nhật avatarUrl mới
+            };
+            localStorage.setItem("user", JSON.stringify(updatedUserData));
             navigate("/profile");
             window.location.reload();
         } catch (error) {
@@ -106,15 +113,6 @@ export default function ProfileEdit() {
                 <CardContent>
                     {error && <div className="text-red-500 mb-4">{error}</div>}
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="userName">Username</Label>
-                            <Input
-                                disabled
-                                id="userName"
-                                name="userName"
-                                value={profile.userName}
-                            />
-                        </div>
                         <div className="space-y-2">
                             <Label htmlFor="email">Email</Label>
                             <Input

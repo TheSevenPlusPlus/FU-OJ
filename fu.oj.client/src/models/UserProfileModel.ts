@@ -14,7 +14,6 @@ export interface UserProfile {
 }
 
 export interface UpdateUserProfile {
-    userName: string;
     email: string;
     phoneNumber: string;
     fullName: string;

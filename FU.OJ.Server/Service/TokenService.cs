@@ -30,6 +30,7 @@ namespace FU.OJ.Server.Service{    public interface ITokenService
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()), // UserId
                 new Claim(JwtRegisteredClaimNames.GivenName, user.UserName), // UserName
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),       // Email
+                new Claim("AvatarUrl", user.AvatarUrl ?? string.Empty) // Thêm AvatarUrl vào claim
             };
 
             // Thêm các role của người dùng vào claims

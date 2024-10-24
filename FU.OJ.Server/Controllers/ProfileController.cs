@@ -1,5 +1,6 @@
 using FU.OJ.Server.DTOs.User.Respond;
 using FU.OJ.Server.Infra.Const.Route;
+using FU.OJ.Server.Infra.Models;
 using FU.OJ.Server.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -48,14 +49,47 @@ namespace FU.OJ.Server.Controllers
                 return HandleException(ex);
             }
         }
+
+        [HttpGet(UserRoute.Action.GetByToken)]
+        public async Task<IActionResult> GetUserByToken()
+        {
+            try
+            {
+                var user = await _userService.GetUserByUsernameAsync(UserHeader.UserName);
+                if (user == null)
+                    throw new Exception("User not found.");
+
+                var userResponse = new UserView
+                {
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                    FullName = user.FullName,
+                    City = user.City,
+                    Description = user.Description,
+                    FacebookLink = user.FacebookLink,
+                    GithubLink = user.GithubLink,
+                    School = user.School,
+                    CreatedAt = user.CreatedAt,
+                    AvatarUrl = user.AvatarUrl,
+                };
+
+                return Ok(userResponse);
+            }
+            catch (Exception ex)
+            {
+                return HandleException(ex);
+            }
+        }
+
         [Authorize]
         [HttpPut(UserRoute.Action.Update)]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest updateUserRequest)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest updateProfileRequest)
         {
-            if (!ModelState.IsValid)
-                throw new Exception("Invalid model state.");
+            //if (!ModelState.IsValid)
+            //    throw new Exception("Invalid model state.");
 
-            var updatedUser = await _userService.UpdateUserAsync(updateUserRequest);
+            var updatedUser = await _userService.UpdateProfileAsync(UserHeader.UserName, updateProfileRequest);
             if (updatedUser == null)
                 throw new Exception("User not found.");
 

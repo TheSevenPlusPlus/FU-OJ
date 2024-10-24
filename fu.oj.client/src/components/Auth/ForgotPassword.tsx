@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,18 +13,33 @@ const ForgotPassword: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [countdown, setCountdown] = useState(0);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        let timer: NodeJS.Timeout;
+        if (countdown > 0) {
+            timer = setInterval(() => {
+                setCountdown((prev) => prev - 1);
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [countdown]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        await sendResetLink();
+    };
+
+    const sendResetLink = async () => {
         setIsLoading(true);
         setSuccessMessage(null);
         setErrorMessage(null);
 
         try {
             await forgotPassword(email);
-            setSuccessMessage("Password reset link has been sent to your email.");
-            setTimeout(() => navigate('/login'), 3000);
+            setSuccessMessage("Password reset link has been sent to your email. Please check your inbox and spam folder.");
+            setCountdown(60); // Start 60-second countdown
         } catch (error) {
             if (error.response && error.response.status === 400) {
                 setErrorMessage("The provided email is invalid or not registered.");
@@ -72,10 +87,21 @@ const ForgotPassword: React.FC = () => {
                             <AlertDescription>{errorMessage}</AlertDescription>
                         </Alert>
                     )}
-                    <Button type="submit" className="w-full" disabled={isLoading}>
-                        {isLoading ? 'Sending...' : 'Send Reset Link'}
+                    <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={isLoading || countdown > 0}
+                    >
+                        {isLoading ? 'Sending...' : countdown > 0 ? `Resend in ${countdown}s` : 'Send Reset Link'}
                     </Button>
                 </form>
+
+                {successMessage && (
+                    <div className="mt-4 text-sm text-gray-500 text-center">
+                        Please be patient as the email may take a few minutes to arrive.
+                        Check your spam folder if you don't see it in your inbox.
+                    </div>
+                )}
             </CardContent>
         </Card>
     );

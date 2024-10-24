@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FU.OJ.Server", "FU.OJ.Serve
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "fu.oj.client", "fu.oj.client\fu.oj.client.esproj", "{E87CD8E4-E40A-4BAD-9923-79DAF3EA0133}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3D346286-2D0C-4F0B-93A5-CFB27ACAB375}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\deploy.yaml = .github\workflows\deploy.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
