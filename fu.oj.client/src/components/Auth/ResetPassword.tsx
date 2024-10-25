@@ -8,6 +8,7 @@ import { resetPassword } from '../../api/auth';
 import { Eye, EyeOff } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Helmet } from 'react-helmet-async';
+import Loading from "../Loading"
 
 const ResetPassword: React.FC = () => {
     const [email, setEmail] = useState('');

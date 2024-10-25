@@ -15,7 +15,7 @@ import { BlogDetail } from "../../models/BlogDTO";
 import ItemsPerPageSelector from '../Pagination/ItemsPerPageSelector';
 import Pagination from '../Pagination/Pagination';
 import { Helmet } from "react-helmet-async";
-
+import Loading from "../Loading"
 export default function BlogPost() {
     const { blog_id } = useParams<{ blog_id: string }>();
     const navigate = useNavigate();
@@ -27,6 +27,7 @@ export default function BlogPost() {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const isLoggedIn = localStorage.getItem("token") !== null;
 
     useEffect(() => {
         const fetchData = async () => {
@@ -58,7 +59,10 @@ export default function BlogPost() {
         fetchData();
     }, [blog_id, pageIndex, pageSize]);
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) {
+        return < Loading />;
+    }
+
     if (error) return <div>{error}</div>;
     if (!blogPost) return <div>Blog post not found</div>;
 
@@ -93,7 +97,7 @@ export default function BlogPost() {
                     totalPages={totalPages}
                     onPageChange={handlePageChange}
                 />
-                <AddCommentForm blogId={blog_id} setComments={setComments} />
+                {isLoggedIn && <AddCommentForm blogId={blog_id} setComments={setComments} />}
             </div>
         </div>
     );

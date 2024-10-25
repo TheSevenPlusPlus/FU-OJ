@@ -19,6 +19,7 @@ import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
 import { Helmet } from "react-helmet-async";
 import { date } from "yup";
+import Loading from "../Loading"
 
 export default function ProblemDetail() {
     const { problemCode } = useParams<{ problemCode: string }>();
@@ -60,12 +61,7 @@ export default function ProblemDetail() {
     }, [contestCode, searchParams, problemCode]);
 
     if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-full">
-                <div className="spinner"></div>
-                <p className="text-center text-lg mt-2">Loading...</p>
-            </div>
-        );
+        return < Loading />;
     }
 
     if (error) {

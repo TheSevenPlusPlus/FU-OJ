@@ -35,6 +35,8 @@ import Pagination from '../../Pagination/Pagination';
 import ItemsPerPageSelector from '../../Pagination/ItemsPerPageSelector';
 import { Badge } from "@/components/ui/badge";
 import { Helmet } from "react-helmet-async";
+import Loading from "../../Loading"
+
 interface Problem {
     id: string;
     code: string;
@@ -117,7 +119,10 @@ const ProblemManagement: React.FC = () => {
         return hasSolution ? <i className="fas fa-check-circle text-green-500"></i> : null;
     };
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) {
+        return < Loading />;
+    }
+
     if (error) return <div>Error: {error}</div>;
 
     return (

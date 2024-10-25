@@ -4,7 +4,7 @@ import { getRank, getContestByCode, isRegisteredContest } from "../../api/contes
 import { ContestParticipantView, ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "./ContestNavbar";
 import { Helmet } from "react-helmet-async";
-
+import Loading from "../Loading"
 export function ContestRank() {
     const { contestCode } = useParams<{ contestCode: string }>();
     const [rankings, setRankings] = useState<ContestParticipantView[]>([]);
@@ -57,7 +57,9 @@ export function ContestRank() {
         fetchRankings();
     }, [contestCode]);
 
-    if (loading) return <div className="text-center py-10 text-xl">Loading contest...</div>;
+    if (loading) {
+        return < Loading />;
+    }
     if (error) return <div className="text-center py-10 text-xl text-red-600">{error}</div>;
 
     return (

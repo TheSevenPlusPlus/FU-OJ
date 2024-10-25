@@ -23,6 +23,11 @@ export default function Navbar() {
         navigate("/");
     };
 
+    const handleClearLocalStorageAndNavigate = (path: string) => {
+        localStorage.clear(); // Xóa toàn bộ localStorage
+        navigate(path); // Điều hướng người dùng
+    };
+
     const toggleMenu = () => setIsOpen(!isOpen);
 
     return (
@@ -41,13 +46,16 @@ export default function Navbar() {
                                 <>
                                     <Button
                                         variant="outline"
-                                        asChild
+                                        onClick={() => handleClearLocalStorageAndNavigate("/login")}
                                         className="mr-2 bg-white text-black hover:bg-gray-200"
                                     >
-                                        <Link to="/login">Log in</Link>
+                                        Log in
                                     </Button>
-                                    <Button asChild className="bg-white text-black hover:bg-gray-200">
-                                        <Link to="/register">Register</Link>
+                                    <Button
+                                        onClick={() => handleClearLocalStorageAndNavigate("/register")}
+                                        className="bg-white text-black hover:bg-gray-200"
+                                    >
+                                        Register
                                     </Button>
                                 </>
                             )}

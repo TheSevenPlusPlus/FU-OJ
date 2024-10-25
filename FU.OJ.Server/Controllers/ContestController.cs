@@ -36,6 +36,7 @@ public class ContestController : AuthorizeController
     }
 
     [HttpGet(ContestRoute.Action.GetByCode)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetContestByCodeAsync([FromRoute] string contestCode)
     {
         try
@@ -123,6 +124,7 @@ public class ContestController : AuthorizeController
     }
 
     [HttpGet(ContestRoute.Action.IsRegistered)]
+    [AllowAnonymous]
     public async Task<IActionResult> IsRegistered([FromRoute] string contestCode)
     {
         try

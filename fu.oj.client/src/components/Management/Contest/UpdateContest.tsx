@@ -32,11 +32,16 @@ const UpdateContest: React.FC = () => {
         const fetchContestData = async () => {
             try {
                 const contest = await getContestByCode(contestCode!); // Fetch contest data using contestId
+
+                // Format startTime and endTime for datetime-local input
+                const formattedStartTime = new Date(contest.data.startTime).toISOString().slice(0, 16);
+                const formattedEndTime = new Date(contest.data.endTime).toISOString().slice(0, 16);
+
                 setFormState({
                     name: contest.data.name,
                     description: contest.data.description,
-                    startTime: contest.data.startTime,
-                    endTime: contest.data.endTime,
+                    startTime: formattedStartTime, // Set formatted startTime
+                    endTime: formattedEndTime,     // Set formatted endTime
                     rules: contest.data.rules,
                     problems: contest.data.problems || [],
                 });
@@ -50,6 +55,7 @@ const UpdateContest: React.FC = () => {
             fetchContestData();
         }
     }, [contestCode]);
+
 
     const handleInputChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>

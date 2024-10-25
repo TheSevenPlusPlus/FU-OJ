@@ -1,24 +1,25 @@
-﻿import React, { useState, useEffect } from "react";
+﻿'use client'
+
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { submitCode } from "../../api/submission";
 import { submitContestCode } from "../../api/contest";
-import Editor from "@monaco-editor/react"; // Import Monaco Editor
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import Editor from "@monaco-editor/react";
+import { useParams, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Problem } from "../../models/ProblemModel";
 import { getProblemByCode } from "../../api/problem";
 import { getContestByCode, isRegisteredContest } from "../../api/contest";
 import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
 import { Helmet } from "react-helmet-async";
+import Loading from "../Loading"
 
-// Define model for language
 interface Language {
     languageId: number;
     languageName: string;
-    languageCode: string; // Thêm trường languageCode
+    languageCode: string;
 }
 
-// Create a list of languages
 const languages: Language[] = [
     { languageId: 49, languageName: "C (GCC 8.3.0)", languageCode: "c" },
     { languageId: 53, languageName: "C++ (GCC 8.3.0)", languageCode: "cpp" },
@@ -32,37 +33,46 @@ const languages: Language[] = [
     { languageId: 67, languageName: "Pascal (FPC 3.0.4)", languageCode: "pascal" },
 ];
 
-const CodeSubmission: React.FC = () => {
+export default function CodeSubmission() {
     const { problemCode } = useParams<{ problemCode: string }>();
-    const navigate = useNavigate(); // Hook for navigation
+    const navigate = useNavigate();
     const [code, setCode] = useState<string>("");
     const [problem, setProblem] = useState<Problem | null>(null);
-    const [language, setLanguage] = useState<Language | null>(languages[0]);
+    const [language, setLanguage] = useState<Language>(languages[0]);
     const [contestCode, setContestCode] = useState<string | null>(null);
     const [isRegistered, setIsRegistered] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [contest, setContest] = useState<ContestView | null>(null);
     const [searchParams] = useSearchParams();
+    const location = useLocation();
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [fileName, setFileName] = useState<string | null>(null);
+
+    const isLoggedIn = localStorage.getItem("token") !== null;
+
+    useEffect(() => {
+        if (!isLoggedIn) {
+            navigate(`/login?redirectTo=${encodeURIComponent(location.pathname)}`);
+        }
+    }, [isLoggedIn, navigate, location.pathname]);
 
     useEffect(() => {
         const fetchProblem = async () => {
+            if (!problemCode) return;
+
             try {
                 const response = await getProblemByCode(problemCode);
                 setProblem(response.data);
 
-                const contestCode = searchParams.get("contestCode");
-                if (contestCode != null) {
-                    setContestCode(contestCode);
-                    try {
-                        const _response = await getContestByCode(contestCode);
-                        setContest(_response.data);
+                const contestCodeParam = searchParams.get("contestCode");
+                if (contestCodeParam) {
+                    setContestCode(contestCodeParam);
+                    const contestResponse = await getContestByCode(contestCodeParam);
+                    setContest(contestResponse.data);
 
-                        const registeredResponse = await isRegisteredContest(contestCode);
-                        setIsRegistered(registeredResponse.data);
-                    } catch (error) {
-                        console.error("Error fetching registration status", error);
-                    }
+                    const registeredResponse = await isRegisteredContest(contestCodeParam);
+                    setIsRegistered(registeredResponse.data);
                 }
             } catch (err) {
                 setError("Failed to fetch problem details");
@@ -70,35 +80,31 @@ const CodeSubmission: React.FC = () => {
         };
 
         fetchProblem();
-    }, [problemCode, contestCode]);
+    }, [problemCode, searchParams]);
 
     const handleSubmit = async () => {
         setLoading(true);
         setError(null);
         try {
-            if (contestCode == null || Date.now() > new Date(contest.endTime).getTime()) {
+            if (!contestCode || (contest && Date.now() > new Date(contest.endTime).getTime())) {
                 const response = await submitCode({
-                    problemCode: problemCode,
+                    problemCode: problemCode!,
                     sourceCode: code,
-                    languageId: language?.languageId,
-                    languageName: language?.languageName,
+                    languageId: language.languageId,
+                    languageName: language.languageName,
                     problemId: problem?.id,
                 });
-
-                let submissionId = response.data;
-                navigate(`/submissions/${submissionId}`);
+                navigate(`/submissions/${response.data}`);
             } else {
                 const response = await submitContestCode({
-                    problemCode: problemCode,
+                    problemCode: problemCode!,
                     sourceCode: code,
-                    languageId: language?.languageId,
-                    languageName: language?.languageName,
+                    languageId: language.languageId,
+                    languageName: language.languageName,
                     problemId: problem?.id,
                     contestCode: contestCode,
                 });
-
-                let submissionId = response.data;
-                navigate(`/submissions/${submissionId}?contestCode=${contestCode}`);
+                navigate(`/submissions/${response.data}?contestCode=${contestCode}`);
             }
         } catch (err: any) {
             if (err.response?.status === 404) {
@@ -111,16 +117,31 @@ const CodeSubmission: React.FC = () => {
         }
     };
 
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setFileName(file.name);
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const content = e.target?.result as string;
+                setCode(content);
+            };
+            reader.readAsText(file);
+        }
+    };
+
+    const handleChooseFile = () => {
+        fileInputRef.current?.click();
+    };
+
     return (
         <>
             {isRegistered && <ContestNavbar />}
-
-            {isRegistered && (
+            {isRegistered && contest && (
                 <div className="bg-white border-b border-gray-200 py-4 sticky top-10 z-10">
-                    <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest?.name}</h1>
+                    <h1 className="text-3xl font-extrabold text-center text-gray-800">{contest.name}</h1>
                 </div>
             )}
-
             <div className="container mx-auto py-8">
                 <Helmet>
                     <title>Submit for {problem?.title || "Unknown Problem"}</title>
@@ -128,28 +149,43 @@ const CodeSubmission: React.FC = () => {
                 </Helmet>
 
                 <h1 className="text-3xl font-bold mb-4">Submit Your Code</h1>
-                <select
-                    id="language"
-                    value={language?.languageId}
-                    onChange={(e) => {
-                        const selectedLang = languages.find(
-                            (lang) => lang.languageId.toString() === e.target.value,
-                        );
-                        setLanguage(selectedLang || null);
-                        setCode(""); // Xóa nội dung code khi thay đổi ngôn ngữ
-                    }}
-                    className="mb-4 block w-full p-2 border border-gray-300 rounded-md"
-                >
-                    {languages.map((lang) => (
-                        <option key={lang.languageId} value={lang.languageId}>
-                            {lang.languageName}
-                        </option>
-                    ))}
-                </select>
+                <div className="mb-4">
+                    <select
+                        id="language"
+                        value={language.languageId}
+                        onChange={(e) => {
+                            const selectedLang = languages.find(
+                                (lang) => lang.languageId.toString() === e.target.value
+                            );
+                            if (selectedLang) {
+                                setLanguage(selectedLang);
+                                setCode("");
+                            }
+                        }}
+                        className="block w-full p-2 border border-gray-300 rounded-md mb-2"
+                    >
+                        {languages.map((lang) => (
+                            <option key={lang.languageId} value={lang.languageId}>
+                                {lang.languageName}
+                            </option>
+                        ))}
+                    </select>
+                    <div className="flex items-center">
+                        <Button onClick={handleChooseFile} className="mr-2">Choose File</Button>
+                        {fileName && <span className="text-sm text-gray-600">{fileName}</span>}
+                    </div>
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept=".c,.cpp,.py,.java,.js,.ts,.cs,.go,.sh,.pas"
+                    />
+                </div>
                 <div className="border rounded-md mb-4">
                     <Editor
                         height="400px"
-                        language={language?.languageCode} // Sử dụng language thay vì defaultLanguage
+                        language={language.languageCode}
                         value={code}
                         onChange={(value) => setCode(value || "")}
                         theme="vs-dark"
@@ -163,6 +199,4 @@ const CodeSubmission: React.FC = () => {
             </div>
         </>
     );
-};
-
-export default CodeSubmission;
+}

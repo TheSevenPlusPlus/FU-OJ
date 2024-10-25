@@ -29,7 +29,6 @@ const UserMenu: React.FC<UserMenuProps> = ({ onLogout }) => {
 
     // Hàm lấy thông tin user từ token khi người dùng đăng nhập lần đầu
     const fetchUserDataFromToken = () => {
-        console.log("Co fetch khong?");
         const token = localStorage.getItem("token");
         if (token) {
             const parsedToken = parseJwt(token);

@@ -82,10 +82,10 @@ namespace FU.OJ.Server.Controllers
             }
         }
         [Authorize(Roles = RoleAuthorize.OnlyAdmin)]
-        [HttpGet(UserRoute.Action.GetDetail)]
-        public async Task<IActionResult> GetUserByUserName()
+        [HttpGet(UserRoute.Action.GetByUsername)]
+        public async Task<IActionResult> GetUserByUserName([FromRoute] string userName)
         {
-            var user = await _userService.GetUserByIdAsync(UserHeader.UserId);
+            var user = await _userService.GetUserByUsernameAsync(userName);
             if (user == null) return NotFound("Không tìm thấy người dùng");
 
             var userResponse = new UserView

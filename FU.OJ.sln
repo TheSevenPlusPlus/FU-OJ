@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3D346286-2D0C-4F0B-93A5-CFB27ACAB375}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\deploy.yaml = .github\workflows\deploy.yaml
+		config\fuoj.default.conf = config\fuoj.default.conf
 	EndProjectSection
 EndProject
 Global

@@ -10,6 +10,7 @@ import { Toast } from "./Toast";
 import { getAllUsers, deleteUser } from "../../../api/user";
 import { UserView } from "../../../models/UserDTO";
 import { Helmet } from "react-helmet-async";
+import Loading from "../../Loading";
 
 interface UsersResponse {
     users: UserView[];
@@ -80,7 +81,7 @@ export default function UserManagement() {
                     </Button>
                 </div>
                 {isLoading ? (
-                    <p>Loading...</p>
+                    <Loading />
                 ) : (
                     <>
                         <UserTable
