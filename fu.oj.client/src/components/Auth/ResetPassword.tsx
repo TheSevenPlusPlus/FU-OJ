@@ -17,6 +17,7 @@ const ResetPassword: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false); // State mới cho Confirm Password
     const [passwordError, setPasswordError] = useState('');
     const [updateError, setUpdateError] = useState('');
     const { toast } = useToast();
@@ -29,7 +30,7 @@ const ResetPassword: React.FC = () => {
         const emailParam = searchParams.get('email');
 
         if (tokenParam) {
-            setToken(decodeURIComponent(tokenParam)); // Giải mã token
+            setToken(decodeURIComponent(tokenParam));
             console.log("Decoded Token:", decodeURIComponent(tokenParam));
         }
         if (emailParam) setEmail(emailParam);
@@ -78,9 +79,9 @@ const ResetPassword: React.FC = () => {
         setShowPassword(!showPassword);
     };
 
-    if (isLoading) {
-        return < Loading />;
-    }
+    const toggleConfirmPasswordVisibility = () => { // Hàm để toggle mật khẩu xác nhận
+        setShowConfirmPassword(!showConfirmPassword);
+    };
 
     return (
         <>
@@ -128,14 +129,25 @@ const ResetPassword: React.FC = () => {
                         </div>
                         <div className="space-y-2">
                             <label htmlFor="confirmPassword" className="text-sm font-medium">Confirm Password</label>
-                            <Input
-                                id="confirmPassword"
-                                type="password"
-                                placeholder="Confirm new password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                required
-                            />
+                            <div className="relative">
+                                <Input
+                                    id="confirmPassword"
+                                    type={showConfirmPassword ? "text" : "password"} // Điều chỉnh để hiển thị hoặc ẩn mật khẩu
+                                    placeholder="Confirm new password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    required
+                                />
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute right-0 top-0 h-full"
+                                    onClick={toggleConfirmPasswordVisibility} // Nút để toggle mật khẩu
+                                >
+                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                            </div>
                         </div>
                         {passwordError && (
                             <Alert variant="destructive">

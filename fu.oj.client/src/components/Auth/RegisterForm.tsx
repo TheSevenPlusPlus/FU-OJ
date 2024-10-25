@@ -33,7 +33,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, submitErro
     const validateForm = () => {
         const newErrors: { [key: string]: string } = {};
 
-        if (!formData.username.trim()) newErrors.username = "Username is required";
+        if (!formData.username.trim()) {
+            newErrors.username = "Username is required";
+        } else if (formData.username.length < 4) {
+            newErrors.username = "Username must be at least 4 characters";
+        }
         if (!formData.email.trim()) newErrors.email = "Email is required";
         if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid";
         if (!formData.password) newErrors.password = "Password is required";
