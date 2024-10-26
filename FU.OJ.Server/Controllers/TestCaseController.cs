@@ -32,7 +32,7 @@ namespace FU.OJ.Server.Controllers{    [ApiController]
         {
             try
             {
-                bool isDeleted = await _service.DeleteAsync(UserHeader.UserId, problemCode);
+                bool isDeleted = await _service.DeleteAsync(problemCode);
                 if (isDeleted) return Ok("Delete success");
                 else return BadRequest(new { message = "Delete not succcess" });
             }

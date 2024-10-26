@@ -71,7 +71,7 @@ public class BlogController : AuthorizeController
             return StatusCode(500, "An error occurred while retrieving the blogs.");
         }
     }
-    [AllowAnonymous]
+    [Authorize(Roles = RoleAuthorize.AdminManager)]
     [HttpPut(BlogRoute.Action.Update)]
     public async Task<IActionResult> UpdateBlogAsync([FromBody] UpdateBlogRequest request)
     {
@@ -82,6 +82,18 @@ public class BlogController : AuthorizeController
 
         try
         {
+            if (UserHeader.Role == RoleStatic.RoleManager)
+            {
+                var blog = _blogService.GetByIdAsync(request.Id);
+                if (blog == null)
+                {
+                    return NotFound();
+                }
+                if (blog.Result.UserId != UserHeader.UserId)
+                {
+                    return Unauthorized();
+                }
+            }
             await _blogService.UpdateAsync(request);
             return NoContent();
         }
@@ -92,17 +104,24 @@ public class BlogController : AuthorizeController
         }
     }
 
+    [Authorize(Roles = RoleAuthorize.AdminManager)]
     [HttpDelete(BlogRoute.Action.Delete)]
     public async Task<IActionResult> DeleteBlogAsync(string id)
     {
         try
         {
-            var blog = await _blogService.GetByIdAsync(id);
-            if (blog == null)
+            if (UserHeader.Role == RoleStatic.RoleManager)
             {
-                return NotFound("Blog not found.");
+                var blog = _blogService.GetByIdAsync(id);
+                if (blog == null)
+                {
+                    return NotFound();
+                }
+                if (blog.Result.UserId != UserHeader.UserId)
+                {
+                    return Unauthorized();
+                }
             }
-
             await _blogService.DeleteAsync(id);
             return NoContent();
         }
