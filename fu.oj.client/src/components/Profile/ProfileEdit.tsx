@@ -51,6 +51,7 @@ export default function ProfileEdit() {
             } catch (error) {
                 console.error("Failed to fetch profile:", error);
                 setError("Failed to load profile. Please try again later.");
+                navigate("/");
             } finally {
                 setLoading(false);
             }

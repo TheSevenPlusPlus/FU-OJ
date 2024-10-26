@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from "react";
-import { useParams, Link, useSearchParams } from "react-router-dom";
+import { useParams, Link, useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -31,6 +31,10 @@ const SubmissionDetail: React.FC = () => {
     const [contestCode, setContestCode] = useState<string | null>(null);
     const [contest, setContest] = useState<ContestView | null>(null);
     const [isRegistered, setIsRegistered] = useState<boolean>(false);
+    const navigate = useNavigate();
+
+    const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+    const currentUserName = currentUser.userName;
 
     useEffect(() => {
         const fetchSubmission = async () => {
@@ -85,6 +89,17 @@ const SubmissionDetail: React.FC = () => {
             minute: "2-digit",
             hour12: false,
         });
+    };
+
+    const showResubmitButton =
+        submission &&
+        submission.status.toLowerCase() !== "accepted" &&
+        submission.userName === currentUserName;
+
+    const handleResubmit = () => {
+        if (submission) {
+            navigate(`/problem/${submission.problemName}/submit`);
+        }
     };
 
     return (
@@ -231,6 +246,24 @@ const SubmissionDetail: React.FC = () => {
                                         </TableBody>
                                     </Table>
                                 </div>
+                            </>
+                        ) : (
+                            <p>Loading submission details...</p>
+                        )}
+                    </CardContent>
+                    <CardContent className="pt-6">
+                        {submission ? (
+                            <>
+                                {/* Nội dung chi tiết bài nộp */}
+                                {/* Nút Resubmit */}
+                                {showResubmitButton && (
+                                    <button
+                                        onClick={handleResubmit}
+                                        className="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 transition"
+                                    >
+                                        Resubmit
+                                    </button>
+                                )}
                             </>
                         ) : (
                             <p>Loading submission details...</p>
