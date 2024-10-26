@@ -13,6 +13,7 @@ import { ContestView } from "../../models/ContestModel";
 import { ContestNavbar } from "../Contest/ContestNavbar";
 import { Helmet } from "react-helmet-async";
 import Loading from "../Loading"
+import codeTemplates from "./codeTemplates.json";
 
 interface Language {
     languageId: number;
@@ -36,9 +37,9 @@ const languages: Language[] = [
 export default function CodeSubmission() {
     const { problemCode } = useParams<{ problemCode: string }>();
     const navigate = useNavigate();
-    const [code, setCode] = useState<string>("");
-    const [problem, setProblem] = useState<Problem | null>(null);
     const [language, setLanguage] = useState<Language>(languages[0]);
+    const [code, setCode] = useState<string>(codeTemplates[languages[0].languageCode] || ""); // Lấy template mặc định cho ngôn ngữ đầu tiên
+    const [problem, setProblem] = useState<Problem | null>(null);
     const [contestCode, setContestCode] = useState<string | null>(null);
     const [isRegistered, setIsRegistered] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -159,7 +160,7 @@ export default function CodeSubmission() {
                             );
                             if (selectedLang) {
                                 setLanguage(selectedLang);
-                                setCode("");
+                                setCode(codeTemplates[selectedLang.languageCode] || ""); // Set mẫu code khi đổi ngôn ngữ
                             }
                         }}
                         className="block w-full p-2 border border-gray-300 rounded-md mb-2"
