@@ -84,6 +84,7 @@ public class ContestController : AuthorizeController
     {
         try
         {
+            if (UserHeader.Role == RoleStatic.RoleAdmin) isMine = false;
             var(contests, totalPages) = await _contestService.GetListContestsAsync(query, UserHeader.UserId, isMine);
             return Ok(new {contests, totalPages});
         }
@@ -151,13 +152,18 @@ public class ContestController : AuthorizeController
             return HandleException(ex);
         }
     }
-
+    [Authorize(Roles = RoleAuthorize.AdminManager)]
     [HttpDelete(ContestRoute.Action.Delete)]
     public async Task<IActionResult> Delete([FromRoute] string contestCode)
     {
         try
         {
-            var result = await _contestService.DeleteAsync(UserHeader.UserId, contestCode);
+            if (UserHeader.Role == RoleStatic.RoleManager)
+            {
+                var contest = _contestService.GetContestByCodeAsync(contestCode);
+                if (UserHeader.UserId != contest.Result.OrganizationId) return Unauthorized();
+            }
+            var result = await _contestService.DeleteAsync(contestCode);
             return Ok(result);
         }
         catch (Exception ex)
@@ -166,12 +172,18 @@ public class ContestController : AuthorizeController
         }
     }
 
+    [Authorize(Roles = RoleAuthorize.AdminManager)]
     [HttpPut(ContestRoute.Action.Update)]
     public async Task<IActionResult> Update([FromRoute] string contestCode, [FromBody] UpdateContestRequest request)
     {
         try
         {
-            var result = await _contestService.UpdateContestAsync(UserHeader.UserId, contestCode, request);
+            if (UserHeader.Role == RoleStatic.RoleManager)
+            {
+                var contest = _contestService.GetContestByCodeAsync(contestCode);
+                if (UserHeader.UserId != contest.Result.OrganizationId) return Unauthorized();
+            }
+            var result = await _contestService.UpdateContestAsync(contestCode, request);
             return Ok(result);
         }
         catch (Exception ex)

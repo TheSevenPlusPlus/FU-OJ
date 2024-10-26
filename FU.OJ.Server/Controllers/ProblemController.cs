@@ -60,6 +60,7 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
+                if (UserHeader.Role == RoleStatic.RoleAdmin) isMine = false;
                 var (problems, totalPages) = await _service.GetAllAsync(query, UserHeader.UserId, isMine);
                 return Ok(new { problems, totalPages });
             }
@@ -74,6 +75,15 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
+                if (UserHeader.Role == RoleStatic.RoleManager)
+                {
+                    var problem = await _service.GetByCodeAsync(UserHeader.UserId, request.Code);
+                    if (problem == null) return NotFound();
+                    if (problem.UserId != UserHeader.UserId)
+                    {
+                        return Unauthorized();
+                    }
+                }
                 var updated = await _service.UpdateAsync(UserHeader.UserId, request);
 
                 if (!updated)
@@ -92,8 +102,17 @@ namespace FU.OJ.Server.Controllers
         {
             try
             {
-                await _testcaseService.DeleteAsync(UserHeader.UserId, id);
-                await _service.DeleteAsync(UserHeader.UserId, id);
+                if (UserHeader.Role == RoleStatic.RoleManager)
+                {
+                    var problem = await _service.GetByIdAsync(id);
+                    if (problem == null) return NotFound();
+                    if (problem.UserId != UserHeader.UserId)
+                    {
+                        return Unauthorized();
+                    }
+                }
+                await _testcaseService.DeleteAsync(id);
+                await _service.DeleteAsync(id);
 
                 return NoContent();
             }

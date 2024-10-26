@@ -25,8 +25,8 @@ namespace FU.OJ.Server.Service
         public Task<List<ContestParticipantView>> GetContestParticipantInfoByCodeAsync(string contestCode);
         public Task<bool> IsRegistered(string contestCode, string userId);
         public Task<List<ContestParticipantView>> GetRank(string contestCode);
-        public Task<string> UpdateContestAsync(string userId, string contestCode, UpdateContestRequest request);
-        public Task<bool> DeleteAsync(string userId, string contestCode);
+        public Task<string> UpdateContestAsync(string contestCode, UpdateContestRequest request);
+        public Task<bool> DeleteAsync(string contestCode);
     }
     public class ContestService : IContestService
     {
@@ -117,9 +117,9 @@ namespace FU.OJ.Server.Service
             return contest.Code;
         }
 
-        public async Task<bool> DeleteAsync(string userId, string contestCode)
+        public async Task<bool> DeleteAsync(string contestCode)
         {
-            var contest = await _context.Contests.FirstOrDefaultAsync(p => p.Code == contestCode && p.OrganizationId == userId);
+            var contest = await _context.Contests.FirstOrDefaultAsync(p => p.Code == contestCode);
 
             if (contest == null)
                 throw new Exception(ErrorMessage.NotFound);
@@ -130,9 +130,9 @@ namespace FU.OJ.Server.Service
             return true;
         }
 
-        public async Task<string> UpdateContestAsync(string userId, string contestCode, UpdateContestRequest request)
+        public async Task<string> UpdateContestAsync(string contestCode, UpdateContestRequest request)
         {
-            var contest = await _context.Contests.FirstOrDefaultAsync(c => c.Code == contestCode && c.OrganizationId == userId);
+            var contest = await _context.Contests.FirstOrDefaultAsync(c => c.Code == contestCode);
             if (contest == null)
                 throw new NotFoundException(ErrorMessage.NotFound);
 

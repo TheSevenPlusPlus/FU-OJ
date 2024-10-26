@@ -13,9 +13,10 @@ namespace FU.OJ.Server.Service
     {
         Task<string> CreateAsync(string userId, CreateProblemRequest request);
         Task<ProblemView?> GetByCodeAsync(string userId, string code);
+        Task<ProblemView?> GetByIdAsync(string code);
         Task<(List<ProblemView> problems, int totalPages)> GetAllAsync(Paging query, string userId, bool? isMine = false);
         Task<bool> UpdateAsync(string userId, UpdateProblemRequest request);
-        Task<bool> DeleteAsync(string userId, string id);
+        Task<bool> DeleteAsync(string id);
         Task<bool> IsAccepted(string userId, string problemId);
     }
 
@@ -73,6 +74,46 @@ namespace FU.OJ.Server.Service
                 HasSolution = problemData.Problem.HasSolution,
                 Status = problemData.ProblemUser?.Status ?? "Default",
                 PassedTestCount = problemData.ProblemUser?.PassedTestCount ?? 0
+            };
+
+            return problemView;
+        }
+
+        public async Task<ProblemView?> GetByIdAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new ArgumentException(ErrorMessage.InvalidInput);
+            var problemData = await _context.Problems.AsNoTracking()
+                .Where(p => p.Id == id)
+                .Select(p => new
+                {
+                    Problem = p,
+                    Examples = p.Examples.Select(e => new ExampleInputOutputView
+                    {
+                        Input = e.Input,
+                        Output = e.Output
+                    }).ToList()
+                })
+                .FirstOrDefaultAsync();
+            var problemView = new ProblemView
+            {
+                Id = problemData.Problem.Id,
+                Code = problemData.Problem.Code,
+                Title = problemData.Problem.Title,
+                Description = problemData.Problem.Description,
+                Constraints = problemData.Problem.Constraints,
+                Examples = problemData.Examples, // Đổ dữ liệu Examples vào ProblemView
+                Input = problemData.Problem.Input,
+                Output = problemData.Problem.Output,
+                TimeLimit = problemData.Problem.TimeLimit,
+                MemoryLimit = problemData.Problem.MemoryLimit,
+                CreatedAt = problemData.Problem.CreatedAt,
+                UserId = problemData.Problem.UserId,
+                TestCasePath = problemData.Problem.TestCasePath,
+                TotalTests = problemData.Problem.TotalTests,
+                AcQuantity = problemData.Problem.AcQuantity,
+                Difficulty = problemData.Problem.Difficulty,
+                HasSolution = problemData.Problem.HasSolution,
             };
 
             return problemView;
@@ -185,9 +226,6 @@ namespace FU.OJ.Server.Service
                 .Include(p => p.Examples)
                 .FirstOrDefaultAsync(p => p.Code == request.Code);
 
-            if (problem == null || problem.UserId != userId)
-                throw new Exception(ErrorMessage.NotFound);
-
             // Update problem details
             problem.Title = request.Title;
             problem.Description = request.Description;
@@ -223,9 +261,9 @@ namespace FU.OJ.Server.Service
         }
 
 
-        public async Task<bool> DeleteAsync(string userId, string id)
+        public async Task<bool> DeleteAsync(string id)
         {
-            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Id == id && p.UserId == userId);
+            var problem = await _context.Problems.FirstOrDefaultAsync(p => p.Id == id);
 
             if (problem == null)
                 throw new Exception(ErrorMessage.NotFound);
