@@ -254,12 +254,10 @@ const SubmissionDetail: React.FC = () => {
                     <CardContent className="pt-6">
                         {submission ? (
                             <>
-                                {/* Nội dung chi tiết bài nộp */}
-                                {/* Nút Resubmit */}
                                 {showResubmitButton && (
                                     <button
                                         onClick={handleResubmit}
-                                        className="mt-4 px-4 py-2 bg-blue-500 text-white font-semibold rounded hover:bg-blue-600 transition"
+                                        className="mt-4 px-3 py-1.5 bg-gray-800 text-white font-semibold text-sm rounded hover:bg-gray-900 transition"
                                     >
                                         Resubmit
                                     </button>

@@ -1,0 +1,12 @@
+{
+  "c": "#include <stdio.h>\n\nint main() {\n    // Your code here\n    return 0;\n}",
+  "cpp": "#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    ios_base::sync_with_stdio(false);\n    cin.tie(NULL);\n    // Your code here\n    return 0;\n}",
+  "python": "# Your code here",
+  "java": "import java.io.*;\nimport java.util.*;\n\npublic class Main {\n    public static void main(String[] args) {\n        // Your code here\n    }\n}",
+  "javascript": "// Your code here",
+  "typescript": "// Your code here",
+  "csharp": "using System;\n\nclass Program {\n    static void Main() {\n        // Your code here\n    }\n}",
+  "go": "package main\nimport \"fmt\"\n\nfunc main() {\n    // Your code here\n    fmt.Println(\"Hello, World\")\n}",
+  "bash": "#!/bin/bash\n# Your code here",
+  "pascal": "program HelloWorld;\nbegin\n    writeln('Hello, World!');\nend."
+}
