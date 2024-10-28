@@ -22,7 +22,7 @@ export default function ProblemList() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [pageIndex, setPageIndex] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(10);
+    const [pageSize, setPageSize] = useState<number>(50);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [searchParams] = useSearchParams();
 
